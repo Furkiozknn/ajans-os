@@ -129,3 +129,20 @@ düzeltme görevinin çalışma anı arasında yarış vardı.
 - Zaten çözülmüşse düzeltme yapma; sadece doğrula ve günlüğe neden
   hâlâ görev kuyruğunda göründüğünü yaz (yarış durumu, gecikmeli
   değerlendirme vb.).
+
+## 14. Git kimliğini `-c user.email` ile ezme — push reddedilir
+
+Makinede global kimlik zaten hesabın **noreply** adresi
+(`121863222+Furkiozknn@users.noreply.github.com`). Commit atarken
+`-c user.name=... -c user.email=furkiozkann@gmail.com` vermek o commit'i
+hesabın **gizli** e-postasıyla imzalar; GitHub'ın "e-postamı açığa çıkaran
+push'ları engelle" ayarı push'u reddeder:
+`! [remote rejected] HEAD -> master (push declined due to email privacy restrictions)`.
+7 Eylül'de `ajans-os`'un ilk push'u böyle düştü; 8 commit gizli e-postayla
+atılmıştı.
+
+- `git commit` çağrısına **hiçbir zaman** `-c user.*` ekleme; global config
+  doğru. Emin değilsen önce `git config --global user.email` bak.
+- Reddedilen commit'ler yalnızca yeniden yazarak (yazar e-postası) ya da
+  GitHub ayarını geçici kapatarak push edilebilir — ikisi de kullanıcının
+  kararı.
