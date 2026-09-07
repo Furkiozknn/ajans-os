@@ -54,13 +54,15 @@ yerden sürer.
 
 ### Faz 2 — Karşılaştırma
 
-- [ ] **Architecture Comparison Matrix** — Altı iz özetinden tek
-      matris: satırlar projeler, sütunlar protokol §3'teki altı puan +
-      "sağlayıcı bağımsızlığı", "sözleşme var mı", "insan kapısı var mı".
-      Biçim **sabit**: protokol §6 (sütunlar, JSON şeması, yorum bölümü). Her hücre kanıt bağlantılı (proje dosyasına). Çıktı:
-      `docs/01-KARSILASTIRMA-MATRISI.md`. Ham veriyi ayrıca
-      `docs/01-matris.json` olarak yaz — sonraki analizler makineyle
-      okusun.
+- [ ] **Architecture Comparison Matrix** — Matrisi **elle yazma**:
+      `node arac/matris-uret.js` altı iz özetinden `docs/01-matris.json` ve
+      `docs/01-KARSILASTIRMA-MATRISI.md`'yi üretir (protokol §6 biçimi,
+      sütun istatistikleri dahil). Önce çalıştır; "Ayrıştırma uyarıları"
+      bölümü boş değilse kaynak iz özetindeki tabloyu düzelt, yeniden üret.
+      Sonra §6.4 yorumunu markdown'daki `<!-- YORUM -->` bloğuna yaz:
+      sütun liderleri, boşluklar (örn. güvenlik sütunu tüm projelerde
+      düşükse bu bizim fırsatımız), çelişkiler — her biri kanıt
+      bağlantılı. Araç yeniden çalışınca yorum bloğu korunur.
 
 - [ ] **Best ideas ve patterns** — Matris ve iz özetlerinden: birden çok
       projede **bağımsız** ortaya çıkan desenler (en güçlü sinyal), her
