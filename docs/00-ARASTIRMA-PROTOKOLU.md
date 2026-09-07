@@ -21,6 +21,12 @@ bulunabilmeli. Satır numarası oynak dosyalarda (`pyproject.toml`,
 bunu `sed -n` ile birebir kontrol eder; tutmayan alıntı iddiayı
 düşürmese de araştırmacının güvenilirlik puanını düşürür.
 
+*Dosya disiplini (İ2 denetiminden):* sembolü **tanımlandığı** dosyayla
+alıntıla, kullanıldığı dosyayla değil. İ2'de `gleaning` → `prompt.py`,
+`id_for` → `upsert_nodes.py`, `ApprovalRequestMessage` → `errors.py` olarak
+yazılmıştı; üçü de depoda var ama o dosyalarda yok. Emin değilsen
+`grep -rn <sembol> <depo>` ile tanım dosyasını bul, sonra yaz.
+
 **README'ye güvenme kuralı.** README pazarlamadır. Şunlar açılır:
 `ARCHITECTURE.md` / `docs/`, klasör ağacı (2 seviye), çekirdek
 modül (orchestrator / graph / runtime / agent base class), hata
@@ -186,6 +192,15 @@ kaç alıntı tam / aralık içi / kaymış / **uydurma**; kayırma var mı;
 dürüstlük bölümü var mı; karar (sentezde kullanılabilir / düzeltme
 gerekir). Uydurma sayısı sıfırdan büyükse iz özeti sentezde kullanılmaz,
 araştırma maddesi yeniden açılır. Örnek: `i1-orkestrasyon/DENETIM.md`.
+
+**Araç:** önce `node arac/kanit-dogrula.js <iz> --yaz` çalıştırılır; bu,
+tüm alıntıları klonlarda otomatik dener ve `<iz>/DENETIM-otomatik.md`
+yazar (TAM / YAKIN / VAR / TOKEN-YOK / EOF / DOSYA-YOK). Sonra yalnızca
+"şüpheli" listesi elle incelenir: sembol depo genelinde var mı
+(`grep -rn`) — varsa *yanlış dosya*, yoksa *uydurma*. DENETIM.md aracın
+özet sayılarını ve elle bakılan her şüphelinin sınıfını içerir. Araç
+karar vermez; %100 vermez de — v3'te doğrulanmış bir iz ~%90-95 verir,
+kalan %5-10 paraphrase ve satır kaymasıdır.
 
 ---
 
