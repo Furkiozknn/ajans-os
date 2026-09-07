@@ -108,7 +108,13 @@ yerden sürer.
 - [ ] **Security Architecture** — Permission Manager tasarımı, en az
       yetki, sandbox katmanları, insan kapısı kuralları (hangi işlemler,
       geçilemez), ajan kimliği, hata sınırları/izolasyon.
-      `contracts/permission.schema.json`. Çıktı:
+      `contracts/permission.schema.json`. **İ3 girdileri zorunlu okuma:**
+      OZET §5 (şema alanları: şiddet ve güvenilirlik ayrı eksen,
+      `ALLOW/BLOCK/HUMAN_REQUIRED`, "kontrol edilmedi" ≠ "temiz", onay kapsamı;
+      kimlik bilgisi ajana ulaşmaz; denetleyici hatası güvenli tarafa düşer)
+      ve §6 **K6'ya aday ek madde:** verilen izin bileşenin sürümüne/içerik
+      özetine bağlanır, bileşen değişirse izin düşer — bu maddede ADR olarak
+      karara bağlanır. Çıktı:
       `docs/mimari/05-GUVENLIK.md`.
 
 - [ ] **Observability Architecture** — İz (trace) modeli (OTel GenAI
