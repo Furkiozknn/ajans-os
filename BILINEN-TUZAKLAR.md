@@ -114,3 +114,18 @@ elle commit'e süpürüldü; aynı iş 15 dk sonra ikinci kez üretilecekti.
   veya çıktıyı yalnızca ekrana bas.
 - Elle commit atmadan önce `git status` — başkasının yarım işini
   süpürme.
+
+## 13. Değerlendirme adımı bulguyu yakaladıktan sonra sorun kendi kendine kapanabilir
+
+Değerlendirme adımı "2 commit'lenmemiş dosya var" diye bir düzeltme
+görevi yazdı (12:27), ama önceki koşu 4 dakika sonra (12:31) zaten
+commit atıp kendi geliştirme günlüğü kaydını da düşmüştü. Düzeltme
+görevi çalıştığında depo zaten temizdi — anlık görüntü (snapshot) ile
+düzeltme görevinin çalışma anı arasında yarış vardı.
+
+- Bir düzeltme görevine başlamadan önce **önce `git status` / ilgili
+  kontrolü çalıştır**, göreve güvenip doğrudan "geri al" ya da "elle
+  düzelt" moduna geçme. Sorun hâlâ var mı diye doğrula.
+- Zaten çözülmüşse düzeltme yapma; sadece doğrula ve günlüğe neden
+  hâlâ görev kuyruğunda göründüğünü yaz (yarış durumu, gecikmeli
+  değerlendirme vb.).
