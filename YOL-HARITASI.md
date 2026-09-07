@@ -22,13 +22,6 @@ yerden sürer.
 ### Faz 1 — Araştırma (her iz bir madde)
 
 
-- [ ] **İ3 Araçlar ve güvenlik sınırı araştırması** — Protokol İ3:
-      MCP ve A2A spesifikasyonlarını **birincil kaynaktan** oku (repo
-      README değil, spec belgesi), araç izin modelleri, sandboxing
-      (E2B/Daytona), guardrails, ajan kimliği/güven, insan-onay
-      kapıları. Kullanıcının `mcp-vet` aracı adaylardan biri. ADR-000
-      K6'yı çürüten veya güçlendiren kanıtı açıkça ara. Çıktı:
-      `docs/arastirma/i3-arac-guvenlik/`.
 
 - [ ] **İ4 Güvenilirlik araştırması** — Protokol İ4: değerlendirici /
       eleştirmen / gözden geçirici ajanlar, reflection & self-correction,
@@ -182,3 +175,15 @@ Tamamlandı: 2026-09-07 — 7 proje dosyası + OZET.md yazıldı.
 
 Tamamlandı: 2026-09-07 — 7 proje dosyası + OZET.md yazıldı (letta, mem0,
 graphiti, cognee, graphrag, llamaindex, LightRAG).
+
+- [x] **İ3 Araçlar ve güvenlik sınırı araştırması** — Protokol İ3:
+      MCP ve A2A spesifikasyonlarını **birincil kaynaktan** oku (repo
+      README değil, spec belgesi), araç izin modelleri, sandboxing
+      (E2B/Daytona), guardrails, ajan kimliği/güven, insan-onay
+      kapıları. Kullanıcının `mcp-vet` aracı adaylardan biri. ADR-000
+      K6'yı çürüten veya güçlendiren kanıtı açıkça ara. Çıktı:
+      `docs/arastirma/i3-arac-guvenlik/`.
+
+Tamamlandı: 2026-09-07 — 7 kaynak dosyası + OZET.md yazıldı (mcp-spec,
+a2a-spec, e2b, microsandbox, llamafirewall, mcp-scan, mcp-vet). ADR-000 K6:
+çürüten kanıt bulunamadı, güçlendi; eksik bir madde Faz 3'e not düşüldü.
