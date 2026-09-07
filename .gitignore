@@ -3,3 +3,4 @@ _eski/
 *.log
 .env
 node_modules/
+_inceleme/

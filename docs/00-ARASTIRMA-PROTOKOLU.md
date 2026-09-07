@@ -33,6 +33,10 @@ sonunda iki liste zorunlu: *Alınacak fikir* (neden, hangi problemi
 `agency-agents` dahil — o yalnızca "prompt kütüphanesi" kategorisinin
 bir örneğidir.
 
+**Klon kuralı.** Kod okumak için klon gerekiyorsa `D:\Repolar\_inceleme\<repo>`
+altına al (`git clone --depth 1`). Çalışma deposunun içine klonlama; oraya
+yazılan şey commit'e girer. `_inceleme/` git dışıdır, istenince silinir.
+
 **Yıldız sayısı kanıt değildir.** Watcher/star oranı, gerçek
 kullanım (npm/PyPI indirme), issue kapanma hızı ve son 90 gün commit
 yoğunluğu birlikte değerlendirilir.
