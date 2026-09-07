@@ -72,7 +72,7 @@ yerden sürer.
 - [ ] **Architecture Comparison Matrix** — Altı iz özetinden tek
       matris: satırlar projeler, sütunlar protokol §3'teki altı puan +
       "sağlayıcı bağımsızlığı", "sözleşme var mı", "insan kapısı var mı".
-      Her hücre kanıt bağlantılı (proje dosyasına). Çıktı:
+      Biçim **sabit**: protokol §6 (sütunlar, JSON şeması, yorum bölümü). Her hücre kanıt bağlantılı (proje dosyasına). Çıktı:
       `docs/01-KARSILASTIRMA-MATRISI.md`. Ham veriyi ayrıca
       `docs/01-matris.json` olarak yaz — sonraki analizler makineyle
       okusun.
@@ -98,7 +98,8 @@ yerden sürer.
       dört maddesi yazılır; yazılamayan bileşen mimariye girmez.
       Bileşenler arası iletişim ve veri akışı diyagramı. Çıktı:
       `docs/mimari/00-BLUEPRINT.md` + `docs/adr/ADR-001..` (her büyük
-      karar ayrı ADR).
+      karar ayrı ADR, biçim `docs/adr/SABLON.md`; "Dahil etme ölçütü"
+      tablosu dolmayan bileşen mimariye girmez).
 
 - [ ] **Agent Architecture** — Sözleşme (`contracts/agent.schema.json`)
       temel alınır; araştırma bulgularıyla şema gözden geçirilir, eksik

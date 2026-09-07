@@ -174,3 +174,71 @@ Her iz için `docs/arastirma/<iz>/OZET.md`:
 - Bir fikri beğendiysen zayıflığını da yaz; bir fikri beğenmediysen
   güçlü yanını da.
 - Kullanıcının kendi depolarını kayırma; aynı rubrik, aynı sertlik.
+
+---
+
+## 6. Karşılaştırma matrisi (Faz 2 çıktısının biçimi)
+
+İz özetleri bittikten sonra tek bir matris üretilir. Amaç, sentez
+aşamasında "hangi proje neyi iyi yapıyor" sorusuna **bakmadan cevap
+verebilmek**; bu yüzden biçim sabittir ve makine-okur bir kopyası olur.
+
+### 6.1 İki çıktı
+
+- `docs/01-KARSILASTIRMA-MATRISI.md` — insan için tablo + kısa yorum
+- `docs/01-matris.json` — aynı verinin makine-okur hâli; sonraki
+  analizler (en iyi fikirler, anti-pattern'ler) buradan okur
+
+### 6.2 Satır: proje. Sütunlar (sabit, sıra değişmez)
+
+| Sütun | Tip | Kaynak |
+|---|---|---|
+| `repo` | string | kimlik |
+| `iz` | i1…i6 | hangi izde incelendi (birden fazla olabilir) |
+| `canlilik` | gecti / tarihi | protokol §1 |
+| `yildiz`, `son_push`, `lisans`, `dil` | | kimlik |
+| `olgunluk` … `guvenlik` (6 puan) | 1–5 | protokol §3 rubrik |
+| `saglayici_bagimsiz` | evet / kismen / hayir | tek LLM sağlayıcısına bağlı mı |
+| `sozlesme_var` | evet / kismen / hayir | ajan makine-okur sözleşmeyle mi tanımlı |
+| `insan_kapisi` | evet / kismen / hayir | riskli işlemde onay mekanizması |
+| `checkpoint` | evet / kismen / hayir | durumdan devam edilebiliyor mu |
+| `kanit` | dosya yolu | `docs/arastirma/<iz>/<repo>.md` |
+
+"kismen" kullanılıyorsa proje dosyasında **neden kısmen** yazılı olmalı.
+
+### 6.3 JSON biçimi
+
+```json
+{
+  "uretim_tarihi": "YYYY-AA-GG",
+  "projeler": [
+    {
+      "repo": "org/ad",
+      "iz": ["i1", "i4"],
+      "canlilik": "gecti",
+      "yildiz": 0, "son_push": "YYYY-AA-GG", "lisans": "MIT", "dil": "Python",
+      "puan": { "olgunluk": 4, "mimari_netlik": 3, "genisletilebilirlik": 4,
+                "guvenilirlik": 3, "gozlemlenebilirlik": 2, "guvenlik": 2 },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "evet",
+      "kanit": "docs/arastirma/i1-orkestrasyon/org-ad.md"
+    }
+  ]
+}
+```
+
+### 6.4 Matrisin altındaki yorum (en fazla bir sayfa)
+
+1. **Sütun bazında liderler** — her ölçütte en iyi 2–3 proje, neden.
+2. **Boşluklar** — hiçbir projenin iyi yapmadığı şey. Bunlar bizim
+   fırsatımız ve en dikkatli tasarlanacak yerler.
+3. **Çelişkiler** — bir ölçütte iyi olup diğerinde kötü olan
+   projeler; ödünleşim (trade-off) nerede.
+
+### 6.5 Faz 3 için ADR biçimi
+
+Mimari kararlar `docs/adr/SABLON.md` biçiminde yazılır. Her ADR'de
+"Dahil etme ölçütü" tablosu doludur; dolmuyorsa bileşen mimariye
+girmez. ADR numaraları 001'den başlar, boşluk bırakılmaz.
