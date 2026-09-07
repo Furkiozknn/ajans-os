@@ -157,3 +157,27 @@ bütçe dolduğunda hâlâ çalışıyordu — yazamadıkları her şey kayboldu
 - İki proje bitir → dosyaya yaz → commit → sonraki iki. Yazılmamış iş,
   bütçe dolunca yok olur; sık commit at.
 - Bütçenin yarısı gittiyse yeni proje açma.
+
+## 16. İki `sonnet` alt ajan da bütçenin yarısını yiyebilir (#15'in devamı)
+
+#15'ten sonra kural "aynı anda en fazla iki, `sonnet` ile" oldu. İ4 turu
+tam olarak buna uydu — ve yine yarım kaldı. İki alt ajan (langgraph ve
+temporal derin kod okuması) tek turda **~3,3 USD** yaktı: 6 USD bütçenin
+%55'i, ~6-7 dakikada, 77 ve 85 araç çağrısı, 135k ve 132k token. Yedi
+projelik izin ikisi bitti.
+
+Yanlış olan kural değil, ölçü birimi: maliyeti belirleyen alt ajan
+**sayısı** değil, her birinin ne kadar kod okuduğu. Bir spec belgesi
+okuyan `sonnet` ile 40 bin satırlık bir motoru gezen `sonnet` aynı şey
+değil.
+
+- Derin kod okuması yapan alt ajan turu başına **iki** demek, tur başına
+  **~3,5 USD** demek. 6 USD bütçede bu, bir izde en fazla **iki** proje
+  eder — altı-on projelik iz üç-dört tura yayılır. Bunu baştan kabul et,
+  tek turda bitirmeye çalışma.
+- Alt ajanı açmadan önce ona **kapsam sınırı** ver: hangi klasörler,
+  hangi dosyalar. "Depoyu incele" açık uçludur ve açık uçlu her görev
+  bütçeyi sonuna kadar kullanır.
+- İz yarım kalacaksa `docs/arastirma/<iz>/DURUM.md` yaz: bitenler,
+  hazır klonlar, kalanların odak soruları, aday dışı bırakılanlar ve
+  nedeni. Sonraki tur bunu okur ve incelenmişi tekrar incelemez.
