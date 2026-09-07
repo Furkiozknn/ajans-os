@@ -21,15 +21,6 @@ yerden sürer.
 
 ### Faz 1 — Araştırma (her iz bir madde)
 
-- [ ] **İ1 Orkestrasyon ve planlama araştırması** — Protokoldeki İ1
-      izini uygula: multi-agent orchestration, routing, dinamik
-      planlama, DAG/workflow, ajan-ajan iletişimi, uzman mimariler,
-      konsensüs. 6–10 canlı proje; tohum listesi + en az iki listede
-      olmayan aday. Her proje için `docs/arastirma/i1-orkestrasyon/<repo>.md`
-      (şablon: protokol §3), sonra `OZET.md` (§4). Kullanıcının
-      `ai-workflow-engine` deposu adaylardan biri — kayırmadan.
-      Bitti sayılması için: en az 6 proje dosyası + OZET.md + her
-      projede "Alınacak / Alınmayacak" dolu.
 
 - [ ] **İ2 Bellek ve bağlam araştırması** — Protokol İ2: bellek
       katmanları, uzun süreli bellek, bağlam yönetimi, RAG, bilgi
@@ -175,3 +166,14 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **İ1 Orkestrasyon ve planlama araştırması** — Protokoldeki İ1
+      izini uygula: multi-agent orchestration, routing, dinamik
+      planlama, DAG/workflow, ajan-ajan iletişimi, uzman mimariler,
+      konsensüs. 6–10 canlı proje; tohum listesi + en az iki listede
+      olmayan aday. Her proje için `docs/arastirma/i1-orkestrasyon/<repo>.md`
+      (şablon: protokol §3), sonra `OZET.md` (§4). Kullanıcının
+      `ai-workflow-engine` deposu adaylardan biri — kayırmadan.
+      Bitti sayılması için: en az 6 proje dosyası + OZET.md + her
+      projede "Alınacak / Alınmayacak" dolu.
+Tamamlandı: 2026-09-07 — 7 proje dosyası + OZET.md yazıldı.
