@@ -1,0 +1,374 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ajans-os.dev/contracts/agent.schema.json",
+  "title": "Agent Contract",
+  "description": "Bir ajanın makine-okur sözleşmesi. Orkestratör, kayıt defteri, yönlendirici, izin yöneticisi ve değerlendirici yalnızca bu sözleşmeyi bilir; ajanın iç yapısını bilmez. ADR-000 K3.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "identity",
+    "role",
+    "mission",
+    "capabilities",
+    "inputs",
+    "outputs",
+    "tools",
+    "permissions",
+    "dependencies",
+    "workflow",
+    "success_criteria",
+    "failure_modes",
+    "recovery_strategy",
+    "evaluation_criteria",
+    "memory_scope",
+    "communication_protocol"
+  ],
+  "properties": {
+    "contract_version": {
+      "description": "Bu şemanın sürümü. Uyumsuz değişiklikte major artar.",
+      "type": "string",
+      "const": "1.0"
+    },
+
+    "identity": {
+      "description": "Ajanı benzersiz ve sürümlü tanımlar. Kayıt defterinin anahtarı id + version.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "version", "owner"],
+      "properties": {
+        "id": { "$ref": "#/$defs/kebab_id" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "version": { "$ref": "#/$defs/semver" },
+        "owner": { "type": "string", "description": "Sorumlu kişi/ekip. Boş bırakılamaz: sahipsiz ajan bakımsız kalır." },
+        "description": { "type": "string", "maxLength": 400 },
+        "tags": { "type": "array", "items": { "$ref": "#/$defs/kebab_id" }, "uniqueItems": true }
+      }
+    },
+
+    "role": {
+      "description": "Sistemdeki işlevsel rolü. Yönlendirici önce role bakar, sonra capabilities'e.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "summary"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["planner", "specialist", "reviewer", "critic", "evaluator", "coordinator", "tool-operator", "researcher"]
+        },
+        "summary": { "type": "string", "maxLength": 200 }
+      }
+    },
+
+    "mission": {
+      "description": "Tek cümlelik amaç. Ajan bu cümlenin dışına çıkmaz; kapsam dışı iş görürse raporlar, yapmaz.",
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 300
+    },
+
+    "capabilities": {
+      "description": "Ne yapabildiği, yönlendirme için. Her yetenek ayrı ve test edilebilir olmalı.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description"],
+        "properties": {
+          "id": { "$ref": "#/$defs/kebab_id" },
+          "description": { "type": "string", "maxLength": 300 },
+          "tags": { "type": "array", "items": { "$ref": "#/$defs/kebab_id" } },
+          "confidence": {
+            "description": "Bu yetenekte kendine güven, 0-1. Yönlendirici düşük güvenli ajanı son çare olarak seçer.",
+            "type": "number", "minimum": 0, "maximum": 1
+          }
+        }
+      }
+    },
+
+    "inputs": {
+      "description": "Aldığı girdilerin tipli tanımı. Orkestratör eksik zorunlu girdiyle ajanı başlatmaz.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/slot" }
+    },
+
+    "outputs": {
+      "description": "Ürettiği çıktıların tipli tanımı. Değerlendirici çıktıyı bu şemaya karşı doğrular.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/slot" }
+    },
+
+    "tools": {
+      "description": "Kullanabileceği araçlar. Listede olmayan araç çağrısı Permission Manager tarafından reddedilir.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "purpose", "scope", "risk"],
+        "properties": {
+          "name": { "type": "string" },
+          "purpose": { "type": "string", "maxLength": 200 },
+          "scope": { "type": "string", "enum": ["read", "write", "execute", "network"] },
+          "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+          "requires_human_approval": {
+            "description": "true ise her çağrı insan kapısından geçer. Geri alınamaz işlemler için zorunlu (ADR-000 K6).",
+            "type": "boolean", "default": false
+          }
+        }
+      }
+    },
+
+    "permissions": {
+      "description": "Kapsamlı izinler. Varsayılan: hiçbir şey. Açıkça verilmeyen her şey yasak.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem", "network", "execute"],
+      "properties": {
+        "filesystem": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "read": { "type": "array", "items": { "type": "string" }, "description": "Glob desenleri. Boş = hiçbir yer." },
+            "write": { "type": "array", "items": { "type": "string" } },
+            "delete": {
+              "type": "boolean", "const": false,
+              "description": "Her zaman false. Kalıcı silme sözleşmeyle verilemez; insan kapısı gerektirir."
+            }
+          }
+        },
+        "network": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allow": { "type": "array", "items": { "type": "string" }, "description": "İzinli alan adları. Boş = ağ yok." }
+          }
+        },
+        "execute": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "sandbox": { "type": "string", "enum": ["none", "process", "container"], "description": "execute açıksa 'none' yalnızca risk=low araçlarla birlikte kabul edilir." }
+          }
+        },
+        "secrets": { "type": "array", "items": { "type": "string" }, "description": "Erişebileceği gizli anahtar adları. Değer değil, ad." },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_cost_usd": { "type": "number", "minimum": 0 },
+            "max_duration_s": { "type": "integer", "minimum": 1 },
+            "max_tokens": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+
+    "dependencies": {
+      "description": "Bağımlılıklar. Kayıt defteri eksik bağımlılığı olan ajanı 'hazır değil' işaretler.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agents": { "type": "array", "items": { "$ref": "#/$defs/kebab_id" }, "description": "Delegasyon yapabileceği ajanlar." },
+        "services": { "type": "array", "items": { "type": "string" } },
+        "models": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "preferred": { "type": "array", "items": { "type": "string" }, "description": "Model Router önce bunları dener. Sağlayıcı-önekli ad (örn. anthropic/claude-*, groq/*)." },
+            "acceptable": { "type": "array", "items": { "type": "string" } },
+            "forbidden": { "type": "array", "items": { "type": "string" }, "description": "Asla kullanılmayacak (örn. veri sınırı gereği)." },
+            "min_capability": { "type": "string", "enum": ["small", "medium", "large", "frontier"] }
+          }
+        }
+      }
+    },
+
+    "workflow": {
+      "description": "Nasıl çalıştığı. Orkestratör bunu izler; ajan adım atlayamaz.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "steps"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["single-shot", "iterative", "multi-step", "reactive"] },
+        "max_iterations": { "type": "integer", "minimum": 1 },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "action"],
+            "properties": {
+              "id": { "$ref": "#/$defs/kebab_id" },
+              "action": { "type": "string", "maxLength": 300 },
+              "produces": { "type": "array", "items": { "type": "string" } },
+              "checkpoint": { "type": "boolean", "default": false, "description": "true ise bu adımdan sonra durum kalıcılaştırılır; buradan devam edilebilir." },
+              "on_failure": { "type": "string", "enum": ["retry", "skip", "abort", "escalate"] }
+            }
+          }
+        }
+      }
+    },
+
+    "success_criteria": {
+      "description": "Ne zaman 'bitti' denir. Ölçülebilir olmayan ölçüt, değerlendirilemez.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement", "measurable"],
+        "properties": {
+          "id": { "$ref": "#/$defs/kebab_id" },
+          "statement": { "type": "string", "maxLength": 300 },
+          "measurable": { "type": "boolean" },
+          "metric": { "type": "string", "description": "measurable=true ise zorunlu: nasıl ölçülür." }
+        }
+      }
+    },
+
+    "failure_modes": {
+      "description": "Nasıl bozulabileceği. Boş liste kabul edilmez: her ajanın en az bir bilinen arıza modu vardır (ADR-000 K5).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description", "detection", "severity", "blast_radius"],
+        "properties": {
+          "id": { "$ref": "#/$defs/kebab_id" },
+          "description": { "type": "string", "maxLength": 300 },
+          "detection": { "type": "string", "description": "Nasıl fark edilir: hangi sinyal, hangi kontrol." },
+          "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "blast_radius": { "type": "string", "enum": ["self", "task", "session", "project", "external"] }
+        }
+      }
+    },
+
+    "recovery_strategy": {
+      "description": "Arızada ne yapılır. Recovery Manager bunu uygular; ajan kendi başına retry döngüsüne girmez.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retry", "fallback"],
+      "properties": {
+        "retry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_attempts"],
+          "properties": {
+            "max_attempts": { "type": "integer", "minimum": 0, "maximum": 10 },
+            "backoff": { "type": "string", "enum": ["none", "linear", "exponential"] },
+            "retry_on": { "type": "array", "items": { "type": "string" }, "description": "Hangi arıza modlarında (failure_modes.id)." }
+          }
+        },
+        "fallback": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Sırayla denenecek: ajan id'leri veya 'human'. Boş liste = doğrudan escalate."
+        },
+        "checkpoint": { "type": "boolean", "default": false },
+        "rollback": { "type": "string", "description": "Geri alma yöntemi. Yazma izni olan her ajan için zorunlu." },
+        "escalate_to": { "type": "string", "enum": ["coordinator", "human"], "default": "human" }
+      }
+    },
+
+    "evaluation_criteria": {
+      "description": "Çıktı kalitesi nasıl puanlanır. Evaluator bunu kullanır; ajan kendi kendini puanlamaz.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "what", "how"],
+        "properties": {
+          "id": { "$ref": "#/$defs/kebab_id" },
+          "what": { "type": "string", "maxLength": 200 },
+          "how": { "type": "string", "enum": ["rubric", "test", "metric", "human"] },
+          "threshold": { "type": "string", "description": "Geçme eşiği. Örn. 'rubric >= 4/5', 'tests pass', 'p95 < 30s'." },
+          "weight": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+
+    "memory_scope": {
+      "description": "Hangi bellek katmanlarına erişir. Yazma izni okuma izninden dardır; global yazma insan onaylı.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read", "write"],
+      "properties": {
+        "read": { "type": "array", "items": { "$ref": "#/$defs/memory_layer" }, "uniqueItems": true },
+        "write": { "type": "array", "items": { "$ref": "#/$defs/memory_layer" }, "uniqueItems": true },
+        "retention": { "type": "string", "enum": ["task", "session", "days-7", "days-30", "permanent"] },
+        "pii_allowed": { "type": "boolean", "default": false }
+      }
+    },
+
+    "communication_protocol": {
+      "description": "Kiminle, nasıl konuşur. Kontrollü iletişim: yalnızca listelenen hedeflere, yalnızca listelenen mesaj tipleriyle.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inbound", "outbound", "format"],
+      "properties": {
+        "inbound": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "accepts": { "type": "array", "items": { "$ref": "#/$defs/message_type" } },
+            "from": { "type": "array", "items": { "type": "string" }, "description": "Kabul edilen gönderenler: ajan id, 'coordinator', 'human'." }
+          }
+        },
+        "outbound": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "emits": { "type": "array", "items": { "$ref": "#/$defs/message_type" } },
+            "handoff_targets": { "type": "array", "items": { "$ref": "#/$defs/kebab_id" }, "description": "İşi devredebileceği ajanlar. Listede olmayana devir reddedilir." }
+          }
+        },
+        "format": { "type": "string", "enum": ["json", "markdown", "json+markdown"] },
+        "max_message_bytes": { "type": "integer", "minimum": 256 }
+      }
+    },
+
+    "x-host": {
+      "description": "Ev sahibine özgü eşlemeler (Claude Code frontmatter, Cursor kuralları vb.). Çekirdek bunu okumaz; dışa aktarıcılar okur. ADR-000 K8.",
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+
+  "$defs": {
+    "kebab_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?$"
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "$ref": "#/$defs/kebab_id" },
+        "type": { "type": "string", "description": "Temel tip (string, number, boolean, object, array, file, path, url) veya bir JSON Schema $ref." },
+        "required": { "type": "boolean", "default": true },
+        "description": { "type": "string", "maxLength": 300 },
+        "schema": { "type": "object", "description": "type=object/array ise iç yapı." }
+      }
+    },
+    "memory_layer": {
+      "type": "string",
+      "enum": ["task", "session", "project", "global", "knowledge"]
+    },
+    "message_type": {
+      "type": "string",
+      "enum": ["task", "result", "question", "status", "handoff", "critique", "approval-request", "error"]
+    }
+  }
+}
