@@ -156,6 +156,11 @@ function degerlendir(lines, a, b, toks) {
 for (const md of fs.readdirSync(IZ_DIR).filter((f) => f.endsWith(".md") && !/^DENETIM/.test(f)).sort()) {
   const base = md.replace(/\.md$/, ""); const dosyaIpucu = base === "OZET" ? [] : depoEsle(base);
   const icerik = fs.readFileSync(path.join(IZ_DIR, md), "utf8").split(/\r?\n/);
+  // Cok surumlu spec depolari (MCP: docs/specification/<tarih>/): md hangi
+  // surumu inceledigini Kimlik bolumunde yazar; adaylar o surume daraltilir.
+  // I3 denetiminde `index.mdx` bu yuzden SEP dizinine denk gelmisti.
+  const surumM = icerik.join("\n").match(/(?:specification|schema)\/(\d{4}-\d{2}-\d{2})/);
+  const surumIpucu = surumM ? surumM[1] : null;
   const yerel = { TAM: 0, YAKIN: 0, VAR: 0, "TOKEN-YOK": 0, EOF: 0, "DOSYA-YOK": 0 };
   icerik.forEach((satir, si) => {
     const alintilar = [...satir.matchAll(ALINTI)]; if (!alintilar.length) return;
@@ -165,6 +170,7 @@ for (const md of fs.readdirSync(IZ_DIR).filter((f) => f.endsWith(".md") && !/^DE
       const toks = yakinTokenlar(adaylarTok, m.index, pozlar.filter((p) => p !== m.index));
       let adaylar = indeks.filter((e) => yolEslesir(e.alt, yol));
       const ipucuAday = adaylar.filter((e) => ipucu.includes(e.depo)); if (ipucuAday.length) adaylar = ipucuAday;
+      if (surumIpucu) { const sv = adaylar.filter((e) => e.alt.includes("/" + surumIpucu + "/")); if (sv.length) adaylar = sv; }
       let enIyi = { sinif: "DOSYA-YOK" }, nerede = "";
       for (const e of adaylar.slice(0, 200)) {
         const r = degerlendir(okuSatirlar(e.tam, () => fs.readFileSync(e.tam, "utf8")), a, b, toks);

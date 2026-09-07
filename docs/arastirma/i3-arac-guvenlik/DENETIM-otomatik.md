@@ -1,6 +1,6 @@
 # i3-arac-guvenlik — otomatik kanıt doğrulaması (v3)
 
-*07.09.2026 17:51:13 · 71.871 dosya, 42 depo · araç: arac/kanit-dogrula.js*
+*07.09.2026 17:56:44 · 71.882 dosya, 42 depo · araç: arac/kanit-dogrula.js*
 
 ## Özet
 
