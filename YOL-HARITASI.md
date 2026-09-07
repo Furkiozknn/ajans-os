@@ -22,12 +22,6 @@ yerden sürer.
 ### Faz 1 — Araştırma (her iz bir madde)
 
 
-- [ ] **İ2 Bellek ve bağlam araştırması** — Protokol İ2: bellek
-      katmanları, uzun süreli bellek, bağlam yönetimi, RAG, bilgi
-      katmanı. Özellikle şuna bak: bellek yazma kimin yetkisinde, PII
-      nasıl ele alınıyor, bağlam penceresi dolunca ne oluyor. Çıktı:
-      `docs/arastirma/i2-bellek/`. Aynı bitti ölçütü.
-
 - [ ] **İ3 Araçlar ve güvenlik sınırı araştırması** — Protokol İ3:
       MCP ve A2A spesifikasyonlarını **birincil kaynaktan** oku (repo
       README değil, spec belgesi), araç izin modelleri, sandboxing
@@ -177,3 +171,12 @@ yerden sürer.
       Bitti sayılması için: en az 6 proje dosyası + OZET.md + her
       projede "Alınacak / Alınmayacak" dolu.
 Tamamlandı: 2026-09-07 — 7 proje dosyası + OZET.md yazıldı.
+
+- [x] **İ2 Bellek ve bağlam araştırması** — Protokol İ2: bellek
+      katmanları, uzun süreli bellek, bağlam yönetimi, RAG, bilgi
+      katmanı. Özellikle şuna bak: bellek yazma kimin yetkisinde, PII
+      nasıl ele alınıyor, bağlam penceresi dolunca ne oluyor. Çıktı:
+      `docs/arastirma/i2-bellek/`. Aynı bitti ölçütü.
+
+Tamamlandı: 2026-09-07 — 7 proje dosyası + OZET.md yazıldı (letta, mem0,
+graphiti, cognee, graphrag, llamaindex, LightRAG).
