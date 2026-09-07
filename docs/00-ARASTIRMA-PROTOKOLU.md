@@ -13,6 +13,14 @@ URL'sine bağlanır. "Orkestrasyonu güçlü" değil —
 "`graph/executor.py:112` — düğümler arası durum geçişi immutable
 snapshot ile yapılıyor, bu yüzden rollback ucuz". Kanıtsız iddia silinir.
 
+*Satır disiplini (İ1 denetiminden):* aralık veriyorsan (`a-b`) anahtar
+token o aralığın **içinde** olmalı; tek satır veriyorsan ±3 satırda
+bulunabilmeli. Satır numarası oynak dosyalarda (`pyproject.toml`,
+`package.json`) satırın yanına anahtar kelimeyi de yaz
+(`pyproject.toml:72 "Development Status :: 2 - Pre-Alpha"`). Denetim
+bunu `sed -n` ile birebir kontrol eder; tutmayan alıntı iddiayı
+düşürmese de araştırmacının güvenilirlik puanını düşürür.
+
 **README'ye güvenme kuralı.** README pazarlamadır. Şunlar açılır:
 `ARCHITECTURE.md` / `docs/`, klasör ağacı (2 seviye), çekirdek
 modül (orchestrator / graph / runtime / agent base class), hata
@@ -167,6 +175,17 @@ Her iz için `docs/arastirma/<iz>/OZET.md`:
 4. **Anti-pattern'ler** — birden çok projede soruna yol açmış seçimler.
 5. **Bizim için öneri** — 3–5 madde, her biri kanıta bağlı.
 6. **Açık sorular** — sentez aşamasında karar verilmesi gerekenler.
+7. **İncelenmeyenler** — bütçe/canlılık yüzünden açılmayan adaylar, neden.
+
+### Denetim adımı (`DENETIM.md`)
+
+İz özeti yazıldıktan sonra, **araştırmayı yapan koşudan farklı bir
+koşu** özetteki en az 12 dosya:satır alıntısını `D:\Repolar\_inceleme`
+klonlarında birebir doğrular ve `docs/arastirma/<iz>/DENETIM.md` yazar:
+kaç alıntı tam / aralık içi / kaymış / **uydurma**; kayırma var mı;
+dürüstlük bölümü var mı; karar (sentezde kullanılabilir / düzeltme
+gerekir). Uydurma sayısı sıfırdan büyükse iz özeti sentezde kullanılmaz,
+araştırma maddesi yeniden açılır. Örnek: `i1-orkestrasyon/DENETIM.md`.
 
 ---
 
