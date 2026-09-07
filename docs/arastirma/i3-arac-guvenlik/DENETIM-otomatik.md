@@ -1,20 +1,20 @@
 # i3-arac-guvenlik — otomatik kanıt doğrulaması (v3)
 
-*07.09.2026 17:48:10 · 71.835 dosya, 42 depo · araç: arac/kanit-dogrula.js*
+*07.09.2026 17:51:13 · 71.871 dosya, 42 depo · araç: arac/kanit-dogrula.js*
 
 ## Özet
 
 | Toplam | TAM | YAKIN | VAR | TOKEN-YOK ⚠️ | EOF ⚠️ | DOSYA-YOK ⚠️ |
 |---|---|---|---|---|---|---|
-| 256 | 73 | 13 | 160 | 9 | 0 | 1 |
+| 256 | 73 | 13 | 161 | 9 | 0 | 0 |
 
-Doğrulanabilir 96 alıntının **%90**'i doğrulandı (TAM+YAKIN). Şüpheli: **10**. Araç karar vermez; şüpheliler elle bakılır.
+Doğrulanabilir 95 alıntının **%91**'i doğrulandı (TAM+YAKIN). Şüpheli: **9**. Araç karar vermez; şüpheliler elle bakılır.
 
 ## Dosya bazında
 
 | Dosya | Toplam | TAM | YAKIN | VAR | ⚠️ |
 |---|---|---|---|---|---|
-| OZET.md | 37 | 4 | 0 | 32 | 1 |
+| OZET.md | 37 | 4 | 0 | 33 | 0 |
 | a2a-spec.md | 36 | 3 | 0 | 31 | 2 |
 | e2b.md | 30 | 21 | 0 | 7 | 2 |
 | llamafirewall.md | 66 | 30 | 11 | 22 | 3 |
@@ -25,7 +25,6 @@ Doğrulanabilir 96 alıntının **%90**'i doğrulandı (TAM+YAKIN). Şüpheli: *
 
 ## Şüpheli alıntılar (elle bak)
 
-- **DOSYA-YOK** `OZET.md:197` → `mcp-vet/models.py:9-16`
 - **TOKEN-YOK** `a2a-spec.md:227` → `specification.md:1908-1913` beklenen: `a2a.proto:206-207`, `proto:206-207` · bakılan: `A2A/docs/specification.md`
 - **TOKEN-YOK** `a2a-spec.md:256` → `specification.md:1921-1933` beklenen: `a2a.proto:206-207`, `proto:206-207` · bakılan: `A2A/docs/specification.md`
 - **TOKEN-YOK** `e2b.md:9` → `README.md:20` beklenen: `firecracker`, `microvm`, `hypervisor` · bakılan: `E2B/packages/cli/README.md`

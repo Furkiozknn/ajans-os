@@ -39,6 +39,12 @@ olarak, ayrı işaretle geçer.
 **Derinlik > genişlik.** Her izde 6–10 proje. Yirmi yüzeysel özet
 yerine altı derin analiz.
 
+**Bütçe disiplini (İ3'ten).** Bir araştırma turunda aynı anda en fazla
+**iki** alt ajan; alt ajanlar `sonnet`. Dört paralel alt ajan 6 USD'lik
+bütçenin %90'ını tek turda yaktı, tur yarım kaldı. Sıra: iki projeyi bitir
+→ dosyaları yaz → commit at → sonraki ikiye geç. Bütçenin yarısı gittiğinde
+yeni proje açma; elindekini bitir, özeti sonraki tura bırak.
+
 **Kopya yasağı.** Amaç fikir çıkarmak, kod taşımak değil. Her analizin
 sonunda iki liste zorunlu: *Alınacak fikir* (neden, hangi problemi
 çözüyor) ve *Alınmayacak* (neden zararlı/gereksiz/uyumsuz).

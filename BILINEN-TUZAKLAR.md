@@ -146,3 +146,14 @@ atılmıştı.
 - Reddedilen commit'ler yalnızca yeniden yazarak (yazar e-postası) ya da
   GitHub ayarını geçici kapatarak push edilebilir — ikisi de kullanıcının
   kararı.
+
+## 15. Dört paralel alt ajan bütçeyi tek turda bitirir
+
+İ3 araştırma turu dört paralel `opus` alt ajan açtı; 8,6 dakikada 6 USD
+bütçenin tamamı gitti, özet yazılamadı, tur yarım kaldı. Alt ajanlar
+bütçe dolduğunda hâlâ çalışıyordu — yazamadıkları her şey kayboldu.
+
+- Aynı anda en fazla **iki** alt ajan, alt ajanlar `sonnet`.
+- İki proje bitir → dosyaya yaz → commit → sonraki iki. Yazılmamış iş,
+  bütçe dolunca yok olur; sık commit at.
+- Bütçenin yarısı gittiyse yeni proje açma.
