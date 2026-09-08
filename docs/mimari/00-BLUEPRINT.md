@@ -54,7 +54,11 @@ bileşenler birbirini çağırmaz (ADR-002).
 ### 2.2 Task Manager
 
 Görevin ve adımlarının kalıcı kaydı; durum makinesinin sahibi. Durumlar en az:
-`PLANLANDI → CALISIYOR → (GIRDI_BEKLIYOR | ONAY_BEKLIYOR) → BITTI | BASARISIZ`.
+`PLANLANDI → BASLADI → (GIRDI_BEKLIYOR | ONAY_BEKLIYOR) → BITTI | BASARISIZ`.
+*(Yürüyen adımın adı `BASLADI`; `contracts/task.schema.json`
+`$defs.step_record.status` ve `docs/mimari/02-ORKESTRASYON.md` §4 ile aynı ad.
+Blueprint ilk yazımında `CALISIYOR` diyordu — 08.09.2026 denetiminde şemaya
+hizalandı, çünkü ad "başladı kaydı"na (ADR-003) bağlı.)*
 
 | Madde | Cevap |
 |---|---|
