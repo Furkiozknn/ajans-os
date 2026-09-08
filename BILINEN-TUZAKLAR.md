@@ -269,3 +269,24 @@ depo tur ortasında kirlenebilir.
   oturumun yarım işidir.
 - Karıştıysa geri almaya çalışma: diğer oturum hâlâ çalışıyor olabilir.
   `raporlar/ONAY-BEKLEYENLER.md` içine yaz, kullanıcı karar versin.
+
+
+## 21. Tablo ayrıştırıcısı "ilk veri satırından" şema tahmin ederse tek bir tire tüm izi sessizce düşürür
+
+`matris-uret.js` puan sütunlarını ilk veri satırında 1–5 arası tamsayı arayarak
+buluyordu ve puan tablosunu "Proje başlığı + içinde .md bağlantısı olan" ilk tablo
+diye seçiyordu. 8 Eylül matris turunda altı izin **dördü** bu yüzden düştü:
+i3 başlığı `Kaynak` yazdığı için, i5/i6 proje sütununda bağlantı yerine düz dosya
+adı olduğu için, i4 ise iki tablosu olduğu için (araç kimlik tablosunu puan tablosu
+sandı). Sonuç: matris 40 proje yerine 20 proje ile üretildi ve **hata vermedi** —
+yalnızca uyarı listesine satır düştü. Uyarıları okumayan biri eksik matrisi doğru
+sanardı.
+
+- Şemayı veriden tahmin etme, **başlıktan** tanı. Sütun adı sabit bir sözlükten
+  eşleştirilir (kısaltmalar dahil: `Güv.ilk.` → `guvilk`), veri hücresinden değil.
+- "İlk eşleşen tabloyu al" yanlış seçim yapabilir; seçim ölçütü aranan sütunların
+  **hepsinin** başlıkta bulunması olmalı.
+- `parseInt("incelenmedi")` → NaN, ve NaN JSON'da `null`, markdown'da `NaN` olarak
+  görünür. Sayı beklenen her hücrede aralık kontrolü yap, sonucu null'a düşür.
+- Kaynak belgeler elle yazılıyorsa biçim mutlaka **sıfır uyarı** ile doğrulanmalı;
+  uyarı listesi boş değilse çıktı yayımlanmaz.

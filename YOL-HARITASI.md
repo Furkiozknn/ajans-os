@@ -25,15 +25,6 @@ yerden sürer.
 
 ### Faz 2 — Karşılaştırma
 
-- [ ] **Architecture Comparison Matrix** — Matrisi **elle yazma**:
-      `node arac/matris-uret.js` altı iz özetinden `docs/01-matris.json` ve
-      `docs/01-KARSILASTIRMA-MATRISI.md`'yi üretir (protokol §6 biçimi,
-      sütun istatistikleri dahil). Önce çalıştır; "Ayrıştırma uyarıları"
-      bölümü boş değilse kaynak iz özetindeki tabloyu düzelt, yeniden üret.
-      Sonra §6.4 yorumunu markdown'daki `<!-- YORUM -->` bloğuna yaz:
-      sütun liderleri, boşluklar (örn. güvenlik sütunu tüm projelerde
-      düşükse bu bizim fırsatımız), çelişkiler — her biri kanıt
-      bağlantılı. Araç yeniden çalışınca yorum bloğu korunur.
 
 - [ ] **Best ideas ve patterns** — Matris ve iz özetlerinden: birden çok
       projede **bağımsız** ortaya çıkan desenler (en güçlü sinyal), her
@@ -151,6 +142,14 @@ yerden sürer.
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 
+- [x] **Architecture Comparison Matrix** — 2026-09-08. `node arac/matris-uret.js`
+      altı iz özetinden `docs/01-matris.json` + `docs/01-KARSILASTIRMA-MATRISI.md`
+      üretti: **40 proje, 6 iz, 0 ayrıştırma uyarısı**. Başlangıçta 5 uyarı vardı
+      (i3/i5/i6 puan tablosu bulunamadı, i4 yanlış tablo, temporal satırı eşleşmedi)
+      ve matrise yalnızca 20 proje giriyordu. Kaynak tablolar düzeltildi; araç
+      puan sütunlarını artık ilk veri satırı tahminiyle değil sütun başlığıyla
+      tanıyor. §6.4 yorumu (liderler / boşluklar / çelişkiler, hepsi kanıt
+      bağlantılı) yazıldı, yeniden üretimde korunduğu doğrulandı.
 - [x] **İ6 Otonom kodlama ve öğrenme araştırması** — Protokol İ6:
       otonom kodlama ajanları (OpenHands, SWE-agent, Aider, Cline,
       Claude Code'un alt-ajan modeli), self-learning / sürekli
