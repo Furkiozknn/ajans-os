@@ -38,10 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U13 — `src/orchestrator/`** — blueprint §3.2'nin 1–10 sırası,
-      elle bağlanan bağımlılıklar. Bitti: 12 sahte bağımlılıkla çağrı sırası
-      §3.2 ile birebir; `HUMAN_REQUIRED`'da koşu duruyor; `kosuyu_surdur`
-      biten adımı tekrarlamıyor.
 - [ ] **U15 — Tetikleyici ifade alanı ve K8'in uçtan uca kanıtı** —
       U2 incelemesinde ölçüldü: `agent-registry.turet(ad, "claude-code")`
       yapısal olarak geçerli bir `.md` üretiyor ama komşu projenin
@@ -75,6 +71,26 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U13 — `src/orchestrator/`** — 2026-09-08. `index.js`
+      (`orkestrator(bagimliliklar, secenekler)` → `kosuyu_yurut`,
+      `kosuyu_surdur`, `adimi_yurut`) + `index.test.js` (9 test, 12 sahte
+      bağımlılık) + `index.d.ts`'ye fabrika. Bitti ölçütünün üçü de ölçüldü:
+      (a) `adimi_yurut`ın çağrı sırası bir diziye adıyla düşüyor ve blueprint
+      §3.2'nin 1–10'uyla **tamamen** karşılaştırılıyor — fazladan bir çağrı da
+      eksik bir çağrı kadar hata; (b) `HUMAN_REQUIRED` gelince adım
+      `ONAY_BEKLIYOR`'a alınıyor, döngü ikinci adımı hiç başlatmıyor ve
+      `bitti_yaz` çağrılmıyor (izin kararının `gate_ref`i `approval_ref`
+      olarak adıma yazılıyor, kapıya ikinci kez yazılmıyor); (c)
+      `kosuyu_surdur` BITTI kaydı olan adımı yeniden başlatmıyor. Ayrıca D11:
+      `DEGERLENDIRILMEDI` GECTI sayılmıyor, aynı insan kapısına düşüyor.
+      Kurtarma modu seçilmiyor, `recovery-manager`a sorulup uyuluyor; tekrar
+      hakkı adımın `retry.max_attempts` alanından okunuyor. Bütçe eşiği ayrı
+      bir koşu sonu: `butce`, başarısızlık değil. Kapılar: `npm run kapi` →
+      137/137 test + yapı doğrulama temiz, `tsc 5.6` → çıkış 0. Kapsam dışı
+      (bilerek): paralel adım, planlayıcı ve **aracın çalıştırılması** — 12
+      bağımlılığın hiçbiri araç yürütücüsü değil, §3.2/7 şema + izin kararıyla
+      bitiyor; gerçek çalıştırma U14'ün taşıyıcı işi.
 
 - [x] **U12 — `src/observability/`** — 2026-09-08. `index.js` (`gozlemci` →
       `span_yaz`, `span_ac`, `kosu_izleri`, `iz_yolu`) + `index.test.js`
