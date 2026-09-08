@@ -25,10 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Memory Architecture** — Katmanlar (task/session/project/global/
-      knowledge), kim yazar kim okur, tutma süreleri, PII, RAG'in yeri,
-      bağlam penceresi yönetimi. Çıktı: `docs/mimari/03-BELLEK.md`.
-
 - [ ] **Evaluation Architecture** — Evaluator vs Critic ayrımı, rubrik/
       test/metrik/insan ölçütleri, hangi çıktı ne zaman hangi yolla
       değerlendirilir, geçme eşikleri, benchmark seti. Çıktı:
@@ -90,6 +86,42 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Memory Architecture** — 2026-09-08.
+      [`docs/mimari/03-BELLEK.md`](docs/mimari/03-BELLEK.md). Beş katman
+      (`task`/`session`/`project`/`global`/`knowledge`) kim yazar–kim okur–ne
+      kadar durur tablosuyla sabitlendi; enum zaten `agent.schema.json`'da
+      duruyordu, bu belge ona anlam ve süre verdi. Üç karar: **yazma sınıfı
+      yazanın kimliğinden değil hedef katmandan türer** (kimlikten türeseydi
+      her ajan tipi için ikinci bir uygulama gerekirdi — AP2'nin tam kendisi),
+      `project`/`global` yazımı **her zaman** `HUMAN_REQUIRED` (yani gece
+      koşusunda hiçbir ajan kalıcı belleğe yazamaz, önerisi sabaha kalır —
+      kural 10'un buradaki karşılığı); **append-only yasak**, çelişki
+      `supersedes` ile geçersiz kılmayla çözülür ve okuma varsayılanı yalnızca
+      geçerli kayıttır (İ2 Ö4'ün uyarısı: graphiti'de bile varsayılan filtresiz).
+      İ2'nin beş açık sorusu da karara bağlandı: S1 graf **hayır** (blueprint
+      §4.3 korundu, `knowledge` düz koleksiyon), S2 beş katman, **S3 PII =
+      katman politikası** (yazma anında sınıflandırma değil: token+gecikme, ve
+      yanlış pozitif belleği işe yaramaz kılar — AP5), S4/S6 **yaklaşık token
+      sayımı** + Letta'nın %30 payı + `usage` ile kalibrasyon (kesin sayım
+      sağlayıcı başına tokenizer = K3/K4 ihlali), S5 **senkron yazma** (adım
+      sınırında, ADR-003'le aynı anda). Blueprint §6'nın S6'sı böylece kapandı.
+      Bağlam yönetimi: LightRAG formülü + **önceden yazılmış kısılma sırası**
+      (sistem sözleşmesi ve görev durumu kırpılmaz; ikisi tek başına bütçeyi
+      doldurursa bu bir hata durumudur, sessizce küçültülmez), eşik %90, taşma
+      = faz geçişi ve **ham kayıt yerinde kalır** (LightRAG'in AP6 hatası
+      tekrarlanmaz). Kanıtsız tek bölüm §5: İ2'de 7/7 projede içerik düzeyinde
+      PII mekanizması bulunamadı, tasarım sıfırdan yapıldı ve bu dürüstlük
+      notunda yazıldı; kalibrasyon fikri de hiçbir projeden alınmadı, bizim
+      eklememiz. Üç boşluk **düzeltilmedi, yazıldı** (§8): `memory_scope`
+      bugün "yazma ⊂ okuma"yı, "`knowledge`'a yalnızca alım yazar"ı ve katman
+      süresi tavanını zorlamıyor — üçü de Faz 4'te `memory.schema.json` ile
+      birlikte kapanır. Doğrulama: `node arac/iz-izle.js docs/mimari/03-BELLEK.md`
+      → **11 alıntının 11'i de BIREBIR** (YOK 0, çıkış kodu 0);
+      `node arac/sema-dogrula.js --test` temiz; tuzak #22 taraması (belgenin
+      kendi metni hakkındaki iddialar) `days-7`, `memory.schema.json`,
+      Letta sabitleri, `_async_add_to_memory` ve eleştiri üst sınırı 20 için
+      tek tek `grep`lendi, hepsi doğrulandı.
 
 - [x] **Orchestration Architecture** — 2026-09-08.
       [`docs/mimari/02-ORKESTRASYON.md`](docs/mimari/02-ORKESTRASYON.md) +
