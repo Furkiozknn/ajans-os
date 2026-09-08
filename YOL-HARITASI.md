@@ -25,10 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Self-improvement Architecture** — ADR-000 K7 çerçevesinde:
-      izlerden öneri üretme, öneri sözleşmesi, insan onay akışı,
-      sürümleme ve geri alma, "sürüklenme" tespiti. Çıktı:
-      `docs/mimari/07-KENDINI-GELISTIRME.md`.
 
 ### Faz 4 — Tasarım
 
@@ -65,6 +61,27 @@ yerden sürer.
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 
+- [x] **Self-improvement Architecture** — 2026-09-08.
+      [`docs/mimari/07-KENDINI-GELISTIRME.md`](docs/mimari/07-KENDINI-GELISTIRME.md) +
+      `contracts/proposal.schema.json` + üç örnek (`contracts/ornek/oneri/`).
+      Yeni çalışan bileşen eklenmedi: blueprint §4.5 Learning Layer'ı
+      çekirdeğin dışında bırakmıştı ve giriş koşulu (kapılı öneri üretiminin
+      üretimde çalıştığı ikinci olgun örnek) İ6'da karşılanmadı. Taşıyıcı
+      karar **D1: öneri üreteci kurulmaz, öneri *biçimi* kurulur** —
+      `author.kind` bugün `insan`, ileride `uretec`; kayıt biçimi değişmez.
+      **D2** öneri veridir, eylem değildir (İ6 AP3 / TextGrad
+      `optimizer.py:186`); şemada uygulama fiili yoktur. **D4** önerilebilir
+      hedefler kapalı listedir ve **kapının kendisi listede değildir** —
+      AP1'in sessiz biçimi, kapıyı kaldıran bir öneri yazıp onaylatmaktır.
+      **D6** geri alma değil **sürüm sabitleme** (kural 9): yapıtın kendisi
+      geri sarılır, ürettiği dış etki telafi edilir. **D7** sürüklenme =
+      onaylı bir öneriyle açıklanamayan sayaç hareketi; detektör gölge
+      modda ve eşik kapısının kanıtı olamaz (kural 6). İ6'nın dört açık
+      sorusundan ikisi kapandı (eşiği kim belirler → D5; `CLAUDE.md` ev
+      sahibi yapılandırmasıdır, öneri hedefi değil → K8). Doğrulama:
+      `node arac/sema-dogrula.js --test` temiz — sekiz çapraz kontrol,
+      on beş öz-test; 11 blok alıntı ve 18 satır içi atıf kaynak
+      dosyalarda birebir arandı.
 - [x] **Observability Architecture** — 2026-09-08.
       [`docs/mimari/06-GOZLEM.md`](docs/mimari/06-GOZLEM.md) +
       `contracts/span.schema.json` + dört örnek (`contracts/ornek/gozlem/`).
