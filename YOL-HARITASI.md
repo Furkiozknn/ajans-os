@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U8 — `src/cost-manager/`** — fiyat tablosu, eşik, adım tavanı.
-      Bitti: bilinmeyen model → maliyet `null` + `bilinmeyen_cagri` sayacı;
-      ondalık ayırıcı testi (tuzak #4).
 - [ ] **U9 — `src/evaluator/`** — ADR-004 deterministik kapı.
       Bitti: aynı girdi 100 çağrıda aynı sonuç; LLM metni `Kanit` yerine
       geçemiyor.
@@ -90,6 +87,23 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 
+- [x] **U8 — `src/cost-manager/`** — 2026-09-08. `index.js`
+      (`maliyetYoneticisi` → `tablo_yukle`, `usage_isle`, `gecis_gerekli_mi`,
+      `adim_tavani`, `durum`) + `index.test.js` (15 test) +
+      `veri/fiyat-tablosu.json` (tablo ve güncelleme prosedürü aynı dosyada) +
+      `index.d.ts`'ye önbellek fiyat alanları, `VARSAYILAN_TABLO` ve fabrika
+      bildirimi. Kural 11'in iki yarısı da ölçülüyor: **fiyat kodda gömülü
+      değil** (tablo yüklenmeden `usage_isle` istisna atıyor) ve **bilinmeyen
+      maliyet `null`, sıfır değil** — tabloda olmayan model, fiyatı `null` olan
+      satır ve fiyatlanmayan sıfır olmayan bir sayaç, üçü de `maliyet_usd:
+      null` + `bilinmeyen_cagri++` veriyor, `harcanan_usd` değişmiyor. Ondalık
+      ayırıcı testi (tuzak #4) iki yönlü: `"1,25"` metni yüklemede reddediliyor,
+      `0.5742` fiyatı 1 Mtok'ta 0,5742 USD veriyor (Türkçe yerelde
+      ayrıştırılsaydı 5742 çıkardı); kaynakta yerel biçimlendirme ve metinden
+      sayı ayrıştırma çağrısı olmadığı da testle sabit. Eşik bir **bayrak**:
+      aşılınca modül hiçbir şeyi durdurmuyor, planlı faz geçişi Orchestrator'un
+      kararı (ADR-002). Doğrulama: 15/15 modül testi, `npm test` 85/85,
+      `node arac/yapi-dogrula.js` temiz, `tsc` çıkış 0.
 - [x] **U7 — `src/model-router/`** — 2026-09-08. `index.js`
       (`modelYonlendirici` → `sec`, `cagir`, donmuş `katalog`) +
       `index.test.js` (14 test) + `index.d.ts`'ye `KatalogGirdisi` ve fabrika
