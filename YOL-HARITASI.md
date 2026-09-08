@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U5 — `src/memory-manager/`** — katmanlı okuma/yazma.
-      Bitti: `ALLOW` olmayan kararla `yaz` yazmıyor; geçersiz kılınan kayıt
-      `oku`'dan dönmüyor.
 - [ ] **U6 — `src/context-manager/`** — bütçe ve kısılma.
       Bitti: atılan parçaların sırası önceden yazılı sırayla birebir.
 - [ ] **U7 — `src/model-router/`** — `sec` + `cagir`, taşıyıcı arkası.
@@ -97,6 +94,25 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U5 — `src/memory-manager/`** — 2026-09-08. `index.js`
+      (`oku`, `yaz`, `gecersiz_kil`) + `index.test.js` (9 test) + genişletilmiş
+      `index.d.ts`. Yazma bir **izin işlemi**: `yaz` ve `gecersiz_kil` bir
+      `IzinKarari` belgesi alıyor, karar `ALLOW` değilse **hiçbir şey
+      yazılmıyor** ve belge `memory_write` dışında bir işlem için verilmişse
+      de yazılmıyor (başka işlemin izni bellek yetkisi değil). `project` ve
+      `global` katmanları insan kapısından geçmemiş bir `ALLOW` ile
+      yazılamıyor; kapının kanıtı karar belgesindeki `supersedes` alanı
+      (03-BELLEK §3, kalıcı sınıf). Geçersiz kılınan kayıt **silinmiyor** ama
+      varsayılan okumaya da girmiyor — geçmiş açıkça isteniyor
+      (`BellekSorgusu.gecmis`, §4). Kapsam belirtilmemiş okuma boş küme
+      dönüyor, "hepsi" değil (AP6 → kural 7); okuma sırası dar katmandan
+      genişe. Bitti ölçütü ölçüldü: `BLOCK`/`HUMAN_REQUIRED` kararından sonra
+      depo boş, `gecersiz_kil` sonrası kayıt `oku`'dan düşüyor ama
+      `gecmis: true` ile hâlâ orada. Kapsam dışı bırakılanlar yerinde:
+      vektör arama yok, saklama/silme işi yok, PII tespiti yok.
+      Doğrulama: `npm run kapi` çıkış 0 (45 test, 9'u U5),
+      `npx -p typescript@5.6 tsc -p tsconfig.json` çıkış 0.
 
 - [x] **U4 — `src/permission-manager/`** — 2026-09-08. `index.js`
       (`karar`, `insan_kapisina_yaz`, `onayi_isle`) + `index.test.js` (17 test)
