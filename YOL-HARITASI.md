@@ -25,11 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Observability Architecture** — İz (trace) modeli (OTel GenAI
-      uyumlu), hangi olaylar kaydedilir, maliyet/gecikme sayaçları, iz
-      → değerlendirme → öğrenme akışının veri sözleşmesi. Çıktı:
-      `docs/mimari/06-GOZLEM.md`.
-
 - [ ] **Self-improvement Architecture** — ADR-000 K7 çerçevesinde:
       izlerden öneri üretme, öneri sözleşmesi, insan onay akışı,
       sürümleme ve geri alma, "sürüklenme" tespiti. Çıktı:
@@ -69,6 +64,49 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Observability Architecture** — 2026-09-08.
+      [`docs/mimari/06-GOZLEM.md`](docs/mimari/06-GOZLEM.md) +
+      `contracts/span.schema.json` + dört örnek (`contracts/ornek/gozlem/`).
+      Yeni bileşen eklenmedi; blueprint §2.13'ün "tek yönlü dinleyici"
+      satırının veri karşılığı yazıldı. Taşıyıcı karar **D1: iz türetilmiş
+      bir gözlemdir, doğruluk kaynağı değildir** — ADR-003'ün adım-sonucu
+      tablosu doğruluk kaynağı olarak kalır, bu yüzden *span yazımı
+      başarısız olursa adım başarısız sayılmaz*; aksi hâlde gözlem katmanı
+      izlediği sistemin arıza kaynağı olurdu. **D3** İ5'in en değerli
+      bulgusunu doğrudan alıyor: token ve para muhasebesi **yalnızca tek
+      modele ve tek çağrıya karşılık gelen sınırda** tutulur, ajan span'i
+      model bilmez — OTel bunu dört kırıcı değişiklikle kendisi yaptı
+      (`changelog.d/469.breaking.md`: ajan span'indeki cache kırılımları
+      "misleading", tüketici bunları `gen_ai.inference.client` span'lerinden
+      toplamalı). **D4** İ5 OZET §6'nın açık sorusunu kapatıyor: hiyerarşi
+      açık `parent_span_id` alanıyla taşınır, OTel trace context varsayımına
+      güvenilmez (`events.yaml:18` ilişkiyi context'e bırakmış). Para hiçbir
+      standartta yok (`cost|price|usd|dollar` OTel'de sıfır sonuç), bu yüzden
+      **D5/D6**: fiyat tablosu veridir, her maliyet kaydı tablonun `digest`ini
+      taşır, bilinmeyen maliyet `null` ve **sebebi zorunludur** (üç değerli) —
+      "bilmiyorum" kabul, sessiz bilmemek değil; **90 günden eski tablo
+      `usd`'yi `null` yapar** (AP10'un mekanizması kataloğun eskimesi değil,
+      eskidiğinin fark edilmemesi). Açık uçlu `usage.extra` bir **bekleme
+      odasıdır**: iki bağımsız sağlayıcı aynı kavramı taşıyınca çekirdeğe
+      terfi eder, etmezse altı ay sonra silinir (OTel'de cache token'ları
+      tam olarak böyle terfi etti). 04-DEGERLENDIRME §8 ve 05-GUVENLIK §8'in
+      ilan ettiği **sekiz sayaç** span karşılığına ve tüketicisine bağlandı;
+      sayaç 6 (`HUMAN_REQUIRED` oranı) **bilerek yetkisiz** kaldı. Üç yerde
+      bilinçli olarak span **yok** (adım kaydı, bellek okuması, Cost Manager)
+      ve gerekçesi yazılı. Belgede §8'in sekiz çapraz kontrolünün sekizi de
+      koda girdi — belgede yazıp makinede sınanmayan kural AP3'ün tanımıdır.
+      Kapanmayan yedi yer §10'da: dışa aktarım katmanı yok, fiyat tablosu
+      dosyası yok, 90 gün ve altı ay eşikleri **ölçülmedi** (sezgi), span
+      hacmi/saklama kararı yok, benchmark seti yok, ve İ5 denetiminin iki
+      OTel klonunu ayırt edememesi D3/D7'nin tazeleme alıntılarını zayıf
+      bırakıyor — bu §0'da ve §11'de açıkça işaretlendi. Doğrulama:
+      `node arac/sema-dogrula.js --test` → dört örnek 14/14 zorunlu alanla
+      geçti, **14 bozma denemesinin 14'ü reddedildi**, çıkış kodu 0;
+      `node arac/iz-izle.js docs/mimari/06-GOZLEM.md` → **28 alıntının 27'si
+      BIREBIR**, 1 YAKIN, **YOK 0**. Doğrulayıcı `oneOf`'u bilmediği için
+      şema onun desteklediği alt kümeye çekildi (araç genişletilmedi —
+      bilmediği anahtarda sessizce geçmemesi kasıtlı bir özellik).
 
 - [x] **Security Architecture** — 2026-09-08.
       [`docs/mimari/05-GUVENLIK.md`](docs/mimari/05-GUVENLIK.md) +
