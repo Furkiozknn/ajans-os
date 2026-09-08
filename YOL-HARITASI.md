@@ -21,10 +21,7 @@ yerden sürer.
 
 ### Faz 1 — Araştırma (her iz bir madde)
 
-
-
 ### Faz 2 — Karşılaştırma
-
 
 ### Faz 3 — Mimari sentez
 
@@ -103,7 +100,13 @@ yerden sürer.
       ekle; sonra bu maddeyi işaretle ve **aynısını en sona tekrar
       ekle**. Döngü böyle sürer.
 
-- [ ] **kanit-dogrula iyileştirmesi** — Üç denetimin (İ4, İ5, İ6
+---
+
+## Bitti
+
+<!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **kanit-dogrula iyileştirmesi** — Üç denetimin (İ4, İ5, İ6
       `DENETIM.md`) tekrar eden dersleri araca insin: (1) çıplak dosya adı
       (`README.md:14`) önce depo kökünde aranır, iç içe kopya ancak kökte yoksa
       aday olur; (2) `…/dosya.py:N` gibi kısaltılmış yollar depo içinde ada göre
@@ -113,12 +116,7 @@ yerden sürer.
       ikinci klon köküne de bakılır. Her kural için DENETIM.md'lerdeki gerçek
       yanlış alarmdan bir regresyon testi (`arac/kanit-dogrula-test.js`);
       İ4–İ6 üzerinde yeniden koşup şüpheli sayısının düştüğünü tabloyla göster.
-
----
-
-## Bitti
-
-<!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+      *(2026-09-08 — v3.2: çıplak dosya adı kökte, kardeş belge atfı, depo adıyla başlayan yol, tek parçalı kısaltma, dar token penceresi; arac/kanit-dogrula-test.js 11 kontrol; ölçüm İ4 19→18, İ5 32→25, İ6 10→8, DOSYA-YOK 8→0)*
 
 - [x] **Architecture Blueprint** — 2026-09-08. `docs/mimari/00-BLUEPRINT.md`
       + `docs/adr/ADR-001..005`. Yol haritasının saydığı **18 aday bileşenin
