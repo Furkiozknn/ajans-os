@@ -25,11 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Evaluation Architecture** — Evaluator vs Critic ayrımı, rubrik/
-      test/metrik/insan ölçütleri, hangi çıktı ne zaman hangi yolla
-      değerlendirilir, geçme eşikleri, benchmark seti. Çıktı:
-      `docs/mimari/04-DEGERLENDIRME.md`.
-
 - [ ] **Security Architecture** — Permission Manager tasarımı, en az
       yetki, sandbox katmanları, insan kapısı kuralları (hangi işlemler,
       geçilemez), ajan kimliği, hata sınırları/izolasyon.
@@ -86,6 +81,34 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Evaluation Architecture** — 2026-09-08.
+      [`docs/mimari/04-DEGERLENDIRME.md`](docs/mimari/04-DEGERLENDIRME.md).
+      ADR-004'ün kararı işleyen hâle getirildi; yeni bileşen ya da yeni şema
+      alanı eklenmedi, var olan alanlara anlam verildi. Üç karar: **`rubric`
+      LLM puanlaması değil, her maddesi programla cevaplanan mekanik kontrol
+      listesidir** (LLM puanı olarak okunsaydı ADR-004'te elenen S1 arka
+      kapıdan geri gelirdi); **doğrulayıcı çıkış kodu sözleşmesi** 0/1/≥2 —
+      üçüncüsü "doğrulayıcının kendisi bozuk" demek ve `KALDI` değil
+      `DEGERLENDIRILMEDI` üretir (D11: çalışmayan denetleyicinin sessizliği
+      ne "temiz" ne "kaldı"); **ağırlık bir ölçütü diğerine satamaz** —
+      ağırlıklandırma yalnızca tek rubriğin içinde geçerli, ölçütler arası
+      tek ağırlıklı ortalama yasak. `evaluation_criteria[].how`'ın dört değeri
+      (`rubric`/`test`/`metric`/`human`) `evaluation.method`'un iki değerine
+      bağlandı; `human` bir değerlendirme yolu değil, değerlendirmenin
+      yokluğudur. Sekiz çıktı türü için hangi fonksiyonun neyle beslendiği
+      tabloya döküldü ve **hangisinin doğrulayıcısı bugün var** ayrı sütun
+      oldu. Benchmark seti kapının kendisini ölçer, ajanları değil: her çıktı
+      türü için altın/mutant/ölçülemez üçlüsü, ve **üçlüsü yazılmayan
+      doğrulayıcı kapıya bağlanmaz** (ölçülmemiş detektöre yetki = AP5);
+      tohum `sema-dogrula.js --test` desenidir. Kapının kendisi dört sayaçla
+      izlenir — ilki ADR-004'ün yeniden açılma koşulunu ölçer. Kapanmayan
+      yer açıkça yazıldı: serbest düzyazının deterministik doğrulayıcısı yok,
+      icat da edilmedi. Doğrulama: `sema-dogrula.js` temiz (8 örnek),
+      `sema-dogrula.js --test` ve `kanit-dogrula-test.js` (11 geçti, 0 kaldı)
+      yeşil, `iz-izle.js` belgede 0 YOK, sekiz göreli bağlantı çözülüyor,
+      belgenin kendi metnine dair dört mutlak iddia `grep` ile doğrulandı
+      (tuzak #22).
 
 - [x] **Memory Architecture** — 2026-09-08.
       [`docs/mimari/03-BELLEK.md`](docs/mimari/03-BELLEK.md). Beş katman
