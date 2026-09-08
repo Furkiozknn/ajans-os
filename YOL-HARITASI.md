@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U9 — `src/evaluator/`** — ADR-004 deterministik kapı.
-      Bitti: aynı girdi 100 çağrıda aynı sonuç; LLM metni `Kanit` yerine
-      geçemiyor.
 - [ ] **U10 — `src/critic/`** — `elestir` → `message.schema.json`.
       Bitti: dönüş `string` değil şemaya uyan belge; eleştirinin geçme
       kararına oyu yok.
@@ -86,6 +83,21 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U9 — `src/evaluator/`** — 2026-09-08. `index.js` (`degerlendirici` →
+      `gecerli_mi`, `esigi_asti_mi`) + `index.test.js` (20 test) +
+      `index.d.ts`'ye fabrika ve sonuç sabitleri + `tipler.d.ts`'ye
+      `DegerlendirmeKarari` ve `DegerlendirmeSonucu.sonuc`. İki bitti ölçütü
+      de doğrudan ölçülüyor: **aynı girdi 100 çağrıda aynı sonuç** (hem aynı
+      kurulumda hem her seferinde yeni kurulumda `deepEqual`; ayrıca sonuç
+      kanıt sırasından bağımsız, birleştirme önceliği KALDI >
+      DEGERLENDIRILMEDI > GECTI) ve **LLM metni `Kanit` yerine geçemiyor**
+      (kanıt birleşimi kapalı — bilinmeyen tür, düz metin, yanlış tipli alan
+      ve geçerli bir kanıta iliştirilen `llm_yorumu` alanı, dördü de istisna).
+      ADR-004'ün üçüncü değeri uygulandı: boş kanıt dizisi, koşmamış test
+      takımı ve eşiksiz ölçüm `DEGERLENDIRILMEDI` veriyor. ADR-004 uygulama
+      notunun testi de var: modül kaynağında göreli import ve saat/rastgelelik
+      yok. Doğrulama: `npm run kapi` — 105/105 test, yapı doğrulama temiz.
 
 - [x] **U8 — `src/cost-manager/`** — 2026-09-08. `index.js`
       (`maliyetYoneticisi` → `tablo_yukle`, `usage_isle`, `gecis_gerekli_mi`,
