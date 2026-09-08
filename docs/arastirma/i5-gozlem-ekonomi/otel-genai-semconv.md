@@ -110,3 +110,147 @@ Bu spec, K4'ü ("Sistem hiçbir LLM sağlayıcısına doğrudan bağlanmaz, tek 
 - CHANGELOG'da aynı taşımaya dahil edilen `model/mcp/` ve `model/openai/` klasörleri (`CHANGELOG.md:120`) kapsam dışı bırakıldığı için doğrudan incelenmedi — sadece CHANGELOG referansı üzerinden bilgi sahibiyim, içerikleri okunmadı.
 - Span hiyerarşisinin (parent/child ilişkisi) YAML'larda açıkça nasıl ifade edildiğine dair bir cümle bulunamadı (`parent|hierarch|nest` araması dört dosyada da sıfır sonuç) — bunun standart OTel trace context ile yapıldığını varsayıyorum ama bu **doğrulanmadı**, açık bir kaynağa bağlayamadım.
 - Kullanılan araç çağrısı sayısı: 17 (tavan: 28).
+
+---
+
+# v1.42+ tazelemesi — taşınan depo (`semantic-conventions-genai`)
+
+*Eklendi: 2026-09-08. Kaynak: `D:\Repolar\_inceleme\semantic-conventions-genai`,
+son commit `94f432d`, `2026-09-03T23:30:36Z` (5 gün) — **canlılık geçti**.*
+
+Yukarıdaki analiz, spec'in eski depoda **dondurulmuş** hâline
+(`model/gen-ai/deprecated/*.yaml`, v1.41.0 anı) dayanıyordu. Bu bölüm,
+gerçek yeni depoya bakıp DURUM.md'nin bıraktığı üç soruyu yeniden soruyor.
+Aşağıdaki tüm satır numaraları **yeni depodaki** dosyalara aittir.
+
+## Depo durumu
+
+Yeni depo henüz **sürüm çıkarmadı**: `CHANGELOG.md` yalnızca boş bir
+`## Unreleased` başlığı ve towncrier işaretçisi içeriyor (`CHANGELOG.md:3`,
+`CHANGELOG.md:9`), tüm değişiklikler `changelog.d/` altında parça dosyalar
+hâlinde bekliyor (38 parça). Yani ekosistem "taşındı ve hâlâ akıyor"
+durumunda — kararlılık bekleyen için kötü, deseni okumak isteyen için iyi.
+
+Yeni depoya gelen ek: **MCP semantik kuralları da buraya taşınmış**
+(`model/mcp/` — `common.yaml` 116, `registry.yaml` 151, `spans.yaml` 139,
+`metrics.yaml` 62 satır). GenAI ve MCP'nin aynı depoda buluşması, araç
+çağrısı gözlemlenebilirliğinin GenAI'nin bir alt başlığı sayıldığını
+gösteriyor — İ3 izinin İ5'e bağlandığı nokta.
+
+## Üç sorunun cevabı
+
+**1. Maliyet için standart bir attribute eklendi mi? → HAYIR, hâlâ yok.**
+
+`model/` altındaki tüm YAML'larda `cost|price|usd|dollar` araması **sıfır**
+sonuç veriyor. Donmuş sürümdeki bulgu aynen geçerli: OTel GenAI token sayar,
+para saymaz. Bu artık geçici bir eksiklik değil, **kalıcı bir tasarım
+tercihi** gibi görünüyor — spec ayrı bir depoda aktif geliştirilmeye devam
+ediyor ve fiyat hâlâ kapsam dışı.
+
+*İ5 için sonuç:* maliyet katmanı standarttan gelmeyecek. Fiyat tablosu ve
+USD hesabı bizim kuracağımız katman. Bu, İ5'in ikinci birikimli bulgusunu
+dört kaynaktan **beşe** çıkarıyor.
+
+**2. Herhangi bir alan `stability: stable` oldu mu? → HAYIR, hiçbiri.**
+
+`model/` altındaki **197** `stability:` bildiriminin **197'si de**
+`development`. Tek bir `stable` veya `release_candidate` yok. Spec ayrı
+depoya taşındıktan sonra bile tamamen deneysel.
+
+*İ5 için sonuç:* GenAI semconv'a **sözleşme** olarak bağlanılamaz. Bizim
+tarafımızda attribute isimleri bir çeviri tablosunun arkasında durmalı;
+doğrudan koda gömülürse her spec turunda kırılırız. `changelog.d/` altındaki
+7 `breaking` parçası bunu kanıtlıyor — biri doğrudan yeniden adlandırma:
+`gen_ai.usage.cache_creation.input_tokens` →
+`gen_ai.usage.cache_write.input_tokens` (`changelog.d/440.breaking.md`).
+
+**3. Ajan span hiyerarşisi açık bir attribute'a bağlandı mı? → HAYIR,
+hâlâ OTel trace context varsayımı.**
+
+Gruplama için kimlik attribute'ları var — `gen_ai.conversation.id`
+(`registry.yaml:412`), `gen_ai.agent.id` (`registry.yaml:446`),
+`gen_ai.agent.name` (`registry.yaml:458`) — ama parent/child ilişkisini
+taşıyan bir alan yok. Hiyerarşiye tek açık gönderme normatif metinde:
+`events.yaml:18` — *"This event SHOULD be parented to GenAI operation span
+being evaluated when possible"*. Yani ilişki OTel'in kendi trace context'ine
+bırakılmış. Donmuş sürümde "doğrulanamadı" denen bu soru artık
+**doğrulandı: bağlanmadı**.
+
+## En değerli yeni bulgu — maliyet sayacı ajan span'inde değil, çağrı span'inde
+
+`changelog.d/469.breaking.md`, cache token alanlarını internal `invoke_agent`
+span'inden **kaldırıyor** ve gerekçesini açıkça yazıyor: *"Cache breakdowns on
+that span aggregate across models and inference calls, which makes them
+misleading; consumers should aggregate them from `gen_ai.inference.client`
+spans instead."* O span türü `spans.yaml:171` (`- type: gen_ai.inference.client`).
+
+Bu tek cümle bir tasarım kuralı veriyor: **token ve maliyet muhasebesi
+yalnızca tek bir modele ve tek bir çağrıya karşılık gelen sınırda tutulur;
+ajan seviyesinde toplanan sayı yanıltıcıdır.** Toplama işi tüketicinin,
+üretim noktası çağrı sınırının.
+
+Aynı yönde üç kırıcı değişiklik daha var — ajan span'i bilinçli olarak
+inceltiliyor: `gen_ai.agent.id` internal ajan span'lerinden çıkarıldı
+(`changelog.d/242.breaking.md`), `gen_ai.provider.name` `invoke_agent`'tan
+çıkarıldı (`changelog.d/289.breaking.md`), `gen_ai.agent.version` çıkarıldı
+(`changelog.d/322.breaking.md`). Üçünün ortak mantığı: ajan span'i **model
+bilmez**; model bilgisi bir alt katmanda, çağrı span'inde yaşar.
+
+## K4 kanıtı — güçlendi, ama tezin şekli değişti
+
+Bu, İ5'in birikimli K4 kanıtına iki katkı yapıyor.
+
+**Birincisi, doğrudan destek.** `provider.name`'in ajan span'inden çıkarılması
+(`changelog.d/289.breaking.md`) ve maliyetin `gen_ai.inference.client`
+sınırına toplanması (`changelog.d/469.breaking.md`), K4'ün tam olarak
+söylediği şeyi standardın kendi evriminde gösteriyor: **sağlayıcı bilgisi ve
+para muhasebesi tek bir alt sınıra ait; üst katmanlar sağlayıcıdan habersiz
+olmalı.** Bu, K4 lehine bulunan en açık bağımsız kanıt — bir kütüphanenin
+uygulama tercihi değil, standardın kırıcı değişiklikle *geri aldığı* bir şey.
+
+**İkincisi, birikimli "çatlak" bulgusunun düzeltilmesi.** Şimdiye kadarki
+formülasyon şuydu: *"ortak sınır şemada kuruluyor, ama sınırı doldurmak için
+sağlayıcıya özel çeviri kodu kaçınılmaz."* Yeni depo bunu **kısmen çürütüyor**.
+Donmuş sürümde Anthropic'e özel sayılan cache token'ları artık **çekirdek
+registry'de**: `gen_ai.usage.cache_read.input_tokens` (`registry.yaml:301`),
+`gen_ai.usage.cache_write.input_tokens` (`registry.yaml:308`), üstelik
+modalite kırılımıyla birlikte (`gen_ai.usage.text.cache_read.input_tokens`,
+`registry.yaml:374`). Ayrı bir `model/anthropic/` klasörü **yok**.
+
+Ama sağlayıcı uzantı alanı boşalmadı, sadece küçüldü:
+`model/openai/registry.yaml` (39 satır — `openai.request.service_tier`,
+`openai.api.type`, `openai.response.system_fingerprint`) ve
+`model/aws-bedrock/registry.yaml` (17 satır — `aws.bedrock.guardrail.id`,
+`aws.bedrock.knowledge_base.id`) duruyor.
+
+Doğru formülasyon şu olmalı:
+
+> **Sağlayıcıya özel alan kalıcı değil, geçici.** Birden çok sağlayıcı aynı
+> kavramı uygulayınca kavram çekirdeğe göç ediyor (cache token'ları böyle
+> oldu). Ama uzantı alanı hiç boşalmıyor, çünkü her sağlayıcı yeni bir kavram
+> getiriyor. Yani Model Router sözleşmesi "bugünkü istisnaları saymak" üzerine
+> değil, **istisna akışını taşımak** üzere kurulmalı: açık uçlu bir uzantı
+> sözlüğü, artı zamanla oradan çekirdeğe terfi eden alanlar için bir yol.
+
+Bu, DURUM.md'deki "açık uçlu `usage`/`cost` sözlüğü" önerisini çürütmüyor,
+**gerekçesini değiştiriyor**: sözlük "sağlayıcılar farklı olduğu için" değil,
+"kavramlar çekirdeğe terfi ederken sözleşme kırılmasın diye" gerekli.
+
+## Bu tazelemenin dürüstlüğü
+
+- `model/gen-ai/*.yaml` (2243 satır), `model/mcp/`, `model/openai/`,
+  `model/aws-bedrock/` ve `changelog.d/` incelendi. **Girilmedi:** `docs/`,
+  `reference/`, `templates/`, `policies/` — yani üretilmiş markdown çıktısı ve
+  weaver şablonları okunmadı, kaynak YAML'lara bakıldı.
+- 38 changelog parçasından 8'i (7 `breaking` + 1 `deprecation`) okundu;
+  `enhancement` ve `clarification` parçaları okunmadı. Yeni **eklenen**
+  alanların tam listesi bu yüzden çıkarılmadı — sadece kırıcı yön okundu.
+- `model/gen-ai/` altındaki 7 yeni JSON şema dosyası
+  (`gen-ai-input-messages.json`, `gen-ai-memory-records.json`,
+  `gen-ai-retrieval-documents.json`, `gen-ai-tool-definitions.json` vb.)
+  yalnızca **varlığı** not edildi, içerikleri okunmadı. Mesaj, bellek ve
+  erişim gövdelerinin JSON Schema ile tanımlanıyor olması İ2 (bellek) izini
+  de ilgilendiren bir yenilik — sonraki bir tur için not.
+- Yıldız sayısı ve upstream sürüm bilgisi doğrulanmadı (ağ kullanılmadı).
+- Yukarıdaki analizin (donmuş sürüm) **hiçbir satırı silinmedi**; tarihî
+  referans olarak duruyor. Çelişki varsa bu bölüm geçerlidir.
