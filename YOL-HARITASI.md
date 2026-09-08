@@ -26,10 +26,6 @@ yerden sürer.
 ### Faz 2 — Karşılaştırma
 
 
-- [ ] **Anti-patterns** — Birden çok projede soruna yol açmış seçimler;
-      her biri için: belirti, kök neden, hangi projede nasıl göründü,
-      bizde nasıl kaçınılır. Çıktı: `docs/03-ANTI-PATTERNLER.md`.
-
 ### Faz 3 — Mimari sentez
 
 - [ ] **Architecture Blueprint** — Faz 2 çıktısından tek bir üst
@@ -136,6 +132,24 @@ yerden sürer.
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 
+- [x] **Anti-patterns** — 2026-09-08. `docs/03-ANTI-PATTERNLER.md`.
+      Giriş şartı iki dallı: ya **2+ bağımsız izde** aynı seçim, ya tek izde
+      ama **3+ bağımsız projede**. Üstüne bir ayraç kondu ve asıl eleme onu
+      yaptı: *anti-pattern bir seçimdir, olgunluk eksikliği değil* — üç
+      projede tekrarlayan backoff'suz retry, kaynağın kendisi "olgunluk farkı,
+      tasarım tercihi değil" dediği için elendi. **11 desen geçti, 8 aday
+      elendi** (her biri için "ne olursa geçer" yazılı). En güçlüsü AP1 —
+      insan kapısının bir yapılandırma değeri olması, **5 izde 9 kaynakta**
+      (MCP'de SHOULD, Letta'da varsayılana bağlanmamış onay kuralı, Aider
+      `--yes-always`, OpenHands `NeverConfirm`, İ4'te yedi projeden yalnızca
+      birinde birinci sınıf kapı). AP8 "rollback" kelimesini mimariden
+      çıkarıyor (beş projede telafi yok, hepsinde yalnızca durumu geri sarma);
+      AP9 (bellek yolunda gizlilik kararı yok, 7/7 proje) ekosistemde aynası
+      olmayan tek boşluk. Her AP'de K2'nin "maliyet" maddesinin karşılığı
+      olarak **kaçınmanın maliyeti** de yazıldı. Faz 3 için 12 bağlayıcı
+      kural çıkarıldı (§6). Doğrulama: 35 `dosya:satır` atıfı + 17 sembol
+      alıntısı = 52 kontrol, `grep -rF` ile iz belgelerinde arandı, 52'si de
+      bulundu; sıfır uydurma.
 - [x] **Best ideas ve patterns** — 2026-09-08. `docs/02-EN-IYI-FIKIRLER.md`.
       Sıralama ölçütü "kaç projede" değil **"kaç bağımsız izde"**: tek izde
       altı proje aynı şeyi yapıyorsa o alanın kültürü olabilir, dört ayrı
