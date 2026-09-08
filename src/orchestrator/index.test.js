@@ -374,7 +374,11 @@ test("adimi_yurut cagri sirasi blueprint §3.2'nin 1-10'uyla birebir", async () 
     "gorev_yoneticisi.bitti_yaz", // 9  Task Manager  → durum=BITTI
   ]);
   // 10 — 1–9 arasindaki her olay icin span, hepsi en sonda ve tek yonlu.
-  assert.ok(kuyruk.length >= 9, "her olay icin span yazilmali");
+  // U14: span sinifi listesi kapali (span.schema.json). Karsiligi olmayan ara
+  // olaylar (bellek okuma, baglam butcesi, maliyet) artik span uretmiyor; alti
+  // span kaliyor: run, invoke_agent, inference, execute_tool, permission_check,
+  // evaluate.
+  assert.ok(kuyruk.length >= 6, "her olay icin span yazilmali");
   assert.ok(
     kuyruk.every((ad) => ad === "gozlem.span_yaz"),
     "span yazimi 1–9'un arasina girmez",

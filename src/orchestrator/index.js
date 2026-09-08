@@ -28,6 +28,8 @@
  * tasiyici isi.
  */
 
+import { createHash, randomBytes } from "node:crypto";
+
 /** `OrchestratorBagimliliklari` alanlari; eksigi kurulusta yakalanir. */
 const GEREKLI_BAGIMLILIKLAR = [
   "gorev_yoneticisi",
@@ -64,6 +66,61 @@ function simdi() {
 function tokenTahmini(deger) {
   const metin = typeof deger === "string" ? deger : JSON.stringify(deger ?? "");
   return Math.ceil(metin.length / 4);
+}
+
+/** permission.schema.json $defs.digest — `sha256:` + 64 onaltilik hane. */
+function ozet(deger) {
+  return `sha256:${createHash("sha256").update(JSON.stringify(deger ?? null)).digest("hex")}`;
+}
+
+/**
+ * Ajan sozlesmesinin ilgili islem sinifi icin beyan ettigi izinli kapsam.
+ *
+ * U14 bulgusu: bu iki alan (`izinli_kapsam` + `binding`) verilmeden hicbir arac
+ * cagrisi `ALLOW` alamiyordu — kapsam denetimi "calistirilmadi", surum bagi
+ * "calistirilmadi" doner ve D11 geregi karar `HUMAN_REQUIRED`e duserdi. Yani
+ * uctan uca kosuda **her** adim insan kapisinda duruyordu. Kapsamin kaynagi
+ * ajan sozlesmesidir; orkestrator kendi kapsamini uydurmaz.
+ *
+ * Listesi olmayan siniflar (`execute`, `delete`, `publish`) icin `undefined`
+ * doner ve karar insan kapisina duser — bu bilincli: sozlesmede beyan
+ * edilmemis yetki, "serbest" degil "sorulacak" demektir.
+ */
+function izinliKapsam(ajan, islem) {
+  const izin = (ajan && ajan.permissions) || {};
+  const dosya = izin.filesystem || {};
+  switch (islem) {
+    case "read":
+      return dosya.read;
+    case "write":
+      return dosya.write;
+    case "network":
+      return izin.network && izin.network.allow;
+    case "memory_write":
+      return ajan && ajan.memory_scope && ajan.memory_scope.write;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Modelden istenen yetenek etiketleri.
+ *
+ * U14 bulgusu: burasi ajan sozlesmesinin `capabilities` alanini dogrudan
+ * yonlendiriciye veriyordu. Iki sey birden yanlisti — alan `{id, description,
+ * confidence}` **nesneleri** tasir (yonlendirici metin dizisi bekler, kosu
+ * "yetenekler metin dizisi olmali" ile duserdi) ve iki alan ayni ad altinda iki
+ * ayri kavramdir: sozlesmedeki yetenek bir **alan becerisidir**
+ * ("guvenlik-incelemesi"), katalogdaki yetenek bir **model ozelligidir**
+ * ("arac-cagirma", "uzun-baglam"). Alan becerisini katalogda aramak hicbir
+ * modelin karsilayamayacagi bir kisittir.
+ *
+ * Sozlesmeden gercekten turetilebilen model kisiti sudur: araci olan ajan arac
+ * cagirabilen bir model ister. Digerleri kisit koymaz (bos dizi).
+ */
+function modelYetenekleri(ajan) {
+  const araclar = ajan && Array.isArray(ajan.tools) ? ajan.tools : [];
+  return araclar.length > 0 ? ["arac-cagirma"] : [];
 }
 
 function adimBul(gorev, adim_id) {
@@ -113,6 +170,11 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
     baglam_token = VARSAYILAN_BAGLAM_TOKEN,
     tampon_token = VARSAYILAN_TAMPON_TOKEN,
     saat = simdi,
+    // span.schema.json `cost.price_table`: maliyeti ureten fiyat tablosunun
+    // kimligi. Tabloyu bilesim koku yukler (`tablo_yukle`), kimligi de oradan
+    // gelir; orkestrator dosyaya bakmaz. Verilmezse "olculmedi" yazilir —
+    // uydurma bir digest yazmaktansa bilmedigini soyler.
+    fiyat_tablosu = { version: "bilinmiyor", digest: ozet("fiyat-tablosu-bilinmiyor") },
   } = secenekler;
 
   let spanSayaci = 0;
@@ -142,10 +204,23 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
     const olaylar = [];
     let kok = null;
 
-    const izle = (operation, name, outcome = { status: "ok" }) => {
+    /**
+     * Span uretir. U14 bulgusu: eskiden ara olaylar da `operation: "run"` ile
+     * yaziliyordu ve span.schema.json D4'u ihlal ediyorlardi — `run` **kok**
+     * span sinifidir, parent'i null olmak zorundadir. Sinif listesi kapalidir
+     * (kural 6: tuketicisi olmayan sinyal uretilmez), bu yuzden karsiligi
+     * olmayan ara olaylar (bellek okuma, baglam butcesi, maliyet) artik span
+     * uretmiyor: bellek/baglam sayilari adim kaydinda, maliyet `cost_usd`
+     * alaninda zaten duruyor.
+     */
+    const izle = (operation, name, outcome = { status: "ok" }, ekler = {}) => {
       const span = {
         contract_version: "1.0",
-        span_id: `${run_id}-span-${(spanSayaci += 1)}`,
+        // U14 bulgusu: sayac orkestrator ornegine ait. Kosu oldurulup yeni bir
+        // surecte surdurulunce sayac sifirdan basliyor, ayni `span_id` ikinci
+        // kez uretiliyor ve `kosu_izleri` (ayni id'nin son kaydini dondurur)
+        // ilk adimin izini sessizce siliyordu. Kimlik surecten bagimsiz olmali.
+        span_id: `${run_id}-span-${(spanSayaci += 1)}-${randomBytes(3).toString("hex")}`,
         trace_id: run_id,
         parent_span_id: kok,
         run_id,
@@ -154,6 +229,7 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
         name,
         started_at: saat(),
         outcome,
+        ...ekler,
       };
       if (kok === null) kok = span.span_id;
       olaylar.push(span);
@@ -207,7 +283,6 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
         katmanlar: bellekKatmanlari(ajan),
         metin: adim.title,
       });
-      izle("run", `bellek okuma (${anilar.length})`);
 
       // 4 — baglam butcesi; kisilma sirasi kurulusta yazili, burada degil
       const butce = d.baglam_yoneticisi.butcele({
@@ -218,11 +293,10 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
         sorgu: tokenTahmini(adim.title),
         tampon: tampon_token,
       });
-      izle("run", `baglam butcesi (kalan ${butce.kalan})`);
 
       // 5 — model secimi ve cagrisi
       const secim = d.model_yonlendirici.sec({
-        yetenekler: Array.isArray(ajan.capabilities) ? ajan.capabilities : [],
+        yetenekler: modelYetenekleri(ajan),
         en_az_baglam_token: baglam_token - butce.kalan,
       });
       const yanit = await d.model_yonlendirici.cagir(secim, {
@@ -231,11 +305,26 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
         anilar,
         butce: butce.bilesenler,
       });
-      izle("inference", `inference ${yanit.model_id}`, { status: "ok" });
-
       // 6 — usage maliyete duser; esik asildiysa faz gecisi kosuyu_yurut'ta
       const { maliyet_usd } = d.maliyet_yoneticisi.usage_isle(yanit.model_id, yanit.usage);
-      izle("run", `maliyet ${maliyet_usd === null ? "bilinmiyor" : maliyet_usd}`);
+
+      // D3/D6: `inference` span'i model, usage ve cost olmadan yazilamaz — token
+      // ve para muhasebesinin tek uretim noktasi cagri sinirdir (U14 bulgusu:
+      // ucu de eksikti, span kendi semasindan gecmiyordu). Span cagridan SONRA
+      // yazilir cunku maliyet cagrinin sonucudur; bagimlilik cagri sirasi
+      // (§3.2) degismedi, span'lar zaten kosu sonunda tek yonlu yaziliyor.
+      izle("inference", `inference ${yanit.model_id}`, { status: "ok" }, {
+        model: { provider: secim.saglayici, name: yanit.model_id },
+        usage: {
+          input_tokens: yanit.usage?.input_tokens ?? null,
+          output_tokens: yanit.usage?.output_tokens ?? null,
+        },
+        cost: {
+          usd: maliyet_usd,
+          price_table: fiyat_tablosu,
+          ...(maliyet_usd === null ? { unknown_reason: "fiyat-tablosunda-yok" } : {}),
+        },
+      });
 
       // 7 — arac cagrisi varsa: sema, sonra izin. Ajan araci dogrudan cagiramaz.
       const cagri = aracCagrisi(yanit.icerik);
@@ -260,9 +349,18 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
             tool: cagri.ad,
             operation: aracKaydi.operation,
             summary: adim.title,
+            arguments_digest: ozet(cagri.argumanlar),
           },
           scope: Array.isArray(adim.writes) && adim.writes.length > 0 ? adim.writes : [adim_id],
           irreversible: Boolean(aracKaydi.irreversible),
+          // Kapsam ajan sozlesmesinden, bag ise sozlesmenin BU halinden gelir
+          // (ADR-007/2: surum numarasi degismeden icerik degisebilir).
+          izinli_kapsam: izinliKapsam(ajan, aracKaydi.operation),
+          binding: {
+            component: `ajan:${ajan.identity.id}`,
+            ...(ajan.identity.version ? { version: ajan.identity.version } : {}),
+            digest: ozet(ajan),
+          },
         });
         izle("permission_check", `permission_check ${karar.decision}`, {
           status: karar.decision === "ALLOW" ? "ok" : "kesildi",
@@ -319,7 +417,6 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
         ...(Array.isArray(adim.writes) && adim.writes.length > 0 ? { artifacts: adim.writes } : {}),
         ...(onay_ref ? { approval_ref: onay_ref } : {}),
       });
-      izle("run", `adim bitti ${adim_id}`);
       return kayit;
     } catch (hata) {
       // Beklenmeyen cokme de bir hata turudur; siniflandirilmadigi icin
@@ -328,6 +425,7 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
     } finally {
       // 10 — 1–9 arasindaki her olay icin span. Tek yonlu: gozlem hicbir sey
       // dondurmez ve yazma hatasi kosuyu dusurmez (U12 karari).
+      if (olaylar.length > 0) olaylar[0].ended_at = saat();
       for (const span of olaylar) d.gozlem.span_yaz(span);
     }
   }
