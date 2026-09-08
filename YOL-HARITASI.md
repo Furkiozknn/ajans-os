@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U4 — `src/permission-manager/`** — üç değerli karar, insan kapısı.
-      Bitti: `BLOCK`/`HUMAN_REQUIRED` istisna değil belge döndürüyor;
-      onay gelmeden ikinci çağrı yine `HUMAN_REQUIRED`.
 - [ ] **U5 — `src/memory-manager/`** — katmanlı okuma/yazma.
       Bitti: `ALLOW` olmayan kararla `yaz` yazmıyor; geçersiz kılınan kayıt
       `oku`'dan dönmüyor.
@@ -100,6 +97,26 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U4 — `src/permission-manager/`** — 2026-09-08. `index.js`
+      (`karar`, `insan_kapisina_yaz`, `onayi_isle`) + `index.test.js` (17 test)
+      + genişletilmiş `index.d.ts`. Üç değerli kararın üçü de **belge**
+      dönüyor; istisna yalnızca bozuk istek ve bozuk bağımlılık için atılıyor.
+      `reliability` istekten okunmuyor, çalışan denetleyicilerden türüyor
+      (D11: çağıran "kontrol ettim, temizdi" diyemiyor); `severity` işlem
+      sınıfından türüyor ve istek onu yalnızca **yükseltebiliyor**. Sabit
+      sınırlar kodda: `delete`/`publish` otomatik kapıya düşüyor, çağıran
+      kural **ekleyebiliyor ama kaldıramıyor**, kapısız yönetici kurulamıyor
+      (AP1). ADR-007: `ALLOW` `binding` olmadan yazılmıyor — bunun sonucu
+      olarak sabit sınıra dokunan ya da geri alınamaz istek, insan `ALLOW`
+      dese bile `HUMAN_REQUIRED` kalıyor ve yeniden kullanılabilir izin
+      kaydedilmiyor. Bitti ölçütü ölçüldü: onay gelmeden ikinci çağrı yine
+      `HUMAN_REQUIRED`; onaydan sonra oturum izni aynı argüman + aynı bileşen
+      özetiyle `ALLOW` dönüyor, `max_calls` dolunca veya süre geçince yeniden
+      kapıya düşüyor. Doğrulama: `npm test` 36/36, `npm run kapi` temiz ve
+      üretilen yedi karar belgesi geçici olarak `contracts/ornek/izin/`
+      altına yazılıp `node arac/sema-dogrula.js` ile **gerçek şemadan**
+      geçirildi (14/14 zorunlu alan, çapraz kontroller temiz), sonra silindi.
 
 - [x] **U3 — `src/tool-registry/`** — 2026-09-08. `src/tool-registry/index.js`
       (`getir`, `listele`, `argumanlari_dogrula`) + `index.test.js` (6 test) +
