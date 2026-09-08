@@ -69,6 +69,19 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
       elle bağlanan bağımlılıklar. Bitti: 12 sahte bağımlılıkla çağrı sırası
       §3.2 ile birebir; `HUMAN_REQUIRED`'da koşu duruyor; `kosuyu_surdur`
       biten adımı tekrarlamıyor.
+- [ ] **U15 — Tetikleyici ifade alanı ve K8'in uçtan uca kanıtı** —
+      U2 incelemesinde ölçüldü: `agent-registry.turet(ad, "claude-code")`
+      yapısal olarak geçerli bir `.md` üretiyor ama komşu projenin
+      doğrulayıcısı (`turkce-ajanlar/arac/dogrula.js`) onu **reddediyor**:
+      `description` içinde tetikleyici ifade yok. Sözleşmede bu bilgiyi
+      taşıyan alan yok (`capabilities` yetenek, `mission` amaç). İki
+      seçenek bir ADR ile karara bağlanır: (a) `triggers: string[]` alanı
+      ve şema v2.1, (b) `x-host` altından okuma. Seçilen yol uygulanır,
+      `turet` çıktısı komşu doğrulayıcıdan **geçirilerek** kanıtlanır ve
+      bu kontrol `src/agent-registry/index.test.js` içine test olarak girer.
+      Bitti ölçütü: türetilen dosya için `node arac/dogrula.js <dosya>`
+      çıkış 0.
+
 - [ ] **U14 — Uçtan uca kabul koşusu** — gerçek modüllerle tek görev
       (sahte olan yalnızca `ModelTasiyici`). Bitti: üretilen her belge
       `arac/sema-dogrula.js`'ten geçiyor; koşu ortasından öldürülüp
