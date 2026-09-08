@@ -371,3 +371,34 @@ ve eşleşme olur.
   harftir. Tam çözüm metin normalizasyonu ister; gerekmedikçe açma.
 - Bir eşleşme testi "aynı görünen iki metin eşleşmiyor" diyorsa önce
   küçültmeye bak, sorguya değil.
+
+---
+
+## 25. `JSON.stringify` ile yazılan frontmatter, içindeki tırnağı okunmaz yapar
+
+U15'te türetici `description` alanına tetikleyici ifadeleri **çift tırnak
+içinde** koydu — çünkü ev sahibinin doğrulayıcısı tam olarak bunu arıyor.
+Değer `JSON.stringify` ile yazılınca satır şöyle çıktı:
+
+```yaml
+description: "... Kullanici \"şu kodu incele\" dediginde kullan."
+```
+
+Bu geçerli YAML'dır ve gerçek bir ayrıştırıcı doğru çözer. Ama ev sahiplerinin
+frontmatter ayrıştırıcıları çoğunlukla naiftir (ölçülen örnek:
+`turkce-ajanlar/arac/dogrula.js`, `.replace(/^["']|["']$/g, "")`): yalnızca
+baştaki ve sondaki tırnağı atarlar, ters bölülü kaçışı **çözmezler**. Sonuç:
+tırnak içindeki ifade tırnak içinde görünmez, doğrulayıcı "tetikleyici ifade
+yok" der ve türetilen dosyayı reddeder. Üretici tarafta her şey doğrudur;
+hata yalnızca tüketici tarafında görünür.
+
+- Bir ev sahibi biçimi üretiyorsan çıktıyı **o ev sahibinin kendi
+  doğrulayıcısından geçir**. "Geçerli YAML üretiyorum" yeterli değil; kabul
+  ölçütü tüketicinin ayrıştırıcısıdır.
+- İçinde çift tırnak olan değeri YAML'ın **tek tırnaklı** biçimiyle yaz
+  (`'...'`, tek kaçış kuralı `'` → `''`). İçerideki çift tırnak olduğu gibi
+  kalır ve naif ayrıştırıcı da doğru okur.
+- Kalan sınır kabul edilir ve yazılır: naif ayrıştırıcı `''` çiftini tek
+  tırnağa geri çevirmez, yani kesme işaretli metin (`PATH'te` → `PATH''te`)
+  onun gözünde çift görünür. Türkçe metinde bu sık olur; kabulü etkilemiyorsa
+  bırakılır, etkilediği gün çözüm ayrıştırıcı tarafındadır.
