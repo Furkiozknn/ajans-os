@@ -201,3 +201,23 @@ raporda açıkça yazdı, bu da dürüstlük açısından artı.
 - "Depoyu incele" yasak. Açık uçlu her görev bütçeyi sonuna kadar kullanır.
 - Ajanın kapsam dışına çıkması gerekirse bunu raporda gerekçesiyle yazmasını
   iste — sessizce genişletmesindense.
+
+## 18. Alt ajan kontrol altına alınınca darboğaz ana ajana kayıyor
+
+#17 kapsam sınırının işe yaradığını ölçmüştü (iki `sonnet` alt ajan
+~1,3 USD). 8 Eylül İ5 turu aynı disiplini uyguladı ve alt ajanlar yine
+ucuz kaldı — ama tur yine yarım bitti. Bu kez parayı yiyen alt ajanlar
+değildi: **ana ajanın kendi yazdığı iki analiz dosyası** (~15 KB Türkçe
+metin, yaklaşık 2,0 USD) alt ajanların toplamından pahalıya geldi.
+
+Uzun Türkçe markdown, çıktı token'ı olarak pahalıdır ve ana ajanın
+bağlamında üretildiği için alt ajan bütçe muhasebesine hiç girmez.
+"İki alt ajan açtım, ucuz kaldı" hissi yanıltıcı.
+
+- Küçük ve yerel bir depoyu "ben okurum, alt ajana gerek yok" diye
+  almak **tasarruf değil**: okuma ucuz, ama arkasından gelen 15 KB'lık
+  analiz dosyası pahalı. Yazma işini de alt ajana ver.
+- Tur planlarken "kaç alt ajan" değil **"kaç analiz dosyası yazılacak"**
+  diye say. Bu makinede bir analiz dosyası ≈ 1 USD, kim yazarsa yazsın.
+- 6 USD bütçe pratikte **dört analiz dosyası + bir DURUM.md** demek.
+  Altı projelik iz iki tur sürer. Baştan böyle planla.
