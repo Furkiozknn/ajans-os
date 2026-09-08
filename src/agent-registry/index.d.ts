@@ -30,3 +30,11 @@ export interface AgentRegistry {
    */
   turet(agent_id: KebabId, ev_sahibi: string): Promise<Record<string, string>>;
 }
+
+/**
+ * Uygulama (`index.js`). Sozlesmeler `dizin` altindaki `*.json` dosyalarindan
+ * yuklenir ve yukleme aninda dogrulanir: gecersiz bir sozlesme sessizce
+ * atlanmaz, istisna atar — sessiz atlama "ajan neden yok" sorusunu bir sonraki
+ * tura birakirdi. `semaYolu` verilmezse `contracts/agent.schema.json` okunur.
+ */
+export function ajanKaydi(secenekler: { dizin: string; semaYolu?: string }): AgentRegistry;

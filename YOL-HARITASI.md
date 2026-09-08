@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U2 — `src/agent-registry/`** — yükleme, `dogrula`, `turet`.
-      Bitti: iki örnek ajan geçiyor, eksik alanlı sözleşme reddediliyor,
-      `turet` diske **yazmıyor**.
 - [ ] **U3 — `src/tool-registry/`** — MCP şemasıyla argüman doğrulama.
       Bitti: izin sınıfı kayıttan okunuyor, araç **adından türetilmiyor**.
 - [ ] **U4 — `src/permission-manager/`** — üç değerli karar, insan kapısı.
@@ -92,6 +89,29 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U2 — `src/agent-registry/`** — 2026-09-08. `src/agent-registry/index.js`
+      (sözleşme yükleme, `dogrula`, `getir`, `listele`, `turet`) +
+      `index.test.js` (5 test) + `index.d.ts` fabrika imzası. İki örnek ajan
+      yükleniyor ve doğrulanıyor; `memory_scope`'u silinmiş sözleşme
+      reddediliyor. **Gecersiz sözleşme sessizce atlanmıyor**: yükleme istisna
+      atıyor — sessiz atlama "ajan neden yok" sorusunu bir sonraki tura
+      bırakırdı (AP3). `turet` diske yazmıyor ve bu **ölçülüyor**: çalışma
+      dizininin anlık görüntüsü (ad+boyut+mtime) çağrı öncesi ve sonrası birebir
+      aynı, dönen yol diskte yok. Şemanın kuralları uygulamada da sınandı
+      (`risk=high` araca `requires_human_approval:false`, `filesystem.delete:true`,
+      `retention`siz yazan bellek katmanı — üçü de reddediliyor). K8'in kayıp
+      bilgi noktası uygulandı: yazma kapsamı frontmatter'a değil, ajan metnindeki
+      sınır cümlesine çevriliyor; `description` elle yazılmıyor, `role.summary` +
+      `capabilities`ten türüyor (eşlemde yazsa bile türetilen kazanıyor).
+      Taşıyıcı karar: **`src/` çalışma zamanı `arac/`'a bağımlı olamaz** —
+      `arac/sema-dogrula.js` bir CLI (dışarı hiçbir şey vermiyor, sonunda
+      `process.exit`), ve dev aracına bağımlı bir çalışma zamanı ADR-002'nin
+      import yönü kuralına da takılıyor. Bu yüzden modül kendi şema
+      doğrulayıcısını taşıyor; iki doğrulayıcının sürüklenmesi **iddia değil
+      ölçüm**: bir test aynı üç belgeyi hem modüle hem araca veriyor ve
+      kararların aynı olmasını şart koşuyor. Doğrulama: `npm run kapi` (13 test
+      + yapı kapısı) ve `npx -p typescript@5.6 tsc -p tsconfig.json` → 0.
 
 - [x] **U1 — `src/task-manager/`** — 2026-09-08. `src/task-manager/index.js`
       (ADR-003 iki yazma, durum makinesi, `sonraki_adim`) +
