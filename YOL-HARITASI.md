@@ -28,18 +28,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Architecture Blueprint** — Faz 2 çıktısından tek bir üst
-      mimari: bileşenler (Orchestrator, Planner, Router, Agent Registry,
-      Task Manager, Memory Manager, Context Manager, Tool Registry,
-      Permission Manager, Evaluator, Critic, Recovery Manager,
-      Observability, Cost Manager, Model Router, Knowledge Layer,
-      Security/Guardrails, Learning Layer) — **her biri için** K2'nin
-      dört maddesi yazılır; yazılamayan bileşen mimariye girmez.
-      Bileşenler arası iletişim ve veri akışı diyagramı. Çıktı:
-      `docs/mimari/00-BLUEPRINT.md` + `docs/adr/ADR-001..` (her büyük
-      karar ayrı ADR, biçim `docs/adr/SABLON.md`; "Dahil etme ölçütü"
-      tablosu dolmayan bileşen mimariye girmez).
-
 - [ ] **Agent Architecture** — Sözleşme (`contracts/agent.schema.json`)
       temel alınır; araştırma bulgularıyla şema gözden geçirilir, eksik
       alan varsa ADR ile eklenir. Ajan yaşam döngüsü: kayıt → seçim →
@@ -131,6 +119,33 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Architecture Blueprint** — 2026-09-08. `docs/mimari/00-BLUEPRINT.md`
+      + `docs/adr/ADR-001..005`. Yol haritasının saydığı **18 aday bileşenin
+      13'ü** K2'nin dört maddesini yazabildi ve mimariye girdi (Orchestrator,
+      Task Manager, Agent/Tool Registry, Permission Manager, Memory Manager,
+      Context Manager, Evaluator, Critic, Recovery Manager, Model Router,
+      Cost Manager, Observability); **5'i giremedi** ve her biri için hangi
+      K2 maddesinin boş olduğu + "ne olursa girer" yazıldı: Planner (kanıt
+      boş — ayrı planlayıcı bileşen için yinelenen desen yok; plan üretimi
+      bir *ajan rolü* olarak tanımlandı), Router/görev→ajan (İ1 D5 tam
+      tersini söylüyor: yönlendirme adım çıktısının bir alanı), Knowledge
+      Layer (problem boş, 02 §4/A3), ayrı Guardrails motoru (maliyet+kanıt
+      boş; sandbox bu makinede uygulanamaz → tek savunma Permission Manager,
+      **bilinçli zayıflık** olarak kaydedildi), Learning Layer (İ6'nın K7
+      sonucu: üretimde çalışan tek örnek yok → Faz 3 "Self-improvement
+      Architecture" maddesine devredildi, çürütülmedi). İletişim modeli
+      ADR-002 ile karara bağlandı: **tek yürütme döngüsü**, bileşenler
+      birbirini çağırmaz, Observability tek yönlü dinleyici; olay veriyolu
+      ve "workflow motoru üstüne ajan döngüsü" gerekçeleriyle elendi.
+      02 §7'nin yedi açık sorusundan **beşi** karara bağlandı (S1–S5),
+      ikisi (S6 tokenizer, S7 izin-sürüm bağı) yol haritasının kendi
+      maddelerine bırakıldı — gerekçesi blueprint §6'da. Doğrulama:
+      `node arac/iz-izle.js` altı belgede **21 alıntının 21'i de BIREBIR**
+      (YOK 0, çıkış kodu 0); JSON şemaları parse edildi; 18 bileşenin
+      hepsinin belgede geçtiği ve giren 13'ün her birinde K2 dört
+      maddesinin dolu olduğu script'le sayıldı; yanlış çıkan tek beyan
+      (kural 9 satırı) düzeltildi.
 
 - [x] **Anti-patterns** — 2026-09-08. `docs/03-ANTI-PATTERNLER.md`.
       Giriş şartı iki dallı: ya **2+ bağımsız izde** aynı seçim, ya tek izde

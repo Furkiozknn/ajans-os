@@ -290,3 +290,29 @@ sanardı.
   görünür. Sayı beklenen her hücrede aralık kontrolü yap, sonucu null'a düşür.
 - Kaynak belgeler elle yazılıyorsa biçim mutlaka **sıfır uyarı** ile doğrulanmalı;
   uyarı listesi boş değilse çıktı yayımlanmaz.
+---
+
+## 22. Belgenin kendi metni hakkındaki iddia da bir iddiadır
+
+`docs/mimari/00-BLUEPRINT.md` §5'in 9. satırına *"'rollback' kelimesi mimariye
+girmez — **bu belgede o kelime hiç kullanılmadı**"* yazıldı. Oysa kelime aynı
+belgede iki kez geçiyordu: yasağı ifade eden cümlenin kendisinde ve o satırda.
+Yani belge, kendi hakkında yanlış bir garanti veriyordu — tam olarak
+`docs/03-ANTI-PATTERNLER.md` AP3'ün ("beyan edilen garantinin kodda karşılığı
+yok") kendimize dönük hâli. `grep -i rollback` ile kapanış doğrulamasında
+yakalandı; yakalanmasaydı bir sonraki tur belgeye güvenip aynı cümleyi
+alıntılayacaktı.
+
+Kaynak koddaki iddiaları doğrulamak için üç araç var (`kanit-dogrula.js`,
+`iz-izle.js`, `matris-uret.js`), ama **belgenin kendi metni hakkındaki**
+iddiayı hiçbiri kontrol etmiyor — çünkü kanıt zinciri dışarıyı gösteriyor,
+içeriyi değil.
+
+- "Bu belgede X yok", "hiçbir yerde geçmiyor", "tek bir istisna yok" gibi her
+  cümle **yazıldığı anda kendi dosyasında aranır** (`grep -n`). Aramadan
+  yazma.
+- Bir kelimeyi yasaklayan cümle, o kelimeyi kaçınılmaz olarak içerir. Yasağı
+  "kullanılmaz" diye yaz, "kullanılmadı" diye değil — biri kural, öbürü
+  doğrulanabilir (ve çoğu zaman yanlış) bir olgu iddiası.
+- Kapanış doğrulamasına şunu ekle: belgede geçen her "hiç / sıfır / yok"
+  ifadesi için bir `grep`.
