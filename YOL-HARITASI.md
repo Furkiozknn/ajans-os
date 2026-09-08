@@ -38,8 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U11 — `src/recovery-manager/`** — dört mod, bekleme.
-      Bitti: telafisi olmayan eylemden sonra daima `insan-kapisi`.
 - [ ] **U12 — `src/observability/`** — span yazımı, tek yönlü.
       Bitti: yazma hatasında `span_yaz` istisna atmıyor, koşu düşmüyor;
       `arac/iz-izle.js` üretilen izi okuyor.
@@ -81,6 +79,21 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 
+- [x] **U11 — `src/recovery-manager/`** — 2026-09-08. `index.js`
+      (`kurtarmaYoneticisi` → `mod_sec`, `bekleme_ms`) + `index.test.js`
+      (9 test) + `index.d.ts`'ye fabrika ve `HATA_TURLERI`. Bitti ölçütü
+      **karşı örneğin yokluğuyla** ölçüldü: `telafi_var: false` için dokuz
+      hata türü × beş deneme (45 kombinasyon) taranıyor ve üretilen mod
+      kümesi tam olarak `["insan-kapisi"]` — `duzelt` hiçbir koşulda
+      çıkmıyor (AP8 → kural 9). Eksik `telafi_var` "telafi vardır"
+      sayılmıyor, istisna atıyor. `bekleme_ms` üstel + eşit jitter, tavanla
+      sınırlı; jitter kaynağı enjekte edildiği için belirlenimci ve dizi
+      jitter'in **iki ucunda da** azalmıyor. Beklemek yalnızca çevre
+      kaynaklı hatada (D7: 429 bekler, `SyntaxError` beklemez);
+      `BILINMEYEN` ilk denemede `durdur` (güvenli taraf); `duzelt` hakkı
+      dolunca bir kez `temiz-sayfa` (D13). Geri alma yok — bu iddia
+      kaynakta `grep` ile test edildi (tuzak #22). Kapı: 121/121 test,
+      `yapi-dogrula` 0, `tsc` 5.6 0.
 - [x] **U10 — `src/critic/`** — 2026-09-08. `index.js` (`elestirmen` →
       `elestir`) + `index.test.js` (7 test) + `index.d.ts`'ye fabrika,
       `ElestiriYaniti`/`ElestiriMaddesi` ve `EN_FAZLA_MADDE`. İki bitti
