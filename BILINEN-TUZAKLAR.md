@@ -221,3 +221,31 @@ bağlamında üretildiği için alt ajan bütçe muhasebesine hiç girmez.
   diye say. Bu makinede bir analiz dosyası ≈ 1 USD, kim yazarsa yazsın.
 - 6 USD bütçe pratikte **dört analiz dosyası + bir DURUM.md** demek.
   Altı projelik iz iki tur sürer. Baştan böyle planla.
+
+## 19. Heredoc'ta tek tırnaklı sınırlayıcı da Türkçe kesme işaretini kurtarmıyor
+
+Tuzak #11 `node -e '...'` içindeki kesme işaretini anlatıyordu ve çözüm olarak
+"heredoc kullan" akla geliyor. 8 Eylül İ5 turunda 9 KB'lık Türkçe bir markdown
+bölümü `cat >> dosya.md << 'MDEOF'` ile — yani **tek tırnaklı, kaçışsız**
+sınırlayıcıyla — eklenmeye çalışıldı. Bash şu hatayla düştü:
+`unexpected EOF while looking for matching \`''` ve **hiçbir şey yazılmadı**.
+
+İçerikte `spec'in`, `DURUM.md'nin`, `İ5'in` gibi onlarca kesme işareti vardı.
+Saf bash'te tek tırnaklı sınırlayıcı bunları literal almalıydı; demek ki komut
+bash'e ulaşmadan önce bir katman daha ayrıştırıyor. Sebep ne olursa olsun sonuç
+aynı: 9 KB'lık çıktı token'ı boşa gitti ve yeniden üretmek gerekti — bu turda
+yaklaşık 0,4 USD.
+
+Kural, #11'in genişletilmiş hâli: **içinde Türkçe düzyazı olan hiçbir içerik
+kabuk komutunun gövdesine yazılmaz** — heredoc dahil, sınırlayıcı tırnaklı
+olsa bile.
+
+- Uzun Türkçe metni `Write` aracıyla yaz. Hedef dosyanın sonuna ekleyeceksen
+  önce `D:/Repolar/_inceleme/_tmp-*.md` gibi geçici bir dosyaya yaz, sonra
+  `cat gecici >> hedef` ile ekle, sonra geçiciyi sil. Bu üç adım güvenli.
+- `git commit -F-` ile heredoc'tan commit mesajı okumak da aynı riski taşır;
+  commit mesajını Türkçe kesme işareti içermeyecek şekilde yaz ya da
+  `-F dosya` kullan.
+- Yazdıktan sonra **doğrula**: `grep -c ''` ile satır sayısı, `grep -n` ile
+  yeni başlığın gerçekten dosyada olduğu. Komut hata verdiyse dosya hiç
+  değişmemiştir; "herhalde yazıldı" varsayma.

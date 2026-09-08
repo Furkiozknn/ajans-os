@@ -1,9 +1,9 @@
-# İ5 Gözlem ve ekonomi — DURUM (yarım kaldı)
+# İ5 Gözlem ve ekonomi — DURUM (tamamlandı, tarihî kayıt)
 
 *Son güncelleme: 2026-09-08, 03:45 · bütçe duvarına yaklaşıldığı için durduruldu*
 
-Bu iz **bitmedi**. Yol haritasındaki kutucuk bilerek boş bırakıldı.
-Sonraki tur bu dosyayı okur, aşağıdaki "bitenler"i **tekrar incelemez**.
+Bu iz 2026-09-08 turunda **tamamlandı**: 6 proje + `OZET.md`. Aşağısı o gün
+kalan işin listesidir; güncel ve geçerli sonuç `OZET.md` içindedir.
 
 ---
 

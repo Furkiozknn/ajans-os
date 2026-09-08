@@ -23,18 +23,6 @@ yerden sürer.
 
 
 
-- [ ] **İ5 Gözlem ve ekonomi araştırması** — Protokol İ5: tracing
-      (OpenTelemetry GenAI kuralları birincil kaynak), değerlendirme ve
-      benchmark araçları, maliyet/gecikme optimizasyonu, model
-      yönlendirme, üretim dağıtımı. Kullanıcının
-      `model-comparison-harness` ve `nvidia-nim-mcp` fallback zinciri
-      adaylar arasında. ADR-000 K4 model sınırı için kanıt topla. Çıktı:
-      `docs/arastirma/i5-gozlem-ekonomi/`.
-      **Yarım kaldı (2026-09-08):** 4/6 proje yazıldı, `OZET.md` yok.
-      Başlamadan önce `docs/arastirma/i5-gozlem-ekonomi/DURUM.md` oku —
-      bitenler, kalan altı adayın odak soruları, hazır klonlar ve OTel
-      spec'inin ayrı depoya taşındığı uyarısı orada.
-
 - [ ] **İ6 Otonom kodlama ve öğrenme araştırması** — Protokol İ6:
       otonom kodlama ajanları (OpenHands, SWE-agent, Aider, Cline,
       Claude Code'un alt-ajan modeli), self-learning / sürekli
@@ -158,6 +146,16 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **İ5 Gözlem ve ekonomi araştırması** — Protokol İ5: tracing
+      (OpenTelemetry GenAI kuralları birincil kaynak), değerlendirme ve
+      benchmark araçları, maliyet/gecikme optimizasyonu, model
+      yönlendirme, üretim dağıtımı. Kullanıcının
+      `model-comparison-harness` ve `nvidia-nim-mcp` fallback zinciri
+      adaylar arasında. ADR-000 K4 model sınırı için kanıt topla. Çıktı:
+      `docs/arastirma/i5-gozlem-ekonomi/`.
+      **Bitti (2026-09-08):** 6 proje analizi, `OZET.md` ve OTel
+      v1.42+ tazelemesi yazildi. Resmi `DENETIM.md` ayri kosuda yazilacak.
 
 - [x] **İ1 Orkestrasyon ve planlama araştırması** — Protokoldeki İ1
       izini uygula: multi-agent orchestration, routing, dinamik
