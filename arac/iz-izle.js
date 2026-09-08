@@ -38,6 +38,9 @@ if (fs.existsSync(izKok)) {
     for (const f of fs.readdirSync(p)) if (f.endsWith(".md")) izDosyalar.push(path.join(p, f));
   }
 }
+// Faz 3 belgeleri Faz 2 ciktilarina da atif yapar (01/02/03): onlar da havuza girer.
+const docsKok = path.join(KOK, "docs");
+if (fs.existsSync(docsKok)) for (const f of fs.readdirSync(docsKok)) if (/^\d\d-.*\.md$/.test(f)) izDosyalar.push(path.join(docsKok, f));
 if (!izDosyalar.length) { console.error("docs/arastirma altinda iz belgesi yok."); process.exit(2); }
 // Tire çeşitleri (– —) normalize edilir: iz belgeleri aralıkta ikisini de kullanıyor.
 const havuz = izDosyalar.map((f) => fs.readFileSync(f, "utf8")).join("\n").replace(/[–—]/g, "-");
@@ -45,6 +48,9 @@ const havuz = izDosyalar.map((f) => fs.readFileSync(f, "utf8")).join("\n").repla
 const ALINTI = /`([A-Za-z0-9_.\/-]+\.(?:py|pyi|ts|tsx|js|mjs|cjs|md|toml|json|ya?ml|rs|go|txt|cfg|ini|sql|sh|ps1)):(\d+)(?:-(\d+))?`/g;
 
 function belgeyiTara(belge) {
+  const kendisi = path.resolve(belge);
+  const havuzYerel = izDosyalar.filter((f) => path.resolve(f) !== kendisi)
+    .map((f) => fs.readFileSync(f, "utf8")).join("\n").replace(/[\u2013\u2014]/g, "-");
   const metin = fs.readFileSync(belge, "utf8");
   const satirlar = metin.split(/\r?\n/);
   const gorulen = new Map();
@@ -61,7 +67,7 @@ function belgeyiTara(belge) {
     const base = path.basename(v.dosya).replace(/\./g, "\\.");
     const re = new RegExp(base + ":(\\d+)(?:-(\\d+))?", "g");
     let tam = false, yakin = false, m2;
-    while ((m2 = re.exec(havuz)) !== null) {
+    while ((m2 = re.exec(havuzYerel)) !== null) {
       const c = Number(m2[1]), d = m2[2] ? Number(m2[2]) : c;
       if (v.a === c && v.b === d) { tam = true; break; }
       if (Math.max(v.a, c) <= Math.min(v.b, d) + 5 && Math.min(v.b, d) >= Math.max(v.a, c) - 5) yakin = true;

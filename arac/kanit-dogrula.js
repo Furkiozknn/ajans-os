@@ -13,6 +13,8 @@
  *     `:124` gibi çıplak sayılar, `*graph*` gibi joker, ≤6 harflik düz sözcükler
  *   - Yoldaki `...` kısaltması joker sayılır (`libs/checkpoint/.../base/__init__.py`)
  *   - YAKIN bandı ±120 (aynı sınıfın metotları birbirinden uzak olabiliyor)
+ * v3.2: çıplak dosya adı önce depo kökünde, kardeş iz belgesine atıf çözülür,
+ * çok alıntılı satırda token penceresi dar (İ4/İ5/İ6 denetim dersleri).
  * v2: tüm adaylar denenir, depo ipucu satırdaki proje adlarından, uzak dal
  *     desteği (git ls-tree / show), yakınlığa göre token eşleme.
  *
@@ -52,9 +54,15 @@ for (const d of fs.readdirSync(KULLANICI_DEPOLARI, { withFileTypes: true })) {
 }
 const depolar = Object.keys(depoKok);
 
+// Kardes iz belgeleri de aday: OZET.md siklikla `langfuse.md:119` gibi ayni
+// klasordeki baska belgeye atif yapiyor; klon indeksinde karsiligi yok
+// (I5 denetimi: 6 DOSYA-YOK'un tamami buydu).
+const izBelgeIndeksi = [];
+
 const dalIndeks = {};
 function dalDosyalari(depo) {
   if (dalIndeks[depo]) return dalIndeks[depo]; const liste = [];
+  if (!depoKok[depo]) { dalIndeks[depo] = liste; return liste; }   // "(iz)" gibi sahte depo: git cagrisi yok
   try {
     const dallar = execFileSync("git", ["-C", depoKok[depo], "branch", "-r", "--format=%(refname:short)"], { encoding: "utf8" }).split(/\r?\n/).map((s) => s.trim()).filter((s) => s && !s.includes("HEAD"));
     for (const dal of dallar.slice(0, 8)) { const out = execFileSync("git", ["-C", depoKok[depo], "ls-tree", "-r", "--name-only", dal], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }); for (const alt of out.split(/\r?\n/)) if (alt) liste.push({ dal, alt }); }
@@ -109,8 +117,8 @@ function tokenAdaylari(satir) {
   }
   return t;
 }
-function yakinTokenlar(adaylar, poz, diger) {
-  return [...new Set(adaylar.filter((a) => Math.abs(a.poz - poz) <= 160).filter((a) => diger.every((p) => Math.abs(a.poz - poz) <= Math.abs(a.poz - p))).map((a) => a.tok))];
+function yakinTokenlar(adaylar, poz, diger, pencere = 160) {
+  return [...new Set(adaylar.filter((a) => Math.abs(a.poz - poz) <= pencere).filter((a) => diger.every((p) => Math.abs(a.poz - poz) <= Math.abs(a.poz - p))).map((a) => a.tok))];
 }
 function bulTokens(lines, a, b, toks) {
   const sl = lines.slice(Math.max(0, a - 1), Math.min(lines.length, b)).join("\n");
@@ -126,11 +134,15 @@ function yolEslesir(alt, yol) {
   if (!yol.includes("...")) return alt === yol || alt.endsWith("/" + yol);
   const parcalar = yol.split("...").map((p) => p.replace(/^\/|\/$/g, "")).filter(Boolean);
   const bas = parcalar[0], son = parcalar[parcalar.length - 1];
+  // Tek parca: `.../security/confirmation_policy.py` — bas ile son ayni, yalnizca
+  // sonu eslesmesi yeter (I6 denetimi: iki yanlis DOSYA-YOK buradan geldi).
+  if (parcalar.length === 1) return alt === son || alt.endsWith("/" + son);
   return (alt.endsWith("/" + son) || alt === son) && (alt === bas || alt.startsWith(bas + "/") || alt.includes("/" + bas + "/"));
 }
 
 // ---------------------------------------------------------------- depo ipucu
 const projeAdlari = fs.readdirSync(IZ_DIR).filter((f) => f.endsWith(".md") && !/^(OZET|DENETIM)/.test(f)).map((f) => f.replace(/\.md$/, ""));
+for (const f of fs.readdirSync(IZ_DIR)) if (f.endsWith(".md")) izBelgeIndeksi.push({ tam: path.join(IZ_DIR, f).replace(/\\/g, "/"), alt: f, depo: "(iz)" });
 function depoEsle(ad) { const n = norm(ad); if (!n) return []; const k = n.slice(0, Math.min(5, n.length)); return depolar.filter((d) => norm(d).includes(k) || n.includes(norm(d).slice(0, Math.min(5, norm(d).length)))); }
 function satirIpucu(satir, dosyaIpucu) {
   const set = new Set(dosyaIpucu); const ns = norm(satir);
@@ -167,8 +179,22 @@ for (const md of fs.readdirSync(IZ_DIR).filter((f) => f.endsWith(".md") && !/^DE
     const adaylarTok = tokenAdaylari(satir); const ipucu = satirIpucu(satir, dosyaIpucu); const pozlar = alintilar.map((m) => m.index);
     for (const m of alintilar) {
       const yol = m[1], a = parseInt(m[2], 10), b = m[3] ? parseInt(m[3], 10) : a;
-      const toks = yakinTokenlar(adaylarTok, m.index, pozlar.filter((p) => p !== m.index));
-      let adaylar = indeks.filter((e) => yolEslesir(e.alt, yol));
+      const toks = yakinTokenlar(adaylarTok, m.index, pozlar.filter((p) => p !== m.index), alintilar.length >= 3 ? 80 : 160);
+      // Yol depo adiyla basliyorsa (`semantic-conventions/CHANGELOG.md`) o on ek
+      // atilir: indeksteki `alt` depo kokune gore (I5 denetimi: 3 yanlis DOSYA-YOK).
+      const ilkParca = yol.split("/")[0];
+      const depoOnEki = yol.includes("/") && depolar.includes(ilkParca) ? ilkParca : null;
+      const yolSade = depoOnEki ? yol.split("/").slice(1).join("/") : yol;
+      let adaylar = indeks.filter((e) => yolEslesir(e.alt, yol) ||
+        (depoOnEki && e.depo === depoOnEki && yolEslesir(e.alt, yolSade)));
+      // Ciplak dosya adi: depo kokundeki once denensin (I4/I5/I6'da dspy ve
+      // RouteLLM README'leri ic ice kopyaya cozulup 4 yanlis alarm uretti).
+      if (!yol.includes("/")) adaylar = adaylar.slice().sort((x, y) =>
+        (x.alt === yol ? 0 : 1) - (y.alt === yol ? 0 : 1) ||
+        x.alt.split("/").length - y.alt.split("/").length || x.alt.length - y.alt.length);
+      // Kardes iz belgesine atif (OZET.md -> langfuse.md:119)
+      const izAday = izBelgeIndeksi.filter((e) => yolEslesir(e.alt, yol));
+      if (izAday.length) adaylar = izAday.concat(adaylar);
       const ipucuAday = adaylar.filter((e) => ipucu.includes(e.depo)); if (ipucuAday.length) adaylar = ipucuAday;
       if (surumIpucu) { const sv = adaylar.filter((e) => e.alt.includes("/" + surumIpucu + "/")); if (sv.length) adaylar = sv; }
       let enIyi = { sinif: "DOSYA-YOK" }, nerede = "";
