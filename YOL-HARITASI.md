@@ -38,8 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U3 — `src/tool-registry/`** — MCP şemasıyla argüman doğrulama.
-      Bitti: izin sınıfı kayıttan okunuyor, araç **adından türetilmiyor**.
 - [ ] **U4 — `src/permission-manager/`** — üç değerli karar, insan kapısı.
       Bitti: `BLOCK`/`HUMAN_REQUIRED` istisna değil belge döndürüyor;
       onay gelmeden ikinci çağrı yine `HUMAN_REQUIRED`.
@@ -102,6 +100,24 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U3 — `src/tool-registry/`** — 2026-09-08. `src/tool-registry/index.js`
+      (`getir`, `listele`, `argumanlari_dogrula`) + `index.test.js` (6 test) +
+      `index.d.ts` fabrika imzası. Araç şeması **yeniden icat edilmedi**: MCP'nin
+      `inputSchema`'sı olduğu gibi doğrulanıyor; modülün tuttuğu tek ek bilgi
+      şemada olmayan iki alan, `operation` (izin sınıfı) ve `irreversible`.
+      İzin sınıfı **kayıttan** okunuyor ve bu ölçülüyor: kayıtta adı
+      `read_or_write_file` olan araç `write`, adı `search` olan araç `network`
+      dönüyor — kodda araç adı üzerinde tek bir desen eşlemesi yok, ad kırılgan
+      anahtardır. Geçersiz kayıt (bilinmeyen izin sınıfı, `irreversible`
+      boolean değil, `inputSchema` yok, yinelenen ad) sessizce atlanmıyor,
+      kurulum istisna atıyor (AP3); `listele(agent_id)` çözülemeyen aracı da
+      düşürmüyor. Şemada bilinmeyen anahtar kelime istisna atıyor — sessizce
+      geçen doğrulayıcı doğrulamıyor demektir. ADR-002 gereği Agent Registry
+      import edilmiyor: bir ajanın araç listesi `ajan_araclari` eşlemiyle
+      dışarıdan geliyor. Kapsam dışı bırakılan: gerçek MCP sunucusuna bağlanma.
+      Doğrulama: `npm run kapi` (19 test + yapı kapısı) ve
+      `npx -p typescript@5.6 tsc -p tsconfig.json` → 0.
 
 - [x] **U2 — `src/agent-registry/`** — 2026-09-08. `src/agent-registry/index.js`
       (sözleşme yükleme, `dogrula`, `getir`, `listele`, `turet`) +

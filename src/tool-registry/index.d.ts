@@ -28,3 +28,16 @@ export interface ToolRegistry {
   /** Cagri argumanlarini aracin inputSchema'sina gore dogrular. */
   argumanlari_dogrula(arac_adi: string, argumanlar: unknown): { gecerli: boolean; hatalar: string[] };
 }
+
+/**
+ * Uygulama (`index.js`). Kayitlar cagirandan gelir: gercek MCP sunucusuna
+ * baglanmak bu modulun isi degil (blueprint §2.4 kapsam disi). `ajan_araclari`
+ * bir ajanin sozlesmesindeki arac adlarini verir — Agent Registry import
+ * edilmez (ADR-002), eslem disaridan gecer.
+ *
+ * Gecersiz kayit sessizce atlanmaz: kurulum istisna atar.
+ */
+export function aracKaydi(secenekler: {
+  kayitlar: AracKaydi[];
+  ajan_araclari?: Record<KebabId, string[]>;
+}): ToolRegistry;
