@@ -25,13 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Orchestration Architecture** — Planlayıcı (hedef → görev
-      grafı), yönlendirici (görev → ajan), yürütücü (paralel/sıralı,
-      checkpoint'li), ajan-ajan iletişim kuralları, konsensüs ne zaman
-      gerekir ne zaman israf. Görev ve mesaj sözleşmeleri:
-      `contracts/task.schema.json`, `contracts/message.schema.json`.
-      Çıktı: `docs/mimari/02-ORKESTRASYON.md`.
-
 - [ ] **Memory Architecture** — Katmanlar (task/session/project/global/
       knowledge), kim yazar kim okur, tutma süreleri, PII, RAG'in yeri,
       bağlam penceresi yönetimi. Çıktı: `docs/mimari/03-BELLEK.md`.
@@ -97,6 +90,39 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Orchestration Architecture** — 2026-09-08.
+      [`docs/mimari/02-ORKESTRASYON.md`](docs/mimari/02-ORKESTRASYON.md) +
+      `contracts/task.schema.json` + `contracts/message.schema.json` + altı örnek
+      (`contracts/ornek/gorev/`, `contracts/ornek/mesaj/`). Üç karar: **plan bir
+      veridir** (`task.graph`) — planlayıcı çekirdek bileşen değil bir ajan
+      rolüdür (blueprint §4.1 korundu), plan revizyonu üstüne yazmaz, yeni
+      `run_id` açar (D5); **yönlendirme bir alandır** (`step.assign` statik,
+      `handoff` mesajı dinamik) ve devir bir öneridir, çağrı değil — hedefi şema
+      düzeyinde `orchestrator` olmak zorunda, tavanı 3 (İ1 Ö4, Strands
+      `multiagent/swarm.py:210-231`); **konsensüs mimariye girmedi** — K2'nin
+      kanıt maddesi boş (İ1 §7: yedi projede birinci sınıf mekanizma yok) ve
+      asıl gerekçe daha güçlü: *oylama deterministik bir kaynağın yerine geçmez*
+      (D3), üç bağımlı örneklemi bağımsız sanmak olmayan bir güven üretir.
+      Yerine üç kademeli kural: deterministik doğrulayıcı ara → yoksa
+      `DEGERLENDIRILMEDI` + insan kapısı (ADR-004) → ikinci görüş isteniyorsa o
+      bir `critique` mesajıdır, oy değil. Paralellik `depends_on`dan türer, ayrı
+      bayrak yok (AP2); iki adım aynı alana yazamaz ve bu artık **kontrol
+      ediliyor** (`gorevCaprazKontrol`: DAG, tanımsız bağımlılık, çift yazma) —
+      ADR-002'nin bu kararı bugüne kadar yalnızca metindeydi. İ1 D6'nın
+      boşluğu (*araç sözleşmesi katı, ajan devri serbest metin*) beş kuralla
+      kapatıldı: ajan-ajan doğrudan mesaj yasağı, devir tavanı, eleştiri üst
+      sınırı 20 + `truncated` + ham kayıt (AP11), hata türü enum'u (D7), onay
+      isteğinde kapsam boş olamaz ve şiddet/güvenilirlik ayrı eksen (ADR-005;
+      birleşik risk skoru **tanımsız** olduğu için yazılamıyor). Doğrulayıcıda
+      üç eksik kapatıldı — `maxItems`, dizi tip ve **`allOf` dışındaki `if/then`
+      sessizce yok sayılıyordu**. Bilinçli sapma: ADR-003'ün Türkçe alan adları
+      yerine İngilizce adlar (değerler Türkçe kaldı), gerekçesi belge §8'de.
+      Doğrulama: `node arac/sema-dogrula.js --test` → 8 örnek geçerli, **38
+      bozma denemesinin 38'i reddedildi**, çıkış kodu 0; `node arac/iz-izle.js`
+      belgede 2 alıntının 2'sini de BIREBIR buldu; tuzak #22 taraması bir yanlış
+      beyan yakaladı ve düzeltildi.
+
 
 - [x] **Agent Architecture** — 2026-09-08. `docs/mimari/01-AJAN.md` +
       [ADR-006](docs/adr/ADR-006-ajan-sozlesmesi.md) + `agent.schema.json`
