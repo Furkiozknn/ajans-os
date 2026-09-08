@@ -134,7 +134,7 @@ düzeltme görevinin çalışma anı arasında yarış vardı.
 
 Makinede global kimlik zaten hesabın **noreply** adresi
 (`121863222+Furkiozknn@users.noreply.github.com`). Commit atarken
-`-c user.name=... -c user.email=furkiozkann@gmail.com` vermek o commit'i
+`-c user.name=... -c user.email=ornek@example.com` vermek o commit'i
 hesabın **gizli** e-postasıyla imzalar; GitHub'ın "e-postamı açığa çıkaran
 push'ları engelle" ayarı push'u reddeder:
 `! [remote rejected] HEAD -> master (push declined due to email privacy restrictions)`.
