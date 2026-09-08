@@ -382,7 +382,7 @@ olgun örnek, veya elle tuzak kaydının yetmediği ölçülmüş bir arıza.
 | 6 | Her sinyalin bir tüketicisi ve yetki seviyesi var | Observability (§2.13), Guardrails gölge modu (§4.4) |
 | 7 | Kapsam belirtilmemişse sonuç boş kümedir | Permission Manager · ADR-005 |
 | 8 | Bileşenin testi diğerlerini başlatmadan koşar | ADR-002 (bileşenler birbirini çağırmaz) |
-| 9 | "Rollback" kelimesi mimariye girmez | Recovery Manager (§2.10) — bu belgede o kelime hiç kullanılmadı |
+| 9 | "Rollback" kelimesi mimariye girmez | Recovery Manager (§2.10) — bu belgede o kelime yalnızca yasağın kendisini yazarken, tırnak içinde geçiyor (§2.10 ve bu satır); hiçbir bileşen davranışı onunla adlandırılmadı |
 | 10 | Belleğe yazmak bir izin işlemidir | Memory Manager (§2.6) → Faz 3 "Memory Architecture" |
 | 11 | Katalog veridir, koda gömülmez; bilinmeyen maliyet `null` | Cost Manager (§2.12) |
 | 12 | Yansıma belleği sınırlıdır, ham kayıt korunur | Critic (§2.9) + Context Manager (§2.7) |
