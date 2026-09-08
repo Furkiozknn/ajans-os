@@ -40,10 +40,41 @@ export interface ModelTasiyici {
   cagir(secim: ModelSecimi, istem: unknown): Promise<ModelYaniti>;
 }
 
+/**
+ * Katalog girdisi — **veridir, koda gomulmez** (kural 11'in secim tarafi).
+ * Sira operatorun tercihidir: kisitlari saglayan ilk girdi secilir.
+ */
+export interface KatalogGirdisi {
+  model_id: string;
+  saglayici: string;
+  yetenekler: string[];
+  baglam_token: number;
+  /** Adim basina tahmini maliyet. Bilinmiyorsa `null` — sifir degil. */
+  tahmini_usd?: number | null;
+  tasima?: Record<string, unknown>;
+}
+
 export interface ModelRouter {
-  /** Gereksinimden model secer. Saglayici-agnostik; saf karar. */
+  /** Kurulusta verilen katalogun donmus hali. */
+  readonly katalog: ReadonlyArray<Readonly<Required<KatalogGirdisi>>>;
+
+  /**
+   * Gereksinimden model secer. Saglayici-agnostik; saf karar. Kisitlari
+   * saglayan girdi yoksa **istisna atar**; sessizce uymayan modele dusmez.
+   */
   sec(gereksinim: ModelGereksinimi): ModelSecimi;
 
   /** Secilen modeli cagirir; tasiyiciyi kendisi bulur. */
   cagir(secim: ModelSecimi, istem: unknown): Promise<ModelYaniti>;
 }
+
+/**
+ * Kurar. `katalog` bos olamaz ve gecersiz girdi sessizce atlanmaz (AP3).
+ * `tasiyicilar` bos birakilabilir: `sec` tasiyicisiz de calisir — secim ile
+ * tasima ayri katmanlardir (K4). `cagir` tasiyicisi olmayan bir secim icin
+ * istisna atar; baska bir saglayiciya dusmez.
+ */
+export declare function modelYonlendirici(secenekler: {
+  katalog: ReadonlyArray<KatalogGirdisi>;
+  tasiyicilar?: ReadonlyArray<ModelTasiyici>;
+}): ModelRouter;
