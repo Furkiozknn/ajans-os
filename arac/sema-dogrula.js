@@ -162,6 +162,44 @@ function gorevCaprazKontrol(gorev) {
   return hatalar;
 }
 
+// ADR-005/ADR-007: izin kararının şemayla ifade edilemeyen kuralları. Şema tek
+// alana bakar; bunlar alanlar ARASI tutarlılıktır ve kontrol edilmezse karar
+// temenniye döner (AP3 → kural 4).
+function izinCaprazKontrol(izin) {
+  const hatalar = [];
+  const checks = izin.checks || [];
+  const gercek = checks.filter((c) => c.shadow !== true);
+
+  // D5: denetleyici hatası güvenli tarafa düşer, ALLOW'a değil.
+  if (gercek.some((c) => c.result === 'hata') && izin.decision === 'ALLOW') {
+    hatalar.push('denetleyici hatası varken ALLOW verilemez (D5: hata yolu güvenli tarafa düşer)');
+  }
+  // D11: denetlenmemiş temiz değildir.
+  if (izin.reliability === 'guclu' && gercek.some((c) => c.result === 'calistirilmadi' || c.result === 'hata')) {
+    hatalar.push("çalıştırılmamış veya hata veren denetleyici varken güvenilirlik 'guclu' olamaz (D11)");
+  }
+  if (gercek.length === 0 && izin.reliability !== 'kontrol-edilmedi') {
+    hatalar.push("hiç denetleyici çalışmadıysa güvenilirlik 'kontrol-edilmedi' olmalı");
+  }
+  // Kural 6: gölge moddaki detektör sinyal üretir, yetki almaz.
+  if (izin.decision === 'BLOCK' && gercek.every((c) => c.result !== 'kaldi') &&
+      checks.some((c) => c.shadow === true && c.result === 'kaldi')) {
+    hatalar.push('gölge moddaki denetleyici tek başına BLOCK gerekçesi olamaz (kural 6)');
+  }
+  // D4: sır tek bir hedefe kapsamlanır ve o hedef kapsamda yazılı olmalı.
+  for (const sir of izin.secret_injection || []) {
+    if (!(izin.scope || []).some((s) => s === sir.target || s.includes(sir.target))) {
+      hatalar.push(`sır '${sir.name}' kapsamda olmayan bir hedefe bağlanmış: '${sir.target}'`);
+    }
+  }
+  // Süreli izin geçmişe veremez.
+  const bitis = (izin.grant || {}).expires_at;
+  if (bitis && izin.at && Date.parse(bitis) <= Date.parse(izin.at)) {
+    hatalar.push('grant.expires_at kararın verildiği andan sonra olmalı');
+  }
+  return hatalar;
+}
+
 // --- öz-test: bozuk sözleşmeler reddedilmeli -------------------------------
 
 function ozTest(kok, temel) {
@@ -287,6 +325,46 @@ function ozTestMesaj(kok, ornekler) {
   return durumlar;
 }
 
+// İzin sözleşmesi öz-testi: ADR-005'in dört kuralı ve ADR-007'nin sürüm bağı
+// şemada gerçekten zorlanıyor mu, yoksa yalnızca alan açıklamasında mı yazıyor?
+function ozTestIzin(ornekler) {
+  const ile = (karar) => {
+    const o = ornekler.find((x) => x.decision === karar);
+    return o ? JSON.parse(JSON.stringify(o)) : null;
+  };
+  const durumlar = [];
+  const izinli = ile('ALLOW');
+  if (izinli) {
+    const b = (fn) => { const k = JSON.parse(JSON.stringify(izinli)); fn(k); return k; };
+    durumlar.push(['izin: sabit sınıra dokunan çağrı ALLOW olamaz', b((k) => { k.hard_limit = { hit: true, rule: 'kalici-silme' }; })]);
+    durumlar.push(['izin: geri alınamaz işlem ALLOW olamaz', b((k) => { k.irreversible = true; })]);
+    durumlar.push(["izin: 'kontrol-edilmedi' güvenilirlikle ALLOW verilemez", b((k) => { k.reliability = 'kontrol-edilmedi'; })]);
+    durumlar.push(['izin: ALLOW binding olmadan yazılamaz (ADR-007)', b((k) => { delete k.binding; })]);
+    durumlar.push(['izin: kapsam boş küme olamaz', b((k) => { k.scope = []; })]);
+    durumlar.push(['izin: tek "risk skoru" alanı uydurulamaz', b((k) => {
+      delete k.severity; delete k.reliability; k.risk_score = 0.2;
+    })]);
+    durumlar.push(['izin: "--yes-always" karşılığı bir alan yazılamaz', b((k) => { k.yes_always = true; })]);
+    durumlar.push(['izin: sırrın değeri sözleşmeye yazılamaz', b((k) => {
+      k.secret_injection = [{ name: 'GITHUB_TOKEN', target: 'api.github.com', value: 'ghp_xxx' }];
+    })]);
+    durumlar.push(['izin: delete işlemi insan kapısına düşmek zorunda', b((k) => { k.action.operation = 'delete'; })]);
+    durumlar.push(['izin: süreli izin binding/expires_at olmadan verilemez', b((k) => { k.grant = { mode: 'sureli' }; })]);
+    durumlar.push(['izin: içerik özeti biçimi zorlanır', b((k) => { k.binding.digest = 'v1.4.2'; })]);
+    durumlar.push(['izin: belleğe yazma düşük şiddetli sayılamaz', b((k) => {
+      k.action.operation = 'memory_write'; k.severity = 'dusuk';
+    })]);
+  }
+  const kapi = ile('HUMAN_REQUIRED');
+  if (kapi) {
+    const b = (fn) => { const k = JSON.parse(JSON.stringify(kapi)); fn(k); return k; };
+    durumlar.push(['izin: insan kapısı kayda bağlanmalı', b((k) => { delete k.recorded_in; })]);
+    durumlar.push(['izin: insan kapısı onay isteğine bağlanmalı', b((k) => { delete k.gate_ref; })]);
+    durumlar.push(['izin: sabit sınır tetiklendiyse hangi kural olduğu yazılmalı', b((k) => { delete k.hard_limit.rule; })]);
+  }
+  return durumlar;
+}
+
 function testKos(baslik, kok, durumlar) {
   console.log(`\n${baslik}`);
   let hata = 0;
@@ -310,7 +388,8 @@ const dizinDosyalari = (...p) => {
 const SEMALAR = [
   { ad: 'agent', sema: 'agent.schema.json', ornekDizin: ['contracts', 'ornek'], enAz: 2 },
   { ad: 'task', sema: 'task.schema.json', ornekDizin: ['contracts', 'ornek', 'gorev'], enAz: 1 },
-  { ad: 'message', sema: 'message.schema.json', ornekDizin: ['contracts', 'ornek', 'mesaj'], enAz: 3 }
+  { ad: 'message', sema: 'message.schema.json', ornekDizin: ['contracts', 'ornek', 'mesaj'], enAz: 3 },
+  { ad: 'permission', sema: 'permission.schema.json', ornekDizin: ['contracts', 'ornek', 'izin'], enAz: 3 }
 ];
 
 let toplamHata = 0;
@@ -329,6 +408,7 @@ for (const s of SEMALAR) {
     const icerik = oku(...s.ornekDizin, dosya);
     const hatalar = dogrula(icerik, kok, kok, '');
     if (s.ad === 'task') hatalar.push(...gorevCaprazKontrol(icerik));
+    if (s.ad === 'permission') hatalar.push(...izinCaprazKontrol(icerik));
     if (hatalar.length === 0) {
       const eksik = kok.required.filter((a) => !(a in icerik));
       yuklenen[s.ad].ornekler.push(icerik);
@@ -350,6 +430,40 @@ if (process.argv.includes('--test')) {
     toplamHata += ozTest(yuklenen.agent.kok, ajan);
     toplamHata += testKos('Görev sözleşmesi:', yuklenen.task.kok, ozTestGorev(yuklenen.task.kok, gorev));
     toplamHata += testKos('Mesaj sözleşmesi:', yuklenen.message.kok, ozTestMesaj(yuklenen.message.kok, yuklenen.message.ornekler));
+    toplamHata += testKos('İzin sözleşmesi:', yuklenen.permission.kok, ozTestIzin(yuklenen.permission.ornekler));
+
+    // İzin çapraz kontrolü: şemanın göremediği alanlar arası kurallar.
+    console.log('\nİzin çapraz kontrolü:');
+    const izinTemel = yuklenen.permission.ornekler.find((x) => x.decision === 'ALLOW');
+    const izinDurumlari = izinTemel ? [
+      ['denetleyici hatası ALLOW üretemez', (() => {
+        const z = JSON.parse(JSON.stringify(izinTemel));
+        z.checks[0].result = 'hata'; z.reliability = 'zayif'; return z;
+      })()],
+      ["çalıştırılmamış denetleyici 'guclu' güvenilirlik üretemez", (() => {
+        const z = JSON.parse(JSON.stringify(izinTemel));
+        z.checks[0].result = 'calistirilmadi'; return z;
+      })()],
+      ['hiç denetleyici yoksa güvenilirlik kontrol-edilmedi olmalı', (() => {
+        const z = JSON.parse(JSON.stringify(izinTemel)); z.checks = []; return z;
+      })()],
+      ['sır kapsamda olmayan hedefe bağlanamaz', (() => {
+        const z = JSON.parse(JSON.stringify(izinTemel));
+        z.secret_injection = [{ name: 'GITHUB_TOKEN', target: 'api.gitlab.com' }]; return z;
+      })()],
+      ['süreli izin geçmişe verilemez', (() => {
+        const z = JSON.parse(JSON.stringify(izinTemel));
+        z.binding.digest = z.binding.digest || 'sha256:' + '0'.repeat(64);
+        z.grant = { mode: 'sureli', expires_at: '2026-09-08T14:00:00+03:00', max_calls: 5 };
+        return z;
+      })()]
+    ] : [];
+    for (const [ad, bozuk] of izinDurumlari) {
+      const h = izinCaprazKontrol(bozuk);
+      if (h.length === 0) { console.log(`  ✗ ${ad} — ama kontrol GEÇTİ dedi`); toplamHata++; }
+      else console.log(`  ✓ ${ad}`);
+    }
+
     // Çapraz kontrolün kendisi de sınanır: bozulmuş graf yakalanmalı.
     console.log('\nGraf çapraz kontrolü:');
     const grafDurumlari = [

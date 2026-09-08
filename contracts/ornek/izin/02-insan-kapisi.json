@@ -1,0 +1,25 @@
+{
+  "contract_version": "1.0",
+  "decision_id": "izin-0002",
+  "run_id": "kosu-2026-09-08-1455",
+  "step_id": "kapanis",
+  "at": "2026-09-08T17:40:00+03:00",
+  "requester": { "kind": "orchestrator", "id": "orkestrator" },
+  "action": {
+    "tool": "Bash",
+    "operation": "publish",
+    "summary": "git push origin master"
+  },
+  "scope": ["D:/Repolar/ajans-os", "remote:origin"],
+  "irreversible": true,
+  "severity": "yuksek",
+  "reliability": "guclu",
+  "checks": [
+    { "id": "sabit-sinir-taramasi", "result": "kaldi", "detail": "disari-yayin-gonderim sınırına giriyor." }
+  ],
+  "hard_limit": { "hit": true, "rule": "disari-yayin-gonderim" },
+  "decision": "HUMAN_REQUIRED",
+  "reason": "Dışarı açılan işlem. Hiçbir yapılandırma bu kapıyı kapatamaz (ADR-005/1).",
+  "recorded_in": "raporlar/ONAY-BEKLEYENLER.md#2026-09-08-push",
+  "gate_ref": "msg-0004"
+}

@@ -1,0 +1,39 @@
+{
+  "contract_version": "1.0",
+  "decision_id": "izin-0004",
+  "run_id": "kosu-2026-09-08-1455",
+  "step_id": "surum-kontrol",
+  "at": "2026-09-08T15:30:00+03:00",
+  "requester": { "kind": "agent", "id": "repo-denetci" },
+  "action": {
+    "tool": "gh",
+    "operation": "network",
+    "summary": "GitHub API üzerinden depo listesini oku",
+    "arguments_digest": "sha256:f7a5928a2de0064580e611c81f14b0ed151336068f0d8b957a708f60203190bc"
+  },
+  "scope": ["api.github.com"],
+  "irreversible": false,
+  "severity": "orta",
+  "reliability": "guclu",
+  "checks": [
+    { "id": "kapsam-eslesme", "result": "gecti" },
+    { "id": "sabit-sinir-taramasi", "result": "gecti" },
+    { "id": "surum-bagi", "result": "gecti", "detail": "Bileşen özeti, izin verildiği andakiyle aynı." }
+  ],
+  "hard_limit": { "hit": false },
+  "decision": "ALLOW",
+  "reason": "Salt okuma ağ çağrısı; sır ajanın bağlamına girmez, kapı enjekte eder.",
+  "binding": {
+    "component": "mcp:github",
+    "version": "1.4.2",
+    "digest": "sha256:a799904fe4a3f56cd370303d6c158698fc624bd6246b76d83d124e8ada1d10ff"
+  },
+  "grant": {
+    "mode": "sureli",
+    "expires_at": "2026-09-08T16:30:00+03:00",
+    "max_calls": 20
+  },
+  "secret_injection": [
+    { "name": "GITHUB_TOKEN", "target": "api.github.com" }
+  ]
+}

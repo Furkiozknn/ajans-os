@@ -25,18 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Security Architecture** — Permission Manager tasarımı, en az
-      yetki, sandbox katmanları, insan kapısı kuralları (hangi işlemler,
-      geçilemez), ajan kimliği, hata sınırları/izolasyon.
-      `contracts/permission.schema.json`. **İ3 girdileri zorunlu okuma:**
-      OZET §5 (şema alanları: şiddet ve güvenilirlik ayrı eksen,
-      `ALLOW/BLOCK/HUMAN_REQUIRED`, "kontrol edilmedi" ≠ "temiz", onay kapsamı;
-      kimlik bilgisi ajana ulaşmaz; denetleyici hatası güvenli tarafa düşer)
-      ve §6 **K6'ya aday ek madde:** verilen izin bileşenin sürümüne/içerik
-      özetine bağlanır, bileşen değişirse izin düşer — bu maddede ADR olarak
-      karara bağlanır. Çıktı:
-      `docs/mimari/05-GUVENLIK.md`.
-
 - [ ] **Observability Architecture** — İz (trace) modeli (OTel GenAI
       uyumlu), hangi olaylar kaydedilir, maliyet/gecikme sayaçları, iz
       → değerlendirme → öğrenme akışının veri sözleşmesi. Çıktı:
@@ -81,6 +69,45 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Security Architecture** — 2026-09-08.
+      [`docs/mimari/05-GUVENLIK.md`](docs/mimari/05-GUVENLIK.md) +
+      [ADR-007](docs/adr/ADR-007-izin-surum-bagi.md) +
+      `contracts/permission.schema.json` + dört örnek (`contracts/ornek/izin/`).
+      ADR-005'in dört kuralı ve İ3 OZET §5'in beş önerisi işleyen hâle getirildi;
+      yeni bileşen eklenmedi. Şemanın taşıyıcı kararları: **şiddet ile güvenilirlik
+      ayrı eksen, tek `risk_score` alanı yok** (iki bağımsız sinyali tek sayıya
+      ezmek AP5'in mekanizması); karar üç değerli `ALLOW`/`BLOCK`/`HUMAN_REQUIRED`
+      ve **insanın kararı yalnızca iki değerli** — kapı kendi kendine onay veremez;
+      denetleyici sonucu dört değerli (`gecti`/`kaldi`/`calistirilmadi`/`hata`) ve
+      son ikisi "temiz" sayılmaz (D11); `shadow: true` ölçülmemiş detektörü gölge
+      moda alır (kural 6). İnsan kapısının geçilemezliği **üç yerde** zorlanıyor:
+      `additionalProperties: false` (`--yes-always` karşılığı bir alan uydurulamaz),
+      `hard_limit.hit` → `decision` **const HUMAN_REQUIRED**, ve sabit sınır
+      listesinin koddan okunması (yükleme yolu yoksa yükleme arızası da yok).
+      Sır ajana ulaşmaz: `secret_injection` yalnızca ad + **tek** hedef taşır,
+      **değer için şemada alan yoktur**; hedef `scope` içinde olmak zorunda.
+      Hipervizör yolu kapalı olduğu için mekanizma **proxy süreç** seçildi (ayrı
+      kullanıcı hesabı elendi) ve bunun kazayı önlediği ama kararlı saldırganı
+      önlemediği §9'da yazıldı. **ADR-007** yol haritasının S7'sini kapatıyor:
+      izin bileşenin **içerik özetine** bağlanır (`version` değil — sürüm beyandır,
+      özet ölçümdür), `ALLOW` `binding`siz yazılamaz, süresiz izin modu yoktur,
+      özet tutmazsa izin düşer ve `supersedes` ile yenisi yazılır. Kanıtı zayıf
+      olduğu ADR'nin kendi K2 tablosunda yazılı: `02-EN-IYI-FIKIRLER.md` aynı fikri
+      elemişti, karar K2'nin ikinci dalına (tuzak #12/#13 — karar anındaki dünya ile
+      eylem anındaki dünya aynı değil) dayanıyor. Sandbox katmanları dört sıraya
+      döküldü, **ikisi çalışıyor**; K3/K4 blueprint §4.4'teki gibi girmedi.
+      Kapanmayan beş yer §9'da: sandbox yok, proxy süreç kararlı saldırganı
+      önlemez, prompt enjeksiyonuna mimari savunma yok, `operation` sınıfını
+      çağıran beyan ediyor (AP2 tam kapanmadı), mcp-vet yanlış pozitif oranı
+      ölçülmedi. Doğrulama: `node arac/sema-dogrula.js --test` → dört izin örneği
+      14/14 zorunlu alanla geçti, **15 bozma denemesinin 15'i reddedildi**, 5 çapraz
+      kontrolün 5'i yakaladı, çıkış kodu 0; `node arac/iz-izle.js` belgede
+      **16 alıntının 16'sı da BIREBIR** (YOK 0), ADR-007'de 3/3; 5 göreli bağlantı
+      çözülüyor; tuzak #22 taraması belgenin kendi metnine dair yedi mutlak iddiayı
+      `grep`ledi ve **bir yanlış beyan yakalandı** (sabit sınır listesinin
+      "CLAUDE.md'yle birebir aynı" olduğu — CAPTCHA maddesi farklı; kaynak
+      ADR-005/1 olarak düzeltildi).
 
 - [x] **Evaluation Architecture** — 2026-09-08.
       [`docs/mimari/04-DEGERLENDIRME.md`](docs/mimari/04-DEGERLENDIRME.md).

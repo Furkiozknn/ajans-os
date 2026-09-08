@@ -291,7 +291,7 @@ bileşeni çağırmaz (ADR-002); Observability tek yönlü **dinleyicidir**.
 | `contracts/agent.schema.json` | var | Agent Registry, Orchestrator, Evaluator |
 | `contracts/task.schema.json` | Faz 3 "Orchestration Architecture" maddesinde yazılacak | Task Manager, Orchestrator |
 | `contracts/message.schema.json` | aynı madde | Critic, Orchestrator, Observability |
-| `contracts/permission.schema.json` | Faz 3 "Security Architecture" maddesinde yazılacak | Permission Manager, Tool Registry |
+| `contracts/permission.schema.json` | var (2026-09-08, [05-GUVENLIK.md](05-GUVENLIK.md)) | Permission Manager, Tool Registry |
 | araç şeması | **yeni sözleşme yazılmaz** — MCP'nin JSON Schema'sı kullanılır | Tool Registry |
 
 ---
@@ -403,7 +403,7 @@ olgun örnek, veya elle tuzak kaydının yetmediği ölçülmüş bir arıza.
 | S4 deterministik kaynağı olmayan çıktı | [ADR-004](../adr/ADR-004-degerlendirme-kapisi.md) |
 | S5 uzatma noktaları izinden muaf mı | [ADR-005](../adr/ADR-005-izin-siniri.md) |
 | S6 yaklaşık mı kesin tokenizer mı | **Bu belgede değil** → Faz 3 "Memory Architecture" (bağlam penceresi yönetimi orada) |
-| S7 izin sürüme bağlansın mı (A1) | **Bu belgede değil** → Faz 3 "Security Architecture"; yol haritası bu maddeyi zaten oraya bağlamış |
+| S7 izin sürüme bağlansın mı (A1) | [ADR-007](../adr/ADR-007-izin-surum-bagi.md) — evet, içerik özetine bağlanır (2026-09-08) |
 
 İ1 §6'nın soruları: S1 (graf mı rol mü) ve S3 (paralel yazma çakışması)
 ADR-002'de; S2 (deterministik replay) `02` §4/A4'te zaten elenmişti; S4

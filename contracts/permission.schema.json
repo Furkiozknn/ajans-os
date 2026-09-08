@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Furkiozknn/ajans-os/contracts/permission.schema.json",
+  "title": "İzin kararı sözleşmesi",
+  "description": "Permission Manager'ın tek çıktısı. Bir araç çağrısının yapılıp yapılamayacağı bu kayıtla karara bağlanır; kayıt yoksa çağrı da yoktur (ADR-005 tek geçit). Karar üç değerlidir, şiddet ile güvenilirlik ayrı eksenlerdir ve tek bir 'risk skoru' alanı YOKTUR — iki bağımsız sinyali tek sayıya ezmek AP5'in mekanizmasıdır. Alan adları İngilizce, açıklamalar Türkçe (ADR-000 K9).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "decision_id",
+    "run_id",
+    "at",
+    "requester",
+    "action",
+    "scope",
+    "irreversible",
+    "severity",
+    "reliability",
+    "checks",
+    "hard_limit",
+    "decision",
+    "reason"
+  ],
+  "properties": {
+    "contract_version": {
+      "description": "Bu sözleşmenin sürümü. Şema değişirse burası değişir; eski kayıtlar eski sürümle okunur.",
+      "const": "1.0"
+    },
+    "decision_id": { "$ref": "#/$defs/kebab_id" },
+    "run_id": { "$ref": "#/$defs/kebab_id" },
+    "step_id": {
+      "description": "Kararın hangi adım için verildiği (task.schema.json graph.steps[].id).",
+      "$ref": "#/$defs/kebab_id"
+    },
+    "at": { "$ref": "#/$defs/zaman" },
+
+    "requester": {
+      "description": "İzni isteyen. Ajan doğrudan araç çağıramaz (K6); istek buradan gelir, karar Permission Manager'dan çıkar.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["agent", "orchestrator", "component"] },
+        "id": { "$ref": "#/$defs/kebab_id" }
+      }
+    },
+
+    "action": {
+      "description": "Ne yapılmak isteniyor. 'operation' izin sınıfıdır ve araç adından türetilmez — izin kararının araç adı gibi kırılgan bir anahtara bağlanması blueprint §2.4'te açıkça önlenen hatadır.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "operation", "summary"],
+      "properties": {
+        "tool": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "operation": {
+          "description": "İzin sınıfı. 'delete' ve 'publish' sabit sınır kapsamındadır ve aşağıdaki kurallarla HUMAN_REQUIRED'a bağlanır.",
+          "type": "string",
+          "enum": ["read", "write", "execute", "network", "delete", "publish", "memory_write"]
+        },
+        "summary": { "type": "string", "minLength": 3, "maxLength": 600 },
+        "arguments_digest": {
+          "description": "Çağrı argümanlarının özeti. Yeniden kullanılabilir bir izin (grant.mode ≠ tek-cagri) verildiğinde, sonraki çağrının aynı argümanlarla geldiğini bu alan kanıtlar.",
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+
+    "scope": {
+      "description": "İşlemin dokunduğu somut hedefler: dosya yolu, glob, alan adı, uzak ad. Kapsam belirtilmemişse sonuç boş kümedir, 'hepsi' değil (AP6 → kural 7, ADR-005/3). Bu yüzden en az bir öğe zorunludur; boş dizi geçersizdir.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 400 }
+    },
+
+    "irreversible": {
+      "description": "İşlemin telafisi var mı. 'rollback' kelimesi mimariye girmez (AP8 → kural 9): telafisi olmayan eylem insan kapısına düşer. true ise karar ALLOW olamaz.",
+      "type": "boolean"
+    },
+
+    "severity": {
+      "description": "Eylemin şiddeti — yanlış giderse ne kadar zarar verir. Güvenilirlikten AYRI eksendir (mcp-vet models.py:9-16).",
+      "type": "string",
+      "enum": ["dusuk", "orta", "yuksek"]
+    },
+
+    "reliability": {
+      "description": "Kararın dayandığı sinyalin ne kadar güvenilir olduğu. 'kontrol-edilmedi' ayrı bir değerdir ve 'temiz' anlamına GELMEZ (D11; mcp-vet models.py:34-40: 'never concludes that something is safe, only that a given check did not fire').",
+      "type": "string",
+      "enum": ["kontrol-edilmedi", "zayif", "guclu"]
+    },
+
+    "checks": {
+      "description": "Kararı besleyen denetleyicilerin tek tek sonucu. Boş dizi geçerlidir ama o zaman reliability 'kontrol-edilmedi' olmalıdır — hiç denetlenmemiş bir çağrı 'temiz' sayılamaz. Ölçülmemiş bir detektör 'shadow: true' ile yazılır ve karara etki etmez (AP4/AP5 → kural 6).",
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "result"],
+        "properties": {
+          "id": { "$ref": "#/$defs/kebab_id" },
+          "result": {
+            "description": "'calistirilmadi' ve 'hata' ayrı değerlerdir ve ikisi de 'gecti' sayılmaz (D5; mcp-vet risk.py:35 EXIT_ERROR=4). Denetleyici hatası güvenli tarafa düşer.",
+            "type": "string",
+            "enum": ["gecti", "kaldi", "calistirilmadi", "hata"]
+          },
+          "detail": { "type": "string", "maxLength": 600 },
+          "shadow": {
+            "description": "true ise bu denetleyici gölge moddadır: sinyal üretir, yetki almaz (kural 6). Ölçülmemiş detektör buradan başlar.",
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+
+    "hard_limit": {
+      "description": "Sabit sınırlar kümesi KODDADIR ve yapılandırmadan okunmaz (AP1 → kural 1, ADR-005/1). '--yes-always' karşılığı bir alan bu şemada tanımlı değildir; additionalProperties:false olduğu için uydurulan böyle bir alan reddedilir. Liste uzatılabilir, daraltılamaz.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hit"],
+      "properties": {
+        "hit": { "type": "boolean" },
+        "rule": {
+          "description": "Hangi sabit sınıra dokunuldu. CLAUDE.md'deki liste ile birebir aynıdır.",
+          "type": "string",
+          "enum": [
+            "kimlik-bilgisi-girme",
+            "kalici-silme",
+            "para-transferi",
+            "hesap-acma",
+            "sistem-guvenlik-ayari",
+            "disari-yayin-gonderim"
+          ]
+        }
+      }
+    },
+
+    "decision": {
+      "description": "Üç değerli karar (LlamaFirewall llamafirewall_data_types.py:22-25). HUMAN_REQUIRED bir Permission Manager çıktısıdır; insanın kararı yalnızca ALLOW/BLOCK'tur ve o message.schema.json approval_decision ile gelir.",
+      "type": "string",
+      "enum": ["ALLOW", "BLOCK", "HUMAN_REQUIRED"]
+    },
+
+    "reason": {
+      "description": "Kararın gerekçesi. Serbest metindir ama zorunludur: gerekçesiz karar denetlenemez (ADR-000 K10).",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 1000
+    },
+
+    "binding": {
+      "description": "İznin bağlandığı bileşen sürümü ve içerik özeti (ADR-007). İzin bir bileşene değil, bileşenin BU hâline verilir; özet değişirse izin düşer. Kaynak: mcp-vet diff.py:3-8 — 'It is the one that was fine at v1.2.0, got read and approved, and quietly grew shell execution at v1.3.0.'",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["component", "digest"],
+      "properties": {
+        "component": {
+          "description": "İzin verilen bileşenin kimliği: araç sağlayıcısı, MCP sunucusu veya ajan sözleşmesi.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "version": {
+          "description": "Beyan edilen sürüm. Tek başına yetmez — sürüm numarası değişmeden içerik değişebilir; bu yüzden digest zorunlu, version değil.",
+          "type": "string",
+          "maxLength": 60
+        },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+
+    "grant": {
+      "description": "Onayın KAPSAMI: hangi işlem, ne kadar süre, sonraki çağrılara geçerli mi (A2A specification.md:1968-1972 — onay sinyali tek başına yetki değildir). Yazılmamışsa varsayılan tek çağrıdır.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "description": "'tek-cagri' = bu kayıt tükendi, sonraki çağrı yeni karar ister. 'oturum' = aynı run_id boyunca, 'sureli' = expires_at'e kadar. Son ikisi binding.digest ve expires_at zorunlu kılar.",
+          "type": "string",
+          "enum": ["tek-cagri", "oturum", "sureli"]
+        },
+        "expires_at": { "$ref": "#/$defs/zaman" },
+        "max_calls": {
+          "description": "Yeniden kullanılabilir izinde çağrı tavanı. Tavansız süreli izin yazılamaz.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "enum": ["oturum", "sureli"] } }, "required": ["mode"] },
+          "then": { "required": ["expires_at", "max_calls"] }
+        }
+      ]
+    },
+
+    "secret_injection": {
+      "description": "Bu çağrıda enjekte edilecek sırlar. Ajan sırrı GÖRMEZ: yeteneği alır, anahtarı kapı koyar (microsandbox README.md:38; A2A specification.md:1961-1962). Sırrın DEĞERİ için bu şemada alan yoktur ve additionalProperties:false olduğu için uydurulamaz — yalnızca ad ve hedef yazılır.",
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "target"],
+        "properties": {
+          "name": {
+            "description": "Sırrın adı, değeri değil (agent.schema.json permissions.secrets ile aynı ad alanı).",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "target": {
+            "description": "Sırrın kapsamlandığı TEK hedef: alan adı, uzak ad veya yol. Hedefsiz sır yazılamaz — kapsamsız kimlik bilgisi, D4'ün önlediği hatanın kendisidir. Bu değer scope içinde de geçmelidir (çapraz kontrol).",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          }
+        }
+      }
+    },
+
+    "recorded_in": {
+      "description": "HUMAN_REQUIRED kararının yazıldığı dosya satırı (raporlar/ONAY-BEKLEYENLER.md#çapa). Onay bir durumdur ve kaydı vardır (kural 2).",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+    },
+
+    "gate_ref": {
+      "description": "Bu karardan doğan approval_request mesajının message_id'si (message.schema.json).",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+
+    "supersedes": {
+      "description": "Bu kayıt hangi eski kararı geçersiz kılıyor. Bileşen değişince düşen izin, silinmez — yerine yenisi yazılır ve eskisi buradan gösterilir (03-BELLEK.md'deki supersedes deseniyle aynı).",
+      "$ref": "#/$defs/kebab_id"
+    }
+  },
+
+  "allOf": [
+    {
+      "description": "Kural 1 (AP1): sabit sınıra dokunan işlem her yapılandırmada insan kapısına düşer. hit=true iken ALLOW yazan bir kayıt reddedilir.",
+      "if": { "properties": { "hard_limit": { "properties": { "hit": { "const": true } }, "required": ["hit"] } }, "required": ["hard_limit"] },
+      "then": {
+        "required": ["recorded_in"],
+        "properties": {
+          "decision": { "const": "HUMAN_REQUIRED" },
+          "hard_limit": { "required": ["rule"] }
+        }
+      }
+    },
+    {
+      "description": "K6: geri alınamaz işlem her zaman insan kapısından geçer. ALLOW yazılamaz.",
+      "if": { "properties": { "irreversible": { "const": true } }, "required": ["irreversible"] },
+      "then": { "properties": { "decision": { "enum": ["BLOCK", "HUMAN_REQUIRED"] } } }
+    },
+    {
+      "description": "D11/D5: denetlenmemiş temiz değildir. Güvenilirlik 'kontrol-edilmedi' iken izin verilemez.",
+      "if": { "properties": { "reliability": { "const": "kontrol-edilmedi" } }, "required": ["reliability"] },
+      "then": { "properties": { "decision": { "enum": ["BLOCK", "HUMAN_REQUIRED"] } } }
+    },
+    {
+      "description": "Sabit sınır: kalıcı silme ve dışarı açılan yayın sözleşmeyle verilemez (CLAUDE.md, ADR-005/1). Bu iki operation hard_limit'i zorunlu tetikler.",
+      "if": { "properties": { "action": { "properties": { "operation": { "enum": ["delete", "publish"] } }, "required": ["operation"] } }, "required": ["action"] },
+      "then": {
+        "properties": {
+          "decision": { "const": "HUMAN_REQUIRED" },
+          "hard_limit": { "properties": { "hit": { "const": true } } }
+        }
+      }
+    },
+    {
+      "description": "ADR-007: izin verilen şey bir bileşenin BU hâlidir. ALLOW binding olmadan yazılamaz — bağsız izin, bileşen değişince düşemez.",
+      "if": { "properties": { "decision": { "const": "ALLOW" } }, "required": ["decision"] },
+      "then": { "required": ["binding"] }
+    },
+    {
+      "description": "Kural 2: onay bir durumdur, kaydı vardır. HUMAN_REQUIRED kaydı ONAY-BEKLEYENLER.md satırına ve approval_request mesajına bağlanır.",
+      "if": { "properties": { "decision": { "const": "HUMAN_REQUIRED" } }, "required": ["decision"] },
+      "then": { "required": ["recorded_in", "gate_ref"] }
+    },
+    {
+      "description": "Yeniden kullanılabilir izin bileşen özetine bağlanmak zorundadır (ADR-007). Süreli/oturumluk izin binding'siz yazılamaz.",
+      "if": { "properties": { "grant": { "properties": { "mode": { "enum": ["oturum", "sureli"] } }, "required": ["mode"] } }, "required": ["grant"] },
+      "then": {
+        "required": ["binding"],
+        "properties": { "binding": { "required": ["digest"] } }
+      }
+    },
+    {
+      "description": "memory_write bir izin işlemidir (AP9 → kural 10). Bellek yazımı 'project'/'global' katmanlarında insan kapısına düşer; bu şema en azından gerekçenin ve kapsamın yazılmasını zorlar.",
+      "if": { "properties": { "action": { "properties": { "operation": { "const": "memory_write" } }, "required": ["operation"] } }, "required": ["action"] },
+      "then": { "properties": { "severity": { "enum": ["orta", "yuksek"] } } }
+    }
+  ],
+
+  "$defs": {
+    "kebab_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "zaman": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "digest": {
+      "description": "İçerik özeti: algoritma öneki + onaltılık değer. Sürüm numarası değişmeden içerik değişebildiği için asıl bağ budur.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

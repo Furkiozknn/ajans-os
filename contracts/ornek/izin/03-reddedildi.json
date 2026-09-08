@@ -1,0 +1,29 @@
+{
+  "contract_version": "1.0",
+  "decision_id": "izin-0003",
+  "run_id": "kosu-2026-09-08-1455",
+  "step_id": "arastir",
+  "at": "2026-09-08T15:20:00+03:00",
+  "requester": { "kind": "agent", "id": "arastirmaci" },
+  "action": {
+    "tool": "Write",
+    "operation": "write",
+    "summary": "Başka bir depodaki dosyayı güncelle"
+  },
+  "scope": ["D:/Repolar/turkce-ajanlar/README.md"],
+  "irreversible": false,
+  "severity": "orta",
+  "reliability": "guclu",
+  "checks": [
+    { "id": "kapsam-eslesme", "result": "kaldi", "detail": "Yol, ajan sözleşmesinin write kapsamı dışında." },
+    { "id": "prompt-enjeksiyon-sezgisi", "result": "calistirilmadi", "detail": "Gölge modda, karara etki etmez.", "shadow": true }
+  ],
+  "hard_limit": { "hit": false },
+  "decision": "BLOCK",
+  "reason": "Kapsam dışı yazma. Genişleme ucuzdur, yetki genişlemesi ucuz değildir (ADR-005/4).",
+  "binding": {
+    "component": "agent:arastirmaci",
+    "version": "2.0",
+    "digest": "sha256:005c3d8d329d94054dbcb53eeef1f615363df47d3e8332b9f5a8e466b0d1f8d6"
+  }
+}
