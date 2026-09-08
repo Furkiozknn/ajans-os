@@ -1,21 +1,21 @@
 # i4-guvenilirlik — otomatik kanıt doğrulaması (v3)
 
-*08.09.2026 03:12:12 · 75.576 dosya, 48 depo · araç: arac/kanit-dogrula.js*
+*08.09.2026 03:19:31 · 75.611 dosya, 48 depo · araç: arac/kanit-dogrula.js*
 
 ## Özet
 
 | Toplam | TAM | YAKIN | VAR | TOKEN-YOK ⚠️ | EOF ⚠️ | DOSYA-YOK ⚠️ |
 |---|---|---|---|---|---|---|
-| 410 | 253 | 18 | 119 | 19 | 1 | 0 |
+| 410 | 254 | 18 | 119 | 19 | 0 | 0 |
 
-Doğrulanabilir 291 alıntının **%93**'i doğrulandı (TAM+YAKIN). Şüpheli: **20**. Araç karar vermez; şüpheliler elle bakılır.
+Doğrulanabilir 291 alıntının **%93**'i doğrulandı (TAM+YAKIN). Şüpheli: **19**. Araç karar vermez; şüpheliler elle bakılır.
 
 ## Dosya bazında
 
 | Dosya | Toplam | TAM | YAKIN | VAR | ⚠️ |
 |---|---|---|---|---|---|
 | DURUM.md | 9 | 1 | 0 | 8 | 0 |
-| OZET.md | 40 | 6 | 1 | 30 | 3 |
+| OZET.md | 40 | 7 | 1 | 30 | 2 |
 | dbos-transact-py.md | 68 | 52 | 5 | 10 | 1 |
 | dspy.md | 33 | 22 | 1 | 4 | 6 |
 | instructor.md | 50 | 30 | 3 | 15 | 2 |
@@ -26,9 +26,8 @@ Doğrulanabilir 291 alıntının **%93**'i doğrulandı (TAM+YAKIN). Şüpheli: 
 
 ## Şüpheli alıntılar (elle bak)
 
-- **EOF** `OZET.md:204` → `types.py:418-437` beklenen: `max_interval=128.0`, `max_interval`, `128.0`, `jitter=True` · bakılan: `temporal-sdk-python/temporalio/types.py`
 - **TOKEN-YOK** `OZET.md:242` → `agents.py:113` beklenen: `self.reflections +=[...]` · bakılan: `reflexion/hotpotqa_runs/agents.py`
-- **TOKEN-YOK** `OZET.md:298` → `reflexion.py:43` beklenen: `reask_handler`, `reward_fn`, `hint_` · bakılan: `reflexion/programming_runs/reflexion.py`
+- **TOKEN-YOK** `OZET.md:298` → `programming_runs/reflexion.py:43` beklenen: `reask_handler`, `reward_fn` · bakılan: `reflexion/programming_runs/reflexion.py`
 - **TOKEN-YOK** `dbos-transact-py.md:77` → `dbos/_core.py:2552-2555` beklenen: `Don't record an outcome — let the step be re-run on resume.` · bakılan: `dbos-transact-py/dbos/_core.py`
 - **TOKEN-YOK** `dspy.md:7` → `pyproject.toml:14` beklenen: `the framework for _programming—rather than prompting—language models_`, `_programming`, `models_` · bakılan: `dspy/.github/.internal_dspyai/pyproject.toml`
 - **TOKEN-YOK** `dspy.md:11` → `README.md:16` beklenen: `signature` · bakılan: `dspy/docs/README.md`
