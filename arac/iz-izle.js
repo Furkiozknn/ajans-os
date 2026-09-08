@@ -41,6 +41,8 @@ if (fs.existsSync(izKok)) {
 // Faz 3 belgeleri Faz 2 ciktilarina da atif yapar (01/02/03): onlar da havuza girer.
 const docsKok = path.join(KOK, "docs");
 if (fs.existsSync(docsKok)) for (const f of fs.readdirSync(docsKok)) if (/^\d\d-.*\.md$/.test(f)) izDosyalar.push(path.join(docsKok, f));
+const mimariKok = path.join(docsKok, "mimari");
+if (fs.existsSync(mimariKok)) for (const f of fs.readdirSync(mimariKok)) if (f.endsWith(".md")) izDosyalar.push(path.join(mimariKok, f));
 if (!izDosyalar.length) { console.error("docs/arastirma altinda iz belgesi yok."); process.exit(2); }
 // Tire çeşitleri (– —) normalize edilir: iz belgeleri aralıkta ikisini de kullanıyor.
 const havuz = izDosyalar.map((f) => fs.readFileSync(f, "utf8")).join("\n").replace(/[–—]/g, "-");
