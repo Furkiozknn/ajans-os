@@ -24,21 +24,21 @@
 | e2b-dev/E2B | i3 | gecti | 13.697 | 2026-09-07 | Apache-2.0 | — | 4 | 4 | 3 | 3 | 2 | 2 | evet | evet | hayir | kismen | [e2b](arastirma/i3-arac-guvenlik/e2b.md) |
 | modelcontextprotocol/modelcontextprotocol | i3 | gecti | 9.151 | 2026-09-07 | MIT→Apache-2.0 geçişte | — | 5 | 5 | 4 | 2 | 2 | 3 | evet | evet | kismen | hayir | [mcp-spec](arastirma/i3-arac-guvenlik/mcp-spec.md) |
 | microsandbox/microsandbox | i3 | gecti | 8.113 | 2026-09-07 | Apache-2.0 | — | 3 | 4 | — | — | 2 | 4 | evet | evet | hayir | — | [microsandbox](arastirma/i3-arac-guvenlik/microsandbox.md) |
+| meta-llama/PurpleLlama | i3 | gecti | 4.385 | 2026-08-18 | karışık (kök Llama Topluluk Lisansı, LlamaFirewall/ MIT) | — | 3 | 4 | 4 | 3 | 2 | 3 | hayir | kismen | evet | hayir | [llamafirewall](arastirma/i3-arac-guvenlik/llamafirewall.md) |
 | invariantlabs-ai/mcp-scan | i3 | gecti | 3.014 | 2026-09-07 | Apache-2.0 | — | 4 | 3 | 2 | 3 | 2 | 3 | evet | kismen | evet | hayir | [mcp-scan](arastirma/i3-arac-guvenlik/mcp-scan.md) |
-| meta-llama/PurpleLlama | i3 | gecti | — | — | — | — | 3 | 4 | 4 | 3 | 2 | 3 | hayir | kismen | evet | hayir | [llamafirewall](arastirma/i3-arac-guvenlik/llamafirewall.md) |
 | Furkiozknn/mcp-vet | i3 | gecti | 0 | 2026-09-06 | MIT | — | 2 | 5 | 3 | 3 | 3 | 4 | evet | evet | hayir | hayir | [mcp-vet](arastirma/i3-arac-guvenlik/mcp-vet.md) |
 | stanfordnlp/dspy | i4 | gecti | 37.834 | 2026-09-05 | MIT | — | 4 | 4 | 4 | 3 | 3 | 3 | evet | kismen | hayir | hayir | [dspy](arastirma/i4-guvenilirlik/dspy.md) |
+| 567-labs/instructor | i4 | gecti | 13.840 | 2026-09-07 | MIT | — | 4 | 3 | 4 | 3 | 3 | 3 | evet | kismen | hayir | hayir | [instructor](arastirma/i4-guvenilirlik/instructor.md) |
 | Portkey-AI/gateway | i4 | tarihi | 12.922 | 2026-05-25 | MIT | — | 4 | 4 | 3 | 3 | 3 | — | evet | kismen | hayir | hayir | [portkey-gateway](arastirma/i4-guvenilirlik/portkey-gateway.md) |
 | noahshinn/reflexion | i4 | tarihi | 3.262 | 2025-01-13 | MIT | — | 2 | 3 | 2 | 2 | 2 | 1 | hayir | hayir | hayir | hayir | [reflexion](arastirma/i4-guvenilirlik/reflexion.md) |
 | dbos-inc/dbos-transact-py | i4 | gecti | 1.563 | 2026-09-04 | MIT | — | 5 | 4 | 3 | 4 | 4 | 3 | kismen | evet | kismen | evet | [dbos-transact-py](arastirma/i4-guvenilirlik/dbos-transact-py.md) |
 | temporalio/sdk-python | i4 | gecti | 1.178 | 2026-09-05 | MIT | — | 4 | 4 | — | 5 | — | — | evet | kismen | hayir | evet | [temporal](arastirma/i4-guvenilirlik/temporal.md) |
-| 567-labs/instructor | i4 | gecti | — | — | MIT | — | 4 | 3 | 4 | 3 | 3 | 3 | evet | kismen | hayir | hayir | [instructor](arastirma/i4-guvenilirlik/instructor.md) |
-| langfuse/langfuse | i5 | gecti | — | 2026-09-07 | MIT (ee/ hariç) | — | 4 | 4 | 3 | 4 | 4 | — | kismen | evet | hayir | — | [langfuse](arastirma/i5-gozlem-ekonomi/langfuse.md) |
-| open-telemetry/semantic-conventions-genai | i5 | gecti | — | 2026-09-03 | Apache-2.0 | — | 2 | 4 | 4 | 3 | 4 | 4 | kismen | evet | — | — | [otel-genai-semconv](arastirma/i5-gozlem-ekonomi/otel-genai-semconv.md) |
-| Furkiozknn/nvidia-nim-mcp | i5 | gecti | — | 2026-09-05 | MIT | — | 3 | 2 | 3 | 4 | 1 | 3 | kismen | hayir | hayir | — | [nvidia-nim-mcp](arastirma/i5-gozlem-ekonomi/nvidia-nim-mcp.md) |
-| Furkiozknn/model-comparison-harness | i5 | gecti | — | 2026-09-06 | MIT | — | 3 | 4 | 4 | 3 | 2 | 2 | kismen | evet | — | hayir | [model-comparison-harness](arastirma/i5-gozlem-ekonomi/model-comparison-harness.md) |
-| BerriAI/litellm | i5 | gecti | — | 2026-09-07 | MIT | — | 5 | 4 | 4 | 4 | 3 | 3 | kismen | kismen | — | kismen | [litellm-router](arastirma/i5-gozlem-ekonomi/litellm-router.md) |
-| lm-sys/RouteLLM | i5 | tarihi | — | 2024-08-10 | Apache-2.0 | — | 2 | 4 | 3 | 2 | 1 | 2 | hayir | evet | — | kismen | [routellm](arastirma/i5-gozlem-ekonomi/routellm.md) |
+| BerriAI/litellm | i5 | gecti | 58.252 | 2026-09-07 | MIT | — | 5 | 4 | 4 | 4 | 3 | 3 | kismen | kismen | — | kismen | [litellm-router](arastirma/i5-gozlem-ekonomi/litellm-router.md) |
+| langfuse/langfuse | i5 | gecti | 34.319 | 2026-09-07 | MIT (ee/ hariç) | — | 4 | 4 | 3 | 4 | 4 | — | kismen | evet | hayir | — | [langfuse](arastirma/i5-gozlem-ekonomi/langfuse.md) |
+| lm-sys/RouteLLM | i5 | tarihi | 5.462 | 2024-08-10 | Apache-2.0 | — | 2 | 4 | 3 | 2 | 1 | 2 | hayir | evet | — | kismen | [routellm](arastirma/i5-gozlem-ekonomi/routellm.md) |
+| open-telemetry/semantic-conventions-genai | i5 | gecti | 643 | 2026-09-03 | Apache-2.0 | — | 2 | 4 | 4 | 3 | 4 | 4 | kismen | evet | — | — | [otel-genai-semconv](arastirma/i5-gozlem-ekonomi/otel-genai-semconv.md) |
+| Furkiozknn/nvidia-nim-mcp | i5 | gecti | 0 | 2026-09-05 | MIT | — | 3 | 2 | 3 | 4 | 1 | 3 | kismen | hayir | hayir | — | [nvidia-nim-mcp](arastirma/i5-gozlem-ekonomi/nvidia-nim-mcp.md) |
+| Furkiozknn/model-comparison-harness | i5 | gecti | 0 | 2026-09-06 | MIT | — | 3 | 4 | 4 | 3 | 2 | 2 | kismen | evet | — | hayir | [model-comparison-harness](arastirma/i5-gozlem-ekonomi/model-comparison-harness.md) |
 | Aider-AI/aider | i6 | tarihi | 48.825 | 2026-05-22 | Apache-2.0 | — | 5 | 4 | 4 | 3 | 2 | 3 | evet | kismen | evet | — | [aider](arastirma/i6-kodlama-ogrenme/aider.md) |
 | SWE-agent/SWE-agent | i6 | gecti | 20.274 | 2026-09-07 | MIT | — | 4 | 4 | 4 | 3 | 3 | 2 | — | evet | hayir | hayir | [swe-agent](arastirma/i6-kodlama-ogrenme/swe-agent.md) |
 | codelion/openevolve | i6 | gecti | 7.332 | 2026-07-18 | Apache-2.0 | — | 3 | 4 | 4 | 3 | 3 | 2 | — | kismen | hayir | evet | [kendini-degistiren-sistemler](arastirma/i6-kodlama-ogrenme/kendini-degistiren-sistemler.md) |

@@ -18,7 +18,7 @@ geri almıyor.** Ayrıntı §3 ve §5'te.
 | temporalio/sdk-python | [temporal](temporal.md) | 1.178 | 2026-09-05 | MIT | geçti | 4 | 4 | incelenmedi | 5 | incelenmedi | incelenmedi | Event-log/replay yolunun referansı |
 | dbos-inc/dbos-transact-py | [dbos-transact-py](dbos-transact-py.md) | 1.563 | 2026-09-04 | MIT | geçti | 5 | 4 | 3 | 4 | 4 | 3 | Üçüncü yol: kalıcı adım-sonucu tablosu |
 | stanfordnlp/dspy | [dspy](dspy.md) | 37.834 | 2026-09-05 | MIT | geçti | 4 | 4 | 4 | 3 | 3 | 3 | Öz-düzeltme: `Refine` / `BestOfN`, ödül fonksiyonu |
-| 567-labs/instructor | [instructor](instructor.md) | ölçülmedi | ölçülmedi | MIT | geçti (sürüm 1.16.1, aktif) | 4 | 3 | 4 | 3 | 3 | 3 | Doğrulama hatasını modele geri besleme |
+| 567-labs/instructor | [instructor](instructor.md) | 13.840 | 2026-09-07 | MIT | geçti (sürüm 1.16.1, aktif) | 4 | 3 | 4 | 3 | 3 | 3 | Doğrulama hatasını modele geri besleme |
 | Portkey-AI/gateway | [portkey-gateway](portkey-gateway.md) | 12.922 | 2026-05-25 | MIT | **tarihî referans** (~105 gün) | 4 | 4 | 3 | 3 | 3 | incelenmedi | Fallback zinciri, devre kesici iddiası |
 | noahshinn/reflexion | [reflexion](reflexion.md) | 3.262 | 2025-01-13 | MIT | **tarihî referans** (~600 gün) | 2 | 3 | 2 | 2 | 2 | 1 | Öz-eleştiri fikrinin kökeni |
 

@@ -19,7 +19,7 @@ Görev K6'yı çürüten kanıtın açıkça aranmasını istiyordu; sonuç §6'
 | a2aproject/A2A | spec | 25.678 | 2026-09-04 | Apache-2.0 | geçti | 5 | 5 | 4 | 3 | 2 | 4 | [a2a-spec.md](a2a-spec.md) |
 | e2b-dev/E2B | sandbox | 13.697 | 2026-09-07 | Apache-2.0 | geçti | 4 | 4 | 3 | 3 | 2 | 2 | [e2b.md](e2b.md) |
 | microsandbox/microsandbox | sandbox | 8.113 | 2026-09-07 | Apache-2.0 | geçti | 3 | 4 | — | — | 2 | 4 | [microsandbox.md](microsandbox.md) |
-| meta-llama/PurpleLlama (LlamaFirewall) | guardrail | — | — | — | geçti | 3 | 4 | 4 | 3 | 2 | 3 | [llamafirewall.md](llamafirewall.md) |
+| meta-llama/PurpleLlama (LlamaFirewall) | guardrail | 4.385 | 2026-08-18 | karışık (kök Llama Topluluk Lisansı, LlamaFirewall/ MIT) | geçti | 3 | 4 | 4 | 3 | 2 | 3 | [llamafirewall.md](llamafirewall.md) |
 | invariantlabs-ai/mcp-scan (Snyk Agent Scan) | güven denetimi | 3.014 | 2026-09-07 | Apache-2.0 | geçti | 4 | 3 | 2 | 3 | 2 | 3 | [mcp-scan.md](mcp-scan.md) |
 | Furkiozknn/mcp-vet | güven denetimi | **0** | 2026-09-06 | MIT | geçti (kısmen: tek geliştirici, sıfır dış kullanım) | 2 | 5 | 3 | 3 | 3 | 4 | [mcp-vet.md](mcp-vet.md) |
 

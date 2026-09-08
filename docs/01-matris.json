@@ -475,6 +475,32 @@
       ]
     },
     {
+      "repo": "meta-llama/PurpleLlama",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 4385,
+      "son_push": "2026-08-18",
+      "lisans": "karışık (kök Llama Topluluk Lisansı, LlamaFirewall/ MIT)",
+      "dil": null,
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "hayir",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "evet",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/llamafirewall.md"
+      ]
+    },
+    {
       "repo": "invariantlabs-ai/mcp-scan",
       "iz": [
         "i3"
@@ -498,32 +524,6 @@
       "checkpoint": "hayir",
       "kanit": [
         "docs/arastirma/i3-arac-guvenlik/mcp-scan.md"
-      ]
-    },
-    {
-      "repo": "meta-llama/PurpleLlama",
-      "iz": [
-        "i3"
-      ],
-      "canlilik": "gecti",
-      "yildiz": null,
-      "son_push": null,
-      "lisans": "—",
-      "dil": null,
-      "puan": {
-        "olgunluk": 3,
-        "mimari_netlik": 4,
-        "genisletilebilirlik": 4,
-        "guvenilirlik": 3,
-        "gozlemlenebilirlik": 2,
-        "guvenlik": 3
-      },
-      "saglayici_bagimsiz": "hayir",
-      "sozlesme_var": "kismen",
-      "insan_kapisi": "evet",
-      "checkpoint": "hayir",
-      "kanit": [
-        "docs/arastirma/i3-arac-guvenlik/llamafirewall.md"
       ]
     },
     {
@@ -576,6 +576,32 @@
       "checkpoint": "hayir",
       "kanit": [
         "docs/arastirma/i4-guvenilirlik/dspy.md"
+      ]
+    },
+    {
+      "repo": "567-labs/instructor",
+      "iz": [
+        "i4"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 13840,
+      "son_push": "2026-09-07",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i4-guvenilirlik/instructor.md"
       ]
     },
     {
@@ -683,29 +709,29 @@
       ]
     },
     {
-      "repo": "567-labs/instructor",
+      "repo": "BerriAI/litellm",
       "iz": [
-        "i4"
+        "i5"
       ],
       "canlilik": "gecti",
-      "yildiz": null,
-      "son_push": null,
+      "yildiz": 58252,
+      "son_push": "2026-09-07",
       "lisans": "MIT",
       "dil": null,
       "puan": {
-        "olgunluk": 4,
-        "mimari_netlik": 3,
+        "olgunluk": 5,
+        "mimari_netlik": 4,
         "genisletilebilirlik": 4,
-        "guvenilirlik": 3,
+        "guvenilirlik": 4,
         "gozlemlenebilirlik": 3,
         "guvenlik": 3
       },
-      "saglayici_bagimsiz": "evet",
+      "saglayici_bagimsiz": "kismen",
       "sozlesme_var": "kismen",
-      "insan_kapisi": "hayir",
-      "checkpoint": "hayir",
+      "insan_kapisi": null,
+      "checkpoint": "kismen",
       "kanit": [
-        "docs/arastirma/i4-guvenilirlik/instructor.md"
+        "docs/arastirma/i5-gozlem-ekonomi/litellm-router.md"
       ]
     },
     {
@@ -714,7 +740,7 @@
         "i5"
       ],
       "canlilik": "gecti",
-      "yildiz": null,
+      "yildiz": 34319,
       "son_push": "2026-09-07",
       "lisans": "MIT (ee/ hariç)",
       "dil": null,
@@ -735,12 +761,38 @@
       ]
     },
     {
+      "repo": "lm-sys/RouteLLM",
+      "iz": [
+        "i5"
+      ],
+      "canlilik": "tarihi",
+      "yildiz": 5462,
+      "son_push": "2024-08-10",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 2,
+        "gozlemlenebilirlik": 1,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "hayir",
+      "sozlesme_var": "evet",
+      "insan_kapisi": null,
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i5-gozlem-ekonomi/routellm.md"
+      ]
+    },
+    {
       "repo": "open-telemetry/semantic-conventions-genai",
       "iz": [
         "i5"
       ],
       "canlilik": "gecti",
-      "yildiz": null,
+      "yildiz": 643,
       "son_push": "2026-09-03",
       "lisans": "Apache-2.0",
       "dil": null,
@@ -766,7 +818,7 @@
         "i5"
       ],
       "canlilik": "gecti",
-      "yildiz": null,
+      "yildiz": 0,
       "son_push": "2026-09-05",
       "lisans": "MIT",
       "dil": null,
@@ -792,7 +844,7 @@
         "i5"
       ],
       "canlilik": "gecti",
-      "yildiz": null,
+      "yildiz": 0,
       "son_push": "2026-09-06",
       "lisans": "MIT",
       "dil": null,
@@ -810,58 +862,6 @@
       "checkpoint": "hayir",
       "kanit": [
         "docs/arastirma/i5-gozlem-ekonomi/model-comparison-harness.md"
-      ]
-    },
-    {
-      "repo": "BerriAI/litellm",
-      "iz": [
-        "i5"
-      ],
-      "canlilik": "gecti",
-      "yildiz": null,
-      "son_push": "2026-09-07",
-      "lisans": "MIT",
-      "dil": null,
-      "puan": {
-        "olgunluk": 5,
-        "mimari_netlik": 4,
-        "genisletilebilirlik": 4,
-        "guvenilirlik": 4,
-        "gozlemlenebilirlik": 3,
-        "guvenlik": 3
-      },
-      "saglayici_bagimsiz": "kismen",
-      "sozlesme_var": "kismen",
-      "insan_kapisi": null,
-      "checkpoint": "kismen",
-      "kanit": [
-        "docs/arastirma/i5-gozlem-ekonomi/litellm-router.md"
-      ]
-    },
-    {
-      "repo": "lm-sys/RouteLLM",
-      "iz": [
-        "i5"
-      ],
-      "canlilik": "tarihi",
-      "yildiz": null,
-      "son_push": "2024-08-10",
-      "lisans": "Apache-2.0",
-      "dil": null,
-      "puan": {
-        "olgunluk": 2,
-        "mimari_netlik": 4,
-        "genisletilebilirlik": 3,
-        "guvenilirlik": 2,
-        "gozlemlenebilirlik": 1,
-        "guvenlik": 2
-      },
-      "saglayici_bagimsiz": "hayir",
-      "sozlesme_var": "evet",
-      "insan_kapisi": null,
-      "checkpoint": "kismen",
-      "kanit": [
-        "docs/arastirma/i5-gozlem-ekonomi/routellm.md"
       ]
     },
     {
