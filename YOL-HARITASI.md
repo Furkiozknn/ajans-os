@@ -26,12 +26,6 @@ yerden sürer.
 ### Faz 2 — Karşılaştırma
 
 
-- [ ] **Best ideas ve patterns** — Matris ve iz özetlerinden: birden çok
-      projede **bağımsız** ortaya çıkan desenler (en güçlü sinyal), her
-      desen için hangi projelerde, neden işe yaradığı, bize nereye
-      oturduğu. ADR-000 K2 ölçütünü her desene uygula; geçemeyen "aday"
-      listesine düşer. Çıktı: `docs/02-EN-IYI-FIKIRLER.md`.
-
 - [ ] **Anti-patterns** — Birden çok projede soruna yol açmış seçimler;
       her biri için: belirti, kök neden, hangi projede nasıl göründü,
       bizde nasıl kaçınılır. Çıktı: `docs/03-ANTI-PATTERNLER.md`.
@@ -142,6 +136,21 @@ yerden sürer.
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 
+- [x] **Best ideas ve patterns** — 2026-09-08. `docs/02-EN-IYI-FIKIRLER.md`.
+      Sıralama ölçütü "kaç projede" değil **"kaç bağımsız izde"**: tek izde
+      altı proje aynı şeyi yapıyorsa o alanın kültürü olabilir, dört ayrı
+      izde on iki proje yapıyorsa problemin şeklidir. **13 desen K2'yi geçti**
+      (en güçlüsü D1 — ilerleme kaydı/checkpoint, 4 izde 12 projede),
+      **7 aday elendi** ve her biri için "hangi K2 maddesi boş" + "ne olursa
+      geçer" yazıldı. Elenenlerin ikisi iz özetlerinin doğrudan "alınmalı"
+      dediği fikirlerdi: izin sürüme bağlanması (İ3 D3 — iki kaynaktan biri
+      olgunluk 2, kanıt sayılamaz) ve otomatik kabul kapısı (İ6 Desen A —
+      üçü de pre-1.0/donmuş). K2'nin ikinci dalı ("bizzat yaşadığımız arıza")
+      ilk kez kullanıldı: "başladı" checkpoint'i ekosistemde sıfır örnekli
+      ama `BILINEN-TUZAKLAR.md` #7/#13/#20 üçü de onun yokluğundan doğmuş.
+      Doğrulama: JSON'lar parse edildi, 16 rastgele alıntı kaynak iz özetine
+      geri izlendi, altı izin `DENETIM.md` kararı dosyadan (özet metninden
+      değil) okundu.
 - [x] **Architecture Comparison Matrix** — 2026-09-08. `node arac/matris-uret.js`
       altı iz özetinden `docs/01-matris.json` + `docs/01-KARSILASTIRMA-MATRISI.md`
       üretti: **40 proje, 6 iz, 0 ayrıştırma uyarısı**. Başlangıçta 5 uyarı vardı
