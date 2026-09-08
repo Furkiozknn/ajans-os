@@ -22,9 +22,15 @@ export interface BellekKaydi {
 }
 
 export interface BellekSorgusu {
+  /** Kapsam zorunlu: bos liste bos sonuc verir, "hepsi" degil (AP6 → kural 7). */
   katmanlar: BellekKatmani[];
   metin?: string;
   limit?: number;
+  /**
+   * Gecersiz kilinmis kayitlar da donsun. Varsayilan `false`: gecmis
+   * **acikca** istenir, guvenli taraf varsayilandir (03-BELLEK §4).
+   */
+  gecmis?: boolean;
 }
 
 export interface MemoryManager {
@@ -40,3 +46,9 @@ export interface MemoryManager {
   /** Eski kaydi gecersiz kilar. Silme degil; kaynak kayit yerinde kalir. */
   gecersiz_kil(id: KebabId, yerine_gecen: KebabId, izin: IzinKarari): Promise<BellekKaydi>;
 }
+
+/**
+ * Bellek yoneticisi. Bagimliligi yoktur: karar belgesi cagri basina gelir,
+ * depo bellek icidir (ADR-002 — bu modul dosya sistemine dokunmaz).
+ */
+export declare function bellekYoneticisi(): MemoryManager;
