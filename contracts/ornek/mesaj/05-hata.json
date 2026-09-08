@@ -1,0 +1,16 @@
+{
+  "contract_version": "1.0",
+  "message_id": "msg-0005",
+  "run_id": "kosu-2026-09-08-1416",
+  "step_id": "sozlesmeleri-yaz",
+  "at": "2026-09-08T14:33:00+03:00",
+  "from": { "kind": "component", "id": "evaluator" },
+  "to": { "kind": "orchestrator", "id": "orkestrator" },
+  "kind": "error",
+  "payload": {
+    "error_type": "DOGRULAMA_KALDI",
+    "error_message": "node arac/sema-dogrula.js --test çıkış kodu 1: mesaj şemasında devir tavanı zorlanmıyor.",
+    "retryable": true,
+    "summary": "Doğrulayıcı üç bozma denemesinden birini yakalayamadı."
+  }
+}

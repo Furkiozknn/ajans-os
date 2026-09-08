@@ -1,0 +1,18 @@
+{
+  "contract_version": "1.0",
+  "message_id": "msg-0004",
+  "run_id": "kosu-2026-09-08-1416",
+  "step_id": "kapanis",
+  "at": "2026-09-08T15:40:00+03:00",
+  "from": { "kind": "component", "id": "permission-manager" },
+  "to": { "kind": "human", "id": "furki" },
+  "kind": "approval_request",
+  "payload": {
+    "action": "git push origin master",
+    "scope": ["D:/Repolar/ajans-os", "remote:origin"],
+    "severity": "yuksek",
+    "reliability": "guclu",
+    "irreversible": true,
+    "recorded_in": "raporlar/ONAY-BEKLEYENLER.md#2026-09-08-push"
+  }
+}

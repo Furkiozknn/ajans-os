@@ -1,0 +1,30 @@
+{
+  "contract_version": "1.0",
+  "message_id": "msg-0002",
+  "run_id": "kosu-2026-09-08-1416",
+  "step_id": "belgeyi-yaz",
+  "at": "2026-09-08T15:02:00+03:00",
+  "from": { "kind": "component", "id": "critic" },
+  "to": { "kind": "orchestrator", "id": "orkestrator" },
+  "kind": "critique",
+  "payload": {
+    "items": [
+      {
+        "id": "kanitsiz-iddia",
+        "severity": "yuksek",
+        "location": "docs/mimari/02-ORKESTRASYON.md:88",
+        "what": "Konsensüsün gereksiz olduğu iddiası kaynak gösterilmeden yazılmış.",
+        "fix_hint": "İ1 OZET.md §7'deki 'yedi projede birinci sınıf konsensüs bulunamadı' tespitine bağla veya iddiayı kaldır."
+      },
+      {
+        "id": "yasak-kelime",
+        "severity": "orta",
+        "location": "docs/mimari/02-ORKESTRASYON.md:140",
+        "what": "Bir bileşen davranışı yasaklı kelimeyle adlandırılmış (kural 9).",
+        "fix_hint": "'durumu geri sarma' veya 'telafi' kullan."
+      }
+    ],
+    "truncated": false,
+    "raw_ref": "loglar/2026-09-08-1416/critic-raw.jsonl"
+  }
+}

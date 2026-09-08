@@ -1,0 +1,15 @@
+{
+  "contract_version": "1.0",
+  "message_id": "msg-0001",
+  "run_id": "kosu-2026-09-08-1416",
+  "step_id": "belgeyi-yaz",
+  "at": "2026-09-08T14:41:10+03:00",
+  "from": { "kind": "orchestrator", "id": "orkestrator" },
+  "to": { "kind": "agent", "id": "mimari-yazari" },
+  "kind": "assignment",
+  "payload": {
+    "agent_id": "mimari-yazari",
+    "instruction": "docs/mimari/02-ORKESTRASYON.md belgesini yaz: planlayıcı, yönlendirici, yürütücü, ajan-ajan iletişim kuralları ve konsensüs kararı. Kanıtı olmayan hiçbir iddia yazılmaz.",
+    "inputs": ["docs/arastirma/i1-orkestrasyon/OZET.md", "docs/03-ANTI-PATTERNLER.md"]
+  }
+}

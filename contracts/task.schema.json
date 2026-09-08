@@ -1,0 +1,319 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ajans-os.dev/contracts/task.schema.json",
+  "title": "Task Contract",
+  "description": "Bir görevin makine-okur sözleşmesi: hedef, görev grafı (adımlar ve aralarındaki bağ) ve çalıştırma kaydı (adım-sonucu tablosu). Task Manager ile Orchestrator yalnızca bunu bilir. Kararlar: ADR-002 (tek yürütme döngüsü, graf veridir), ADR-003 (adım-sonucu tablosu, 'başladı' kaydı), ADR-004 (değerlendirme kapısı), ADR-005 (izin sınırı).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "task", "graph", "run"],
+  "properties": {
+    "contract_version": {
+      "description": "Bu şemanın sürümü. Uyumsuz değişiklikte major artar.",
+      "type": "string",
+      "const": "1.0"
+    },
+
+    "task": {
+      "description": "Görevin kimliği ve sınırları. Kaynağı bir dosyadır (gorevler/bekleyen/*.md); sözleşme o dosyanın yerine geçmez, onun makine-okur kabuğudur.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "goal", "source", "created_at", "budget"],
+      "properties": {
+        "id": { "$ref": "#/$defs/kebab_id" },
+        "title": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "goal": {
+          "description": "Hedefin tek cümlelik ifadesi. Adımlara bölme işi bir ajan rolüdür (blueprint §4.1: ayrı planlayıcı bileşen yok); bu alan o rolün girdisidir.",
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1000
+        },
+        "source": {
+          "description": "Görevi doğuran dosyanın depo-göreli yolu. Kaynak kayıt korunur, üzerine yazılmaz (D5).",
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": { "$ref": "#/$defs/zaman" },
+        "budget": {
+          "description": "Bütçe bir görev alanıdır, bir ortam ayarı değil. BILINEN-TUZAKLAR #7: bütçe duvarı süreci anında öldürür; eşiği görev bilmezse kimse bilmez.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_usd", "on_exceed"],
+          "properties": {
+            "max_usd": { "type": "number", "minimum": 0 },
+            "on_exceed": {
+              "description": "Taşma hata değil, planlanmış faz geçişidir (D10). 'stop' = yeni adım başlatılmaz, kayıt kapatılır; 'human-gate' = görev ONAY_BEKLIYOR'a düşer.",
+              "type": "string",
+              "enum": ["stop", "human-gate"]
+            },
+            "spent_usd": {
+              "description": "Cost Manager'ın yazdığı harcama. Bilinmeyen maliyet null'dır, sıfır değil (kural 11).",
+              "type": ["number", "null"],
+              "minimum": 0
+            }
+          }
+        },
+        "labels": { "type": "array", "items": { "$ref": "#/$defs/kebab_id" }, "uniqueItems": true }
+      }
+    },
+
+    "graph": {
+      "description": "Görev grafı veridir; yürütücü tektir (ADR-002). Rol tabanlı akış tek adımlı bir graf olarak yazılır — ikinci bir yürütücü yazılmaz (AP2).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps"],
+      "properties": {
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/step" }
+        }
+      }
+    },
+
+    "run": {
+      "description": "Adım-sonucu tablosu (ADR-003 S3). Birincil anahtar: run_id + step_id + attempt. Asıl durum dosyalarda yaşar; burada yalnızca hangi adımın nerede olduğu tutulur.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "started_at", "step_records"],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/kebab_id" },
+        "started_at": { "$ref": "#/$defs/zaman" },
+        "ended_at": { "$ref": "#/$defs/zaman" },
+        "resumed_from": {
+          "description": "Kesilen bir koşudan devam ediliyorsa önceki run_id. Tamamlanmış adımlar tekrar çalıştırılmaz.",
+          "$ref": "#/$defs/kebab_id"
+        },
+        "step_records": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/step_record" }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "kebab_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 64
+    },
+
+    "zaman": {
+      "description": "ISO-8601, saat dilimi zorunlu. Yerel ayar bağımlı biçim yasak (BILINEN-TUZAKLAR #4).",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+
+    "hata_turu": {
+      "description": "Hata türü makine-okur bir alandır ve hata metninden ayrıdır (D7). Kurtarma modu bu alandan seçilir, serbest metinden değil.",
+      "type": "string",
+      "enum": [
+        "SEMA_IHLALI",
+        "ARAC_HATASI",
+        "IZIN_REDDI",
+        "BUTCE_DUVARI",
+        "ZAMAN_ASIMI",
+        "MODEL_HATASI",
+        "DOGRULAMA_KALDI",
+        "BAGIMLILIK_BASARISIZ",
+        "BILINMEYEN"
+      ]
+    },
+
+    "step": {
+      "description": "Tek bir adım. Politika (retry, değerlendirme, telafi) adımda yaşar; yürütme döngüsünde değil (ADR-002).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "assign", "depends_on", "evaluation", "retry", "side_effects", "on_failure"],
+      "properties": {
+        "id": { "$ref": "#/$defs/kebab_id" },
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "assign": {
+          "description": "Adımı kim yapar. Yönlendirme ayrı bir servis değildir (blueprint §4.2, İ1 D5): burada ya bir rol yazılır (kayıt defteri 'active' olanlar arasından seçer) ya da doğrudan bir ajan id'si.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {
+            "mode": { "type": "string", "enum": ["role", "agent"] },
+            "role": {
+              "type": "string",
+              "enum": ["planner", "specialist", "reviewer", "critic", "evaluator", "coordinator", "tool-operator", "researcher"]
+            },
+            "agent_id": { "$ref": "#/$defs/kebab_id" }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "mode": { "const": "role" } }, "required": ["mode"] },
+              "then": { "required": ["role"] }
+            },
+            {
+              "if": { "properties": { "mode": { "const": "agent" } }, "required": ["mode"] },
+              "then": { "required": ["agent_id"] }
+            }
+          ]
+        },
+        "depends_on": {
+          "description": "Bu adımın beklediği adım id'leri. Boş dizi = giriş adımı. Paralellik bu alandan türetilir; ayrı bir 'paralel' bayrağı yoktur — iki gösterim iki uygulama demektir (AP2).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/kebab_id" },
+          "uniqueItems": true
+        },
+        "inputs": {
+          "description": "Adımın okuyacağı kaynaklar: depo-göreli dosya yolları veya 'step:<adim-id>' biçiminde önceki adım çıktıları.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "writes": {
+          "description": "Bu adımın yazacağı depo-göreli yollar. İki adım aynı alana yazamaz (ADR-002, İ1 S3); birleştirici yazılmaz, çakışma grafın kendisinde çözülür. Çapraz kontrol arac/sema-dogrula.js'te.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "evaluation": {
+          "description": "Kapı iki fonksiyondur (ADR-004): gecerli_mi() ve esigi_asti_mi(). Deterministik doğrulayıcı önce aranır; bulunamazsa sonuç DEGERLENDIRILMEDI olur ve insan kapısına düşer — GECTI sayılmaz (D11).",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method"],
+          "properties": {
+            "method": { "type": "string", "enum": ["deterministic", "human-gate"] },
+            "checker": {
+              "description": "Deterministik doğrulayıcının çalıştırılabilir karşılığı (ör. 'node arac/kanit-dogrula.js docs/mimari/02-ORKESTRASYON.md').",
+              "type": "string",
+              "minLength": 1
+            },
+            "threshold": {
+              "description": "esigi_asti_mi() için sayısal eşik. Yoksa yalnızca gecerli_mi() uygulanır.",
+              "type": "number"
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "method": { "const": "deterministic" } }, "required": ["method"] },
+              "then": { "required": ["checker"] }
+            }
+          ]
+        },
+        "retry": {
+          "description": "Retry politika nesnesidir, yürütücüye gömülmez (İ1 D4). Düzelt / temiz sayfa ayrımı D13.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_attempts", "mode"],
+          "properties": {
+            "max_attempts": { "type": "integer", "minimum": 1, "maximum": 5 },
+            "mode": {
+              "description": "'duzelt' = eleştiriyi girdi alarak aynı bağlamda yeniden dene; 'temiz-sayfa' = birikmiş bağlamı atıp baştan (D13).",
+              "type": "string",
+              "enum": ["duzelt", "temiz-sayfa"]
+            },
+            "backoff": { "type": "string", "enum": ["yok", "sabit", "ustel"] },
+            "max_critique_items": {
+              "description": "Yansıma belleğinin üst sınırı (kural 12, AP11). 'duzelt' modunda zorunludur; sınırsız eleştiri birikimi maliyeti tam da işler kötü giderken büyütür.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "mode": { "const": "duzelt" } }, "required": ["mode"] },
+              "then": { "required": ["max_critique_items"] }
+            }
+          ]
+        },
+        "side_effects": {
+          "description": "Adım dış dünyada kalıcı bir iz bırakıyor mu (dosya yazma, komut çalıştırma, ağ isteği). true ise telafi zorunludur.",
+          "type": "boolean"
+        },
+        "compensation": {
+          "description": "Yapılanı geri sarmanın yolu. 'Rollback' bir mimari kavram olarak kullanılmaz (kural 9): telafisi olmayan geri alınamaz eylem insan kapısına düşer.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "on_impossible"],
+          "properties": {
+            "method": { "type": "string", "minLength": 3, "maxLength": 300 },
+            "on_impossible": { "type": "string", "const": "human-gate" }
+          }
+        },
+        "on_failure": {
+          "description": "Deneme hakkı bittiğinde ne olur. 'devam' yalnızca bu adıma bağımlı adım yoksa anlamlıdır.",
+          "type": "string",
+          "enum": ["dur", "devam", "human-gate"]
+        },
+        "timeout_s": { "type": "integer", "minimum": 1 },
+        "human_gate": {
+          "description": "Adımın kendisi baştan insan onayına bağlıysa true. Araç düzeyindeki onay ayrıdır ve agent.schema.json'da tanımlıdır.",
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "side_effects": { "const": true } }, "required": ["side_effects"] },
+          "then": { "required": ["compensation"] }
+        }
+      ]
+    },
+
+    "step_record": {
+      "description": "Adım-sonucu tablosunun bir satırı. BASLADI kaydı yan etkiden ÖNCE yazılır (ADR-003); yoksa kaydın anlamı kalmaz.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step_id", "attempt", "status", "started_at"],
+      "properties": {
+        "step_id": { "$ref": "#/$defs/kebab_id" },
+        "attempt": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "status": {
+          "description": "GIRDI_BEKLIYOR ile ONAY_BEKLIYOR ayrı tutulur (A2A a2a.proto:206-207); ikisi de kesintilidir — süreç ölebilir, akış olayla canlanır.",
+          "type": "string",
+          "enum": ["PLANLANDI", "BASLADI", "GIRDI_BEKLIYOR", "ONAY_BEKLIYOR", "BITTI", "BASARISIZ"]
+        },
+        "started_at": { "$ref": "#/$defs/zaman" },
+        "ended_at": { "$ref": "#/$defs/zaman" },
+        "result_summary": { "type": "string", "maxLength": 2000 },
+        "artifacts": {
+          "description": "Adımın ürettiği dosyaların depo-göreli yolları.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "evaluation_result": {
+          "description": "Üçüncü değer zorunludur: 'kontrol edilmedi' ≠ 'temiz' (D11, ADR-004).",
+          "type": "string",
+          "enum": ["GECTI", "KALDI", "DEGERLENDIRILMEDI"]
+        },
+        "error_type": { "$ref": "#/$defs/hata_turu" },
+        "error_message": { "type": "string", "maxLength": 2000 },
+        "side_effects_done": {
+          "description": "Bu denemede fiilen yapılmış yan etkiler. Onay kapısından geçen bir çağrı, kapıdan önce yapılmış hiçbir yan etkiyi tekrarlamaz (ADR-003, LangGraph types.py:864'ün çaresi) — tekrar edilmeyecek olan tam olarak bu listedir.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "approval_ref": {
+          "description": "raporlar/ONAY-BEKLEYENLER.md içindeki satırın kimliği. Onay bir durumdur (kural 2) ve izlenebilir bir kaydı vardır.",
+          "type": "string",
+          "minLength": 1
+        },
+        "cost_usd": { "type": ["number", "null"], "minimum": 0 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "BITTI" } }, "required": ["status"] },
+          "then": { "required": ["ended_at", "result_summary", "evaluation_result"] }
+        },
+        {
+          "if": { "properties": { "status": { "const": "BASARISIZ" } }, "required": ["status"] },
+          "then": { "required": ["ended_at", "error_type"] }
+        },
+        {
+          "if": { "properties": { "status": { "const": "ONAY_BEKLIYOR" } }, "required": ["status"] },
+          "then": { "required": ["approval_ref"] }
+        },
+        {
+          "if": { "properties": { "evaluation_result": { "const": "DEGERLENDIRILMEDI" } }, "required": ["evaluation_result"] },
+          "then": { "required": ["approval_ref"] }
+        }
+      ]
+    }
+  }
+}

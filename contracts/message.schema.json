@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ajans-os.dev/contracts/message.schema.json",
+  "title": "Message Contract",
+  "description": "Yürütme döngüsünde dolaşan tek mesaj biçimi. Ajanlar ve bileşenler birbirine doğrudan mesaj göndermez; her mesaj Orchestrator'dan geçer (ADR-002) ve bu kural şemada zorlanır. İ1 D6'nın tespit ettiği boşluğu — 'araç sözleşmesi katı, ajan devri serbest metin' — kapatmak için yazıldı (ADR-000 K3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "message_id", "run_id", "at", "from", "to", "kind", "payload"],
+  "properties": {
+    "contract_version": { "type": "string", "const": "1.0" },
+    "message_id": { "$ref": "#/$defs/kebab_id" },
+    "run_id": {
+      "description": "Mesajı bir çalıştırmaya bağlar (task.schema.json run.run_id).",
+      "$ref": "#/$defs/kebab_id"
+    },
+    "step_id": { "$ref": "#/$defs/kebab_id" },
+    "at": { "$ref": "#/$defs/zaman" },
+
+    "from": { "$ref": "#/$defs/taraf" },
+    "to": { "$ref": "#/$defs/taraf" },
+
+    "kind": {
+      "description": "Mesajın türü. Yeni bir tür eklemek bir şema değişikliğidir; serbest metne kaçış yoktur.",
+      "type": "string",
+      "enum": ["assignment", "result", "critique", "handoff", "approval_request", "approval_decision", "error"]
+    },
+
+    "payload": {
+      "description": "Türe göre hangi alanların zorunlu olduğu aşağıdaki allOf kurallarında yazılıdır. Tanımsız alan reddedilir.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instruction": { "type": "string", "minLength": 3, "maxLength": 4000 },
+        "agent_id": { "$ref": "#/$defs/kebab_id" },
+        "inputs": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+
+        "summary": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "artifacts": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "usage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["model", "input_tokens", "output_tokens", "cost_usd"],
+          "properties": {
+            "model": { "type": "string", "minLength": 1 },
+            "input_tokens": { "type": "integer", "minimum": 0 },
+            "output_tokens": { "type": "integer", "minimum": 0 },
+            "cost_usd": {
+              "description": "Bilinmeyen maliyet null'dır, sıfır değil (kural 11).",
+              "type": ["number", "null"],
+              "minimum": 0
+            }
+          }
+        },
+
+        "items": {
+          "description": "Eleştiri, bir sonraki çağrının yapılandırılmış girdi alanıdır (D8) — serbest metin değil. Üst sınır AP11 gereği şemada sabittir.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "severity", "what", "fix_hint"],
+            "properties": {
+              "id": { "$ref": "#/$defs/kebab_id" },
+              "severity": { "type": "string", "enum": ["dusuk", "orta", "yuksek"] },
+              "location": { "type": "string", "maxLength": 300 },
+              "what": { "type": "string", "minLength": 3, "maxLength": 600 },
+              "fix_hint": { "type": "string", "minLength": 3, "maxLength": 600 }
+            }
+          }
+        },
+        "truncated": {
+          "description": "Üst sınır yüzünden eleştiri kesildiyse true. Ham kayıt korunur (kural 12): kesilen içerik Observability izinde durur, mesajda değil.",
+          "type": "boolean"
+        },
+        "raw_ref": { "type": "string", "minLength": 1 },
+
+        "target_role": {
+          "type": "string",
+          "enum": ["planner", "specialist", "reviewer", "critic", "evaluator", "coordinator", "tool-operator", "researcher"]
+        },
+        "target_agent": { "$ref": "#/$defs/kebab_id" },
+        "reason": { "type": "string", "minLength": 3, "maxLength": 600 },
+        "handoff_depth": {
+          "description": "Zincirdeki kaçıncı devir olduğu. Tavan şemada sabittir ve yapılandırmadan yükseltilemez (kural 1); İ1 Ö4, Strands multiagent/swarm.py:210-231'in sert devir tavanı. Tavan aşılırsa devir değil, insan kapısı.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+
+        "action": { "type": "string", "minLength": 3, "maxLength": 600 },
+        "scope": {
+          "description": "Kapsam belirtilmemişse sonuç boş kümedir, 'hepsi' değil (kural 7, ADR-005). Bu yüzden en az bir öğe zorunludur.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "severity": {
+          "description": "Eylemin şiddeti. Güvenilirlikle AYNI alana yazılmaz — iki bağımsız sinyali tek 'risk skoru'na ezmek AP5'in mekanizmasıdır (ADR-005).",
+          "type": "string",
+          "enum": ["dusuk", "orta", "yuksek"]
+        },
+        "reliability": {
+          "description": "Sinyalin ne kadar güvenilir olduğu. 'kontrol edilmedi' ayrı bir değerdir, 'temiz' değil (D11).",
+          "type": "string",
+          "enum": ["kontrol-edilmedi", "zayif", "guclu"]
+        },
+        "irreversible": { "type": "boolean" },
+        "recorded_in": {
+          "description": "Onay isteğinin yazıldığı dosya satırı (raporlar/ONAY-BEKLEYENLER.md). Onay bir durumdur ve kaydı vardır (kural 2).",
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "description": "İnsanın kararı yalnızca iki değerlidir. HUMAN_REQUIRED bir Permission Manager çıktısıdır; insan kararı olarak yazılamaz.",
+          "type": "string",
+          "enum": ["ALLOW", "BLOCK"]
+        },
+        "decided_at": { "$ref": "#/$defs/zaman" },
+        "decided_by": { "type": "string", "minLength": 1 },
+
+        "error_type": {
+          "type": "string",
+          "enum": [
+            "SEMA_IHLALI",
+            "ARAC_HATASI",
+            "IZIN_REDDI",
+            "BUTCE_DUVARI",
+            "ZAMAN_ASIMI",
+            "MODEL_HATASI",
+            "DOGRULAMA_KALDI",
+            "BAGIMLILIK_BASARISIZ",
+            "BILINMEYEN"
+          ]
+        },
+        "error_message": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "retryable": { "type": "boolean" }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "description": "Ajandan çıkan her mesaj Orchestrator'a gider. Ajan-ajan doğrudan mesajlaşma yoktur (ADR-002): tek karar noktası korunur, akış tek yerden okunur.",
+      "if": { "properties": { "from": { "properties": { "kind": { "const": "agent" } }, "required": ["kind"] } }, "required": ["from"] },
+      "then": { "properties": { "to": { "properties": { "kind": { "const": "orchestrator" } } } } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "assignment" } }, "required": ["kind"] },
+      "then": {
+        "required": ["step_id"],
+        "properties": {
+          "from": { "properties": { "kind": { "const": "orchestrator" } } },
+          "payload": { "required": ["instruction", "agent_id"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "result" } }, "required": ["kind"] },
+      "then": { "required": ["step_id"], "properties": { "payload": { "required": ["summary", "artifacts"] } } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "critique" } }, "required": ["kind"] },
+      "then": { "required": ["step_id"], "properties": { "payload": { "required": ["items", "truncated"] } } }
+    },
+    {
+      "description": "Devir bir öneridir, bir çağrı değil: hedefi Orchestrator'dır (İ1 D5 — yönlendirme, adım çıktısının bir alanı).",
+      "if": { "properties": { "kind": { "const": "handoff" } }, "required": ["kind"] },
+      "then": {
+        "required": ["step_id"],
+        "properties": {
+          "to": { "properties": { "kind": { "const": "orchestrator" } } },
+          "payload": { "required": ["reason", "handoff_depth"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "approval_request" } }, "required": ["kind"] },
+      "then": {
+        "properties": {
+          "to": { "properties": { "kind": { "const": "human" } } },
+          "payload": { "required": ["action", "scope", "severity", "reliability", "irreversible", "recorded_in"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "approval_decision" } }, "required": ["kind"] },
+      "then": {
+        "properties": {
+          "from": { "properties": { "kind": { "const": "human" } } },
+          "payload": { "required": ["decision", "decided_at", "decided_by", "scope"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "error" } }, "required": ["kind"] },
+      "then": { "properties": { "payload": { "required": ["error_type", "error_message", "retryable"] } } }
+    }
+  ],
+
+  "$defs": {
+    "kebab_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 64
+    },
+    "zaman": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "taraf": {
+      "description": "Mesajın iki ucu. 'component' = blueprint §2'deki 13 bileşenden biri; 'human' = onay kapısının karşı tarafı.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["orchestrator", "agent", "component", "human"] },
+        "id": { "$ref": "#/$defs/kebab_id" }
+      }
+    }
+  }
+}

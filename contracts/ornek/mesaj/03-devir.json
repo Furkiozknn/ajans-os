@@ -1,0 +1,16 @@
+{
+  "contract_version": "1.0",
+  "message_id": "msg-0003",
+  "run_id": "kosu-2026-09-08-1416",
+  "step_id": "belgeyi-yaz",
+  "at": "2026-09-08T15:10:00+03:00",
+  "from": { "kind": "agent", "id": "mimari-yazari" },
+  "to": { "kind": "orchestrator", "id": "orkestrator" },
+  "kind": "handoff",
+  "payload": {
+    "target_role": "reviewer",
+    "reason": "Belge yazıldı; iddiaların kaynağa geri izlenmesi ayrı bir rolün işi (D3: yargı deterministik kaynaktan gelir).",
+    "handoff_depth": 1,
+    "artifacts": ["docs/mimari/02-ORKESTRASYON.md"]
+  }
+}
