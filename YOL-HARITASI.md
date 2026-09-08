@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U7 — `src/model-router/`** — `sec` + `cagir`, taşıyıcı arkası.
-      Bitti: `sec` testinde hiçbir sağlayıcı adı geçmiyor; `cagir` sahte
-      taşıyıcıyla `usage` döndürüyor.
 - [ ] **U8 — `src/cost-manager/`** — fiyat tablosu, eşik, adım tavanı.
       Bitti: bilinmeyen model → maliyet `null` + `bilinmeyen_cagri` sayacı;
       ondalık ayırıcı testi (tuzak #4).
@@ -92,6 +89,33 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U7 — `src/model-router/`** — 2026-09-08. `index.js`
+      (`modelYonlendirici` → `sec`, `cagir`, donmuş `katalog`) +
+      `index.test.js` (14 test) + `index.d.ts`'ye `KatalogGirdisi` ve fabrika
+      bildirimi. K4'ün sınırı yerinde: **seçim ile taşıma ayrı** — `sec`
+      hiçbir taşıyıcı kurulu değilken çalışıyor, taşıyıcı yalnızca `cagir`
+      tarafında aranıyor. Katalog **veridir**, kuruluşta dışarıdan geliyor;
+      kısıtları sağlayan **ilk** girdi kazanıyor (sıra operatörün tercihi,
+      çalışma anında hesaplanan puan değil) — aynı gereksinim 100 çağrıda
+      aynı seçimi veriyor. Eşleşme yoksa sessizce uymayan modele düşülmüyor,
+      istisna atılıyor ve hangi girdinin neden elendiği mesajda yazıyor
+      (AP1). Kural 11 seçim tarafında da uygulandı: `tavan_usd` verildiğinde
+      `tahmini_usd`si `null` olan girdi **eleniyor** — bilinmeyen maliyet
+      sıfır değildir. `cagir` taşıyıcının yanıtını bir güven sınırı sayıp
+      doğruluyor: `usage` yoksa ya da bir sayacı sayı değilse reddediyor
+      (ölçülemeyen çağrı Cost Manager ve Observability için yok hükmünde,
+      eksik `usage`ı boş sözlükle doldurmak sıfır maliyet raporlamaktır,
+      AP10). Taşıyıcının hatası yutulmuyor ve çekirdek kendiliğinden yeniden
+      denemiyor; tekrar bir **taşıma ayarıdır**, `secim.tasima` sözlüğünde
+      taşınır. Bitti ölçütü **ölçüldü, iddia edilmedi**: bir test hem
+      `index.js`i hem kendi kaynağını (yasak liste bloğu çıkarılmış hâlde)
+      18 bilinen sağlayıcı adına karşı tarıyor ve sıfır eşleşme şart koşuyor
+      — tuzak #22'nin ("belgenin kendi metni hakkındaki iddia da bir
+      iddiadır") kod tarafındaki karşılığı. Kapsam dışı yerinde: gerçek
+      sağlayıcı taşıyıcısı yok, tekrar/geri çekilme politikası yok.
+      Doğrulama: `npm run kapi` çıkış 0 (70 test, 14'ü U7),
+      `npx -p typescript@5.6 tsc -p tsconfig.json` çıkış 0.
 
 - [x] **U6 — `src/context-manager/`** — 2026-09-08. `index.js`
       (`baglamYoneticisi` → `esik`, `kisilma_sirasi`, `butcele`) +
