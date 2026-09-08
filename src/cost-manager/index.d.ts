@@ -15,6 +15,9 @@ export interface FiyatSatiri {
   /** Milyon token basina USD. Bilinmiyorsa null — 0 yazmak yasak. */
   input_usd_per_mtok: number | null;
   output_usd_per_mtok: number | null;
+  /** Onbellek sayaclari fiyatlaniyorsa. Yoksa o sayacli cagri bilinmeyen olur. */
+  cache_read_usd_per_mtok?: number | null;
+  cache_write_usd_per_mtok?: number | null;
   gecerli_tarih: string;
 }
 
@@ -43,4 +46,22 @@ export interface CostManager {
 
   /** Bir adim icin verilebilecek ust maliyet siniri; kalan yoksa null. */
   adim_tavani(): number | null;
+
+  /** Anlik butce durumu; hesaplama yapmaz, sayaclari okur. */
+  durum(): ButceDurumu;
 }
+
+/** Fiyat tablosunun varsayilan yeri: depo kokundeki `veri/fiyat-tablosu.json`. */
+export declare const VARSAYILAN_TABLO: string;
+
+/**
+ * Kurar. `tavan_usd` zorunludur. `gecis_esigi` (varsayilan 0.8) asilinca
+ * `gecis_gerekli` kalkar; durdurma karari cagirana aittir. `adim_orani`
+ * (varsayilan 0.25) `adim_tavani`nin kalan butceden aldigi paydir.
+ */
+export declare function maliyetYoneticisi(secenekler: {
+  tabloYolu?: string;
+  tavan_usd: number;
+  gecis_esigi?: number;
+  adim_orani?: number;
+}): CostManager;

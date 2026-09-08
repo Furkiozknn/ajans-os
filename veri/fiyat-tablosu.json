@@ -1,0 +1,33 @@
+{
+  "surum": 1,
+  "kaynak": "Saglayicilarin kendi fiyat sayfalari; her satirin kendi gecerli_tarih alani vardir.",
+  "guncelleme_proseduru": [
+    "1. Saglayicinin fiyat sayfasi acilir; milyon token basina USD degeri okunur.",
+    "2. Satir bu dosyada guncellenir ve gecerli_tarih o gunun tarihi yapilir.",
+    "3. Fiyat okunamiyorsa alan null birakilir — 0 yazmak yasaktir (ADR-000 kural 11, AP10).",
+    "4. Ondalik ayirici daima nokta ve deger daima JSON sayisidir; \"1,25\" gibi metin degerler yuklemede reddedilir (BILINEN-TUZAKLAR #4).",
+    "5. Degisiklik commit edilir; tablo veridir, koda gomulmez."
+  ],
+  "satirlar": [
+    {
+      "model_id": "ornek-kucuk",
+      "input_usd_per_mtok": 0.25,
+      "output_usd_per_mtok": 1.25,
+      "gecerli_tarih": "2026-09-08"
+    },
+    {
+      "model_id": "ornek-buyuk",
+      "input_usd_per_mtok": 3.0,
+      "output_usd_per_mtok": 15.0,
+      "cache_read_usd_per_mtok": 0.3,
+      "cache_write_usd_per_mtok": 3.75,
+      "gecerli_tarih": "2026-09-08"
+    },
+    {
+      "model_id": "ornek-fiyati-bilinmeyen",
+      "input_usd_per_mtok": null,
+      "output_usd_per_mtok": null,
+      "gecerli_tarih": "2026-09-08"
+    }
+  ]
+}
