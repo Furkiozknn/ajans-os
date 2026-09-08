@@ -316,3 +316,34 @@ içeriyi değil.
   doğrulanabilir (ve çoğu zaman yanlış) bir olgu iddiası.
 - Kapanış doğrulamasına şunu ekle: belgede geçen her "hiç / sıfır / yok"
   ifadesi için bir `grep`.
+
+
+---
+
+## 23. Kök `package.json` yoktan var olan bir karardır: `"type": "module"` mevcut CommonJS araçlarını kırar
+
+`ajans-os` U0'da kök `package.json` yazıldı (`"type": "module"`, ADR-009).
+Depoda o güne kadar `package.json` **hiç yoktu**; `arac/*.js` araçlarının
+altısı da `require()` ile yazılmıştı ve `node arac/sema-dogrula.js` diye
+sorunsuz çalışıyordu — çünkü `package.json` yokken Node `.js`'i CommonJS
+sayar. Kök dosya yazıldığı anda aynı komut
+`ReferenceError: require is not defined in ES module scope` ile düşerdi:
+tek bir yeni dosya, hiç dokunulmamış altı aracı birden kırar.
+
+Çözüm altı aracı ESM'e çevirmek değil, **kapsamı daraltmak**: `arac/`
+klasörüne `{ "type": "commonjs" }` içeren iki satırlık bir `package.json`.
+Node en yakın `package.json`'a baktığı için `arac/*.js` CommonJS kalır,
+`src/*.js` ESM olur. Araç dosyalarının hiçbiri değişmedi.
+
+- Bir depoya **ilk kez** `package.json` eklerken önce
+  `grep -l "require(" **/*.js` çalıştır. Çıkan her klasör ya çevrilecek ya da
+  kendi `{"type":"commonjs"}` dosyasıyla korunacaktır.
+- `"type"` alanı dosya başına değil **klasör ağacına** uygulanır; iki kipi
+  ayırmanın maliyeti bir dosyadır, karışık depoda bunu ödemek normaldir.
+- Aynı turda ikinci tuzak: `node --test src/` (klasör argümanı) Node
+  v24.19.0'da klasörü **modül yolu** sanıp
+  `Cannot find module 'D:\...\src'` ile düşüyor. Çalışan biçim glob:
+  `node --test src/**/*.test.js` — ve hiç eşleşme olmasa bile çıkış kodu 0
+  döner, yani "sıfır test bile olsa koşucu ayakta" ölçütü bu biçimle
+  sağlanır. `npm test`'i yazdıktan sonra **bir kez koştur**; koşucunun
+  ayakta olduğu varsayılmaz, görülür.

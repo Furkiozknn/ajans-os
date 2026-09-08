@@ -5,10 +5,17 @@
 `ADR-008` (arayüz dili).
 
 Bu belge tek bir soruya cevap verir: **13 bileşen kodda nereye oturur ve
-birbirine hangi imzayla bakar?** Uygulama yoktur; `src/` altında yalnızca
-arayüz (`.d.ts`) bulunur. Uygulama Faz 5'in işidir.
+birbirine hangi imzayla bakar?** Yazıldığı gün (Faz 4) `src/` altında yalnızca
+arayüz (`.d.ts`) vardı.
 
-Dil kararı [ADR-008](../adr/ADR-008-arayuz-dili.md): **TypeScript `.d.ts`.**
+> **Güncelleme — 2026-09-08, U0:** Faz 5 başladı.
+> [ADR-009](../adr/ADR-009-uygulama-dili.md) uygulama dilini **Node ESM**
+> olarak sabitledi; `src/` altında artık uygulama `.js` ve `*.test.js`
+> dosyaları da bulunur. Bu belgenin arayüz tarafı (imzalar, klasör kuralı,
+> import yönü) aynen geçerlidir; yalnızca "uygulama yoktur" cümlesi
+> geçmiş zamana geçti.
+
+Arayüz dili kararı [ADR-008](../adr/ADR-008-arayuz-dili.md): **TypeScript `.d.ts`.**
 Belirleyici ölçüt popülerlik değil, doğrulanabilirlik — arayüz bir komutla
 denetlenemiyorsa sözleşme değil belgedir (AP3).
 
@@ -26,14 +33,18 @@ ajans-os/
 ├── arac/                 doğrulama araçları (Node, çıkış kodu üretir)
 │   ├── sema-dogrula.js   kanit-dogrula.js   iz-izle.js
 │   ├── matris-uret.js    kanit-dogrula-test.js
-│   └── yapi-dogrula.js   ← bu belgenin kapısı (§5)
-├── src/                  ARAYÜZLER — uygulama yok
+│   ├── yapi-dogrula.js   ← bu belgenin kapısı (§5)
+│   ├── yapi-dogrula-test.js  kapının kendi testi (kasıtlı ihlal)
+│   └── package.json      "type": "commonjs" — araçlar CJS (ADR-009 k.5)
+├── src/                  ARAYÜZLER + uygulama (ADR-009)
 │   ├── tipler.d.ts       sözleşmelerden türeyen ortak tipler
+│   ├── iskelet.test.js   koşucunun ayakta olduğunun testi (U0)
 │   ├── orchestrator/           src/task-manager/       src/agent-registry/
 │   ├── tool-registry/          src/permission-manager/ src/memory-manager/
 │   ├── context-manager/        src/evaluator/          src/critic/
 │   ├── recovery-manager/       src/model-router/       src/cost-manager/
 │   └── observability/
+├── package.json          "type": "module", npm test → node --test (ADR-009)
 └── tsconfig.json         yalnızca src/**/*.d.ts, strict, noEmit
 ```
 
@@ -108,19 +119,25 @@ ve mimariden gelen kısıtı var.
 
 ---
 
-## 5. Doğrulama — iki komut
+## 5. Doğrulama — üç komut
 
 ```
-npx -p typescript@5.6 tsc -p tsconfig.json    # 13 arayüz birbiriyle tutarlı mı
+npm test                                      # koşucu ayakta mı, modül testleri geçiyor mu
 node arac/yapi-dogrula.js                     # yapı ADR-001/ADR-002'ye uyuyor mu
+npx -p typescript@5.6 tsc -p tsconfig.json    # 13 arayüz birbiriyle tutarlı mı
 ```
+
+Üçünü sırayla koşan kısayol: `npm run kapi` (sonuna `arac/yapi-dogrula-test.js`
+ekler — kapının kasıtlı bir ihlali gerçekten yakaladığını sınar).
 
 `yapi-dogrula.js` beş şeyi kontrol eder:
 
 1. Blueprint §2 başlık sayısı = `src/` modül klasörü sayısı = **13**
 2. Her klasör adı bir §2 başlığının kebab-case hâli
 3. Her modülde `index.d.ts` var
-4. `../<kardes-modul>` import'u yalnızca `orchestrator` içinde geçiyor
+4. `../<kardes-modul>` import'u yalnızca `orchestrator` içinde geçiyor —
+   denetim modül klasöründeki **hem `.d.ts` hem `.js`** dosyalarında çalışır
+   (ADR-009 kural 4)
 5. Her modül yolu (`src/<modul>/`) bu belgede geçiyor
 
 İkisi de çıkış kodu 0 verirse Faz 4'ün ilk maddesi uygulanmıştır. Çevrimdışı
@@ -131,8 +148,10 @@ bir turda `tsc` çalışmaz (`npx` indirme gerektirir); o durumda yalnızca
 
 ## 6. Bu iskelette bilerek olmayanlar
 
-- **Uygulama kodu.** `src/` altında uygulama dosyası (`.ts`) yok; modül dosyalarının hepsi `.d.ts`. Faz 4'ün şartı
-  bu; `tsconfig.json` `noEmit` ile bunu pekiştirir.
+- **Uygulama kodu** — *Faz 4 için geçerliydi.* Belge yazıldığında `src/` altında
+  modül dosyalarının hepsi `.d.ts` idi. ADR-009 ile modüller `.js` uygulama
+  dosyası da barındırır; `tsconfig.json` yine yalnızca `.d.ts` tarar, uygulama
+  ile arayüzün uyumu modül testlerinin sorumluluğudur.
 - **Planlayıcı, yönlendirici servis, bilgi grafı, guardrail motoru, öğrenme
   katmanı** için klasör. Beşi de blueprint §4'te gerekçesiyle dışarıda; "ne
   olursa girer" koşulları orada yazılı.

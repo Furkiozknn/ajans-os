@@ -1,0 +1,6 @@
+{
+  "name": "ajans-os-arac",
+  "private": true,
+  "type": "commonjs",
+  "//": "Kok package.json 'type: module' (ADR-009). arac/*.js araclarinin alti da CommonJS 'require' kullaniyor; Node'un en yakin package.json kurali sayesinde bu dosya onlari oldugu gibi calisir birakir. Araclar ESM'e cevrilirse bu dosya silinir."
+}

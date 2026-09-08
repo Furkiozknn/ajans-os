@@ -38,11 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U0 — Çalışma zamanı iskeleti ve test kapısı** — `package.json`
-      (`node --test`), uygulama dili kararı **ADR-009**,
-      `arac/yapi-dogrula.js` import yönü denetimini `.js` dosyalarına
-      genişletir. Bitti: `npm test` 0 **ve** kasıtlı bir ihlal dosyasında
-      yapı denetimi hata veriyor.
 - [ ] **U1 — `src/task-manager/`** — ADR-003 iki yazma, durum makinesi,
       `sonraki_adim`. Bitti: süreç ölümü benzetiminden sonra
       `tamamlandi_mi` doğru cevap veriyor; kayıt `task.schema.json`'a uyuyor.
@@ -100,6 +95,32 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U0 — Çalışma zamanı iskeleti ve test kapısı** — 2026-09-08.
+      `package.json` (`"type": "module"`, `npm test` →
+      `node --test src/**/*.test.js`), `arac/package.json`
+      (`"type": "commonjs"`), [ADR-009](docs/adr/ADR-009-uygulama-dili.md),
+      genişletilmiş `arac/yapi-dogrula.js`, `arac/yapi-dogrula-test.js`,
+      `src/iskelet.test.js`. Dil kararı **Node ESM + `node:test`**: belirleyici
+      ölçüt yine doğrulanabilirlik — U1–U14'ün "bitti" ölçütlerinin çoğu bir
+      `arac/*.js` aracını **test içinden** çağırmayı gerektiriyor, ve kapı
+      ancak ağsız/tek çalışma zamanında koşabiliyorsa kapıdır. TypeScript
+      kaynak (S2) daha güçlü garanti verirdi ama `npx tsc` ağa bağlı: paket
+      çekilemeyen bir turda test koşusu tamamen dururdu (AP3'ün gecikmeli
+      hâli). Python (S3) tuzak #5 ve #6'ya giriyor. Kabul edilen bedel açıkça
+      yazıldı: uygulama `.js`'i `tsconfig.json`'ın kapsamında değil, bu yüzden
+      **her modül testi imzayı da sınamak zorunda**, yalnızca mutlu yolu
+      değil. Tuzak: kök `"type": "module"` altı CommonJS aracı da kırardı —
+      `arac/package.json` Node'un en yakın-package.json kuralıyla bunu tek
+      dosyada çözdü, altı araç hiç değişmedi. ADR-008 sonuç kuralı 3
+      (*"`src/` altında yalnızca `.d.ts`"*) ADR-009 ile yerini bıraktı;
+      ADR-008'in kendi yeniden açılma koşulu (Python) **tetiklenmedi**.
+      Doğrulama: `npm run kapi` → 0 — `npm test` 2/2 geçti, `yapi-dogrula`
+      temiz, `yapi-dogrula-test` kasıtlı `.js` ihlalini yakaladı (çıkış kodu
+      1, mesajda dosya adı + ADR-002) ve ağacı geri bıraktı. Ayrıca
+      `npx -p typescript@5.6 tsc -p tsconfig.json` → 0,
+      `node arac/sema-dogrula.js --test` → temiz. Sıfır test hâlinde de
+      koşucunun 0 döndüğü ayrıca sınandı.
 
 - [x] **Implementation Roadmap** — 2026-09-08.
       [`docs/04-UYGULAMA-YOL-HARITASI.md`](docs/04-UYGULAMA-YOL-HARITASI.md) +

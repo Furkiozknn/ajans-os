@@ -10,7 +10,9 @@
  *   1. Blueprint §2 baslik sayisi = src/ modul klasoru sayisi = 13
  *   2. Her modul klasoru bir §2 basliginin kebab-case hali
  *   3. Her modulde index.d.ts var
- *   4. Yalnizca orchestrator kardes modul import eder (ADR-002)
+ *   4. Yalnizca orchestrator kardes modul import eder (ADR-002) — denetim
+ *      hem .d.ts hem .js dosyalarinda calisir (ADR-009: import yonu kurali
+ *      uygulama kodunda da gecerli)
  *   5. Her modul 08-YAPI-VE-ARAYUZLER.md icinde geciyor
  *
  * Kullanim: node arac/yapi-dogrula.js   (cikis kodu 0 = temiz)
@@ -62,24 +64,39 @@ for (const b of beklenenKlasorler) {
   if (!klasorler.includes(b)) hatalar.push(`Blueprint §2'deki "${b}" icin src/ klasoru yok.`);
 }
 
-// 3 + 4 — index.d.ts ve import yonu
-const importDeseni = /from\s+"\.\.\/([a-z0-9-]+)"/g;
+// 3 + 4 — index.d.ts ve import yonu (.d.ts + .js)
+// import x from "../y/z.js" | import("../y") | require("../y") — tek tirnak da tutar.
+const importDeseni = /(?:\bfrom|\bimport|\brequire)\s*\(?\s*["'](\.\.\/[^"']+)["']/g;
+
+function jsVeTipDosyalari(dizin) {
+  const bulunan = [];
+  for (const g of fs.readdirSync(dizin, { withFileTypes: true })) {
+    const tam = path.join(dizin, g.name);
+    if (g.isDirectory()) bulunan.push(...jsVeTipDosyalari(tam));
+    else if (/\.(d\.ts|js|mjs|cjs)$/.test(g.name)) bulunan.push(tam);
+  }
+  return bulunan;
+}
+
 for (const k of klasorler) {
-  const dosya = path.join(src, k, "index.d.ts");
-  if (!fs.existsSync(dosya)) {
+  const modulDizini = path.join(src, k);
+  if (!fs.existsSync(path.join(modulDizini, "index.d.ts"))) {
     hatalar.push(`src/${k}/index.d.ts yok.`);
     continue;
   }
-  const metin = fs.readFileSync(dosya, "utf8");
-  for (const m of metin.matchAll(importDeseni)) {
-    const hedef = m[1];
-    if (hedef === "tipler") continue;
-    if (k !== "orchestrator") {
-      hatalar.push(
-        `src/${k}/index.d.ts "../${hedef}" import ediyor. ADR-002: kardes modulu yalnizca orchestrator taniyabilir.`,
-      );
-    } else if (!klasorler.includes(hedef)) {
-      hatalar.push(`src/orchestrator "../${hedef}" import ediyor ama boyle bir modul yok.`);
+  for (const dosya of jsVeTipDosyalari(modulDizini)) {
+    const goreli = path.relative(kok, dosya).split(path.sep).join("/");
+    for (const m of fs.readFileSync(dosya, "utf8").matchAll(importDeseni)) {
+      // "../tipler.js" -> tipler, "../evaluator/index.js" -> evaluator
+      const hedef = m[1].slice(3).split("/")[0].replace(/\.(d\.ts|js|mjs|cjs)$/, "");
+      if (hedef === "tipler") continue;
+      if (k !== "orchestrator") {
+        hatalar.push(
+          `${goreli} "${m[1]}" import ediyor. ADR-002: kardes modulu yalnizca orchestrator taniyabilir.`,
+        );
+      } else if (!klasorler.includes(hedef)) {
+        hatalar.push(`${goreli} "${m[1]}" import ediyor ama "${hedef}" diye bir modul yok.`);
+      }
     }
   }
 }

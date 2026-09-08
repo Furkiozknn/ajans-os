@@ -1,0 +1,15 @@
+{
+  "name": "ajans-os",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "//": "ADR-009: uygulama dili Node ESM. Test kosucusu Node'un kendi node:test'i; bagimlilik yok.",
+  "scripts": {
+    "test": "node --test src/**/*.test.js",
+    "yapi": "node arac/yapi-dogrula.js",
+    "kapi": "npm test && node arac/yapi-dogrula.js && node arac/yapi-dogrula-test.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

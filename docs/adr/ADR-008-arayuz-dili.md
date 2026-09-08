@@ -75,7 +75,12 @@ olduğu için maliyeti sınırlıdır. S3, AP3'ün kendimize dönük hâli olurd
 2. Metot ve tip adları **Türkçe**; metotlar snake_case. Bu, ADR-004'ün zaten
    sabitlediği `gecerli_mi()` / `esigi_asti_mi()` adlarıyla aynı biçimdir;
    ikinci bir adlandırma kuralı açmamak için tümü ona uyar.
-3. `src/` altında **yalnızca** `.d.ts` bulunur. Uygulama Faz 5'in işidir.
+3. ~~`src/` altında **yalnızca** `.d.ts` bulunur. Uygulama Faz 5'in işidir.~~
+   **Yerini aldı: [ADR-009](ADR-009-uygulama-dili.md) (2026-09-08).** Faz 5
+   başladı; `src/` altında uygulama `.js` ve `*.test.js` dosyaları da bulunur.
+   Her modülde `index.d.ts` bulunma zorunluluğu ve bu ADR'nin geri kalanı
+   yürürlüktedir. Uygulama dili Python **çıkmadı**, bu yüzden bu ADR'nin
+   yeniden açılma koşulu tetiklenmedi.
 
 ## Dahil etme ölçütü (ADR-000 K2)
 
