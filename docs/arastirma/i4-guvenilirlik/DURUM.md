@@ -1,4 +1,13 @@
-# İ4 — durum: YARIM (bütçe)
+# İ4 — durum: TAMAMLANDI (8 Eylül 2026)
+
+> Bu dosya artık tarihî kayıttır. İz 8 Eylül 2026 sabahı kapandı: yedi proje
+> dosyası + [OZET.md](OZET.md) yazıldı. Aşağıdaki "Yapılacaklar" listesi
+> 7 Eylül gecesi yazılmıştı; instructor, reflexion ve portkey-gateway o
+> listeden tamamlandı. Güncel bulgular için OZET.md okunmalı, bu dosya değil.
+
+---
+
+## (7 Eylül gecesi yazılan ara durum)
 
 *7 Eylül 2026, 22:15 · koşu bütçesi 6 USD, ~4,2 USD harcandığında durduruldu*
 
