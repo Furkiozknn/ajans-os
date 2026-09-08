@@ -61,3 +61,18 @@ export interface Orchestrator {
   /** Tek adim: blueprint §3.2'deki 1–10 sirasi. Sira degismez. */
   adimi_yurut(gorev: GorevSozlesmesi, adim_id: KebabId): Promise<AdimKaydi>;
 }
+
+/** Calisma ortamindan gelen ayarlar; mimari karar degil (08 §6). */
+export interface OrkestratorSecenekleri {
+  /** Model baglam penceresi (token). Context Manager esigi bunun uzerine uygulanir. */
+  baglam_token?: number;
+  /** Baglam butcesinde ayrilan tampon (token). */
+  tampon_token?: number;
+  /** Span zaman damgasi kaynagi; testte sabitlenir. */
+  saat?: () => string;
+}
+
+export declare function orkestrator(
+  bagimliliklar: OrchestratorBagimliliklari,
+  secenekler?: OrkestratorSecenekleri,
+): Orchestrator;
