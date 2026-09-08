@@ -327,6 +327,39 @@ function ozTestMesaj(kok, ornekler) {
 
 // İzin sözleşmesi öz-testi: ADR-005'in dört kuralı ve ADR-007'nin sürüm bağı
 // şemada gerçekten zorlanıyor mu, yoksa yalnızca alan açıklamasında mı yazıyor?
+// Span öz-testi: §8'in sekiz kuralının her biri bir bozma denemesiyle sınanır.
+// Bir kural burada karşılığı olmadan belgede kalırsa, o kural yoktur (AP3).
+function ozTestSpan(ornekler) {
+  const cagri = ornekler.find((o) => o.operation === 'inference' && o.cost && o.cost.usd !== null);
+  const kok = ornekler.find((o) => o.operation === 'run');
+  const izin = ornekler.find((o) => o.operation === 'permission_check');
+  const durumlar = [];
+  const b = (temel, fn) => { const k = JSON.parse(JSON.stringify(temel)); fn(k); return k; };
+  if (cagri) {
+    durumlar.push(['span: maliyet null iken sebep zorunlu (D6)', b(cagri, (k) => { k.cost.usd = null; })]);
+    durumlar.push(['span: maliyet biliniyorken sebep yazilamaz (D6)', b(cagri, (k) => { k.cost.unknown_reason = 'olculmedi'; })]);
+    durumlar.push(['span: inference usage olmadan yazilamaz (D3)', b(cagri, (k) => { delete k.usage; })]);
+    durumlar.push(['span: inference model olmadan yazilamaz (D3)', b(cagri, (k) => { delete k.model; })]);
+    durumlar.push(['span: icerik beyansiz kaydedilemez (§9)', b(cagri, (k) => { k.content = { input: 'x' }; })]);
+    durumlar.push(['span: bitis baslangictan once olamaz', b(cagri, (k) => { k.ended_at = '2026-09-08T15:00:00+03:00'; })]);
+    durumlar.push(['span: trace_id ile run_id ayrisamaz (§3)', b(cagri, (k) => { k.trace_id = 'baska-kosu'; })]);
+    durumlar.push(['span: run disindaki span parentsiz olamaz (D4)', b(cagri, (k) => { k.parent_span_id = null; })]);
+  }
+  if (kok) {
+    durumlar.push(['span: kok span parent tasiyamaz (D4)', b(kok, (k) => { k.parent_span_id = 'span-x'; })]);
+    durumlar.push(['span: ajan/kosu span\'i token tasiyamaz (D3)', b(kok, (k) => { k.usage = { input_tokens: 1, output_tokens: 1 }; })]);
+    durumlar.push(['span: ajan/kosu span\'i maliyet tasiyamaz (D3)', b(kok, (k) => {
+      k.cost = { usd: 1, price_table: { version: '1', digest: 'sha256:' + '0'.repeat(64) } };
+    })]);
+  }
+  if (izin) {
+    durumlar.push(['span: golge sinyal izin karari tasiyamaz (AP5)', b(izin, (k) => { k.shadow = true; })]);
+    durumlar.push(['span: bilinmeyen operation sinifi reddedilir', b(izin, (k) => { k.operation = 'guardrail'; })]);
+    durumlar.push(['span: uydurma alan eklenemez', b(izin, (k) => { k.risk_score = 0.7; })]);
+  }
+  return durumlar;
+}
+
 function ozTestIzin(ornekler) {
   const ile = (karar) => {
     const o = ornekler.find((x) => x.decision === karar);
@@ -376,6 +409,37 @@ function testKos(baslik, kok, durumlar) {
   return hata;
 }
 
+// 06-GOZLEM.md §8: span sözleşmesinin şemayla ifade edilemeyen sekiz kuralı.
+// Şema tek bir alanı doğrular; bu kurallar alanlar arasındadır.
+function spanCaprazKontrol(s) {
+  const h = [];
+  const cagri = s.operation === 'inference';
+  // 1 + 2: para ve token yalnızca çağrı sınırında (D3).
+  for (const alan of ['model', 'usage', 'cost']) {
+    if (!cagri && alan in s) h.push(`D3: '${alan}' yalnizca operation=inference span'inde bulunabilir (burada: ${s.operation}).`);
+    if (cagri && !(alan in s)) h.push(`D3: inference span'i '${alan}' tasimak zorundadir.`);
+  }
+  // 3: bilinmeyen maliyetin sebebi yazilir (D6).
+  if (s.cost) {
+    if (s.cost.usd === null && !s.cost.unknown_reason) h.push("D6: cost.usd null ise unknown_reason zorunludur.");
+    if (s.cost.usd !== null && s.cost.unknown_reason) h.push("D6: maliyet biliniyorken unknown_reason yazilamaz.");
+  }
+  // 4: icerik kaydi acikca beyan edilir (§9).
+  if (s.content && s.content_recording !== 'acik') h.push("§9: content alani varsa content_recording 'acik' olmalidir.");
+  // 5: koke gore parent (D4).
+  if (s.operation === 'run' && s.parent_span_id !== null) h.push("D4: kok (run) span'inde parent_span_id null olmalidir.");
+  if (s.operation !== 'run' && s.parent_span_id === null) h.push("D4: run disindaki her span bir ust span'e baglanir.");
+  // 6: zaman tutarliligi.
+  if (s.ended_at && Date.parse(s.ended_at) < Date.parse(s.started_at)) h.push("ended_at, started_at'ten once olamaz.");
+  // 7: golge sinyal karar tasiyamaz (AP5 -> kural 6).
+  if (s.shadow === true && s.operation === 'permission_check' && (s.attributes || {}).decision) {
+    h.push("AP5: golge moddaki span bir izin karari tasiyamaz.");
+  }
+  // 8: tek kosu, tek iz.
+  if (s.trace_id !== s.run_id) h.push("§3: trace_id ile run_id ayni kosuda ayrisamaz.");
+  return h;
+}
+
 // --- ana ------------------------------------------------------------------
 
 const kokDizin = path.resolve(__dirname, '..');
@@ -389,7 +453,8 @@ const SEMALAR = [
   { ad: 'agent', sema: 'agent.schema.json', ornekDizin: ['contracts', 'ornek'], enAz: 2 },
   { ad: 'task', sema: 'task.schema.json', ornekDizin: ['contracts', 'ornek', 'gorev'], enAz: 1 },
   { ad: 'message', sema: 'message.schema.json', ornekDizin: ['contracts', 'ornek', 'mesaj'], enAz: 3 },
-  { ad: 'permission', sema: 'permission.schema.json', ornekDizin: ['contracts', 'ornek', 'izin'], enAz: 3 }
+  { ad: 'permission', sema: 'permission.schema.json', ornekDizin: ['contracts', 'ornek', 'izin'], enAz: 3 },
+  { ad: 'span', sema: 'span.schema.json', ornekDizin: ['contracts', 'ornek', 'gozlem'], enAz: 3 }
 ];
 
 let toplamHata = 0;
@@ -409,6 +474,7 @@ for (const s of SEMALAR) {
     const hatalar = dogrula(icerik, kok, kok, '');
     if (s.ad === 'task') hatalar.push(...gorevCaprazKontrol(icerik));
     if (s.ad === 'permission') hatalar.push(...izinCaprazKontrol(icerik));
+    if (s.ad === 'span') hatalar.push(...spanCaprazKontrol(icerik));
     if (hatalar.length === 0) {
       const eksik = kok.required.filter((a) => !(a in icerik));
       yuklenen[s.ad].ornekler.push(icerik);
@@ -486,6 +552,16 @@ if (process.argv.includes('--test')) {
     ];
     for (const [ad, bozuk] of grafDurumlari) {
       const h = gorevCaprazKontrol(bozuk);
+      if (h.length === 0) { console.log(`  ✗ ${ad} — ama kontrol GEÇTİ dedi`); toplamHata++; }
+      else console.log(`  ✓ ${ad}`);
+    }
+
+    // Span: şema ve çapraz kontrol birlikte sınanır — §8'in kuralları
+    // ikisine dağılmış durumda, bozma denemesi hangisine takılırsa takılsın
+    // reddedilmiş sayılır. Hiçbirine takılmıyorsa kural yok demektir.
+    console.log('\nSpan sözleşmesi (şema + çapraz kontrol):');
+    for (const [ad, bozuk] of ozTestSpan(yuklenen.span.ornekler)) {
+      const h = dogrula(bozuk, yuklenen.span.kok, yuklenen.span.kok, '').concat(spanCaprazKontrol(bozuk));
       if (h.length === 0) { console.log(`  ✗ ${ad} — ama kontrol GEÇTİ dedi`); toplamHata++; }
       else console.log(`  ✓ ${ad}`);
     }

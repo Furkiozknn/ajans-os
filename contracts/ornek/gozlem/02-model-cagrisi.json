@@ -1,0 +1,42 @@
+{
+  "contract_version": "1.0",
+  "span_id": "span-cagri-0007",
+  "trace_id": "kosu-2026-09-08-1510",
+  "parent_span_id": "span-ajan-0003",
+  "run_id": "kosu-2026-09-08-1510",
+  "step_id": "belge-yaz",
+  "operation": "inference",
+  "name": "inference claude-opus-5",
+  "started_at": "2026-09-08T15:22:04+03:00",
+  "ended_at": "2026-09-08T15:22:51+03:00",
+  "duration_ms": 47210,
+  "actor": { "kind": "component", "id": "model-router" },
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-opus-5",
+    "transport": { "api_base": null }
+  },
+  "usage": {
+    "input_tokens": 61402,
+    "output_tokens": 8815,
+    "cache_read_input_tokens": 54118,
+    "cache_write_input_tokens": 0,
+    "reasoning_output_tokens": null,
+    "extra": {}
+  },
+  "cost": {
+    "usd": 0.9143,
+    "price_table": {
+      "version": "2026-09-01",
+      "digest": "sha256:a063b89cde12736c969bea8d7eb0dece339dcdb1629b724fb1c07ce7adcff465",
+      "updated_at": "2026-09-01T09:00:00+03:00"
+    }
+  },
+  "outcome": { "status": "ok" },
+  "content_recording": "kapali",
+  "otel_map": {
+    "operation_name": "chat",
+    "span_kind": "client",
+    "semconv_version": "genai-development"
+  }
+}
