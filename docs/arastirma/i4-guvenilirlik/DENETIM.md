@@ -31,15 +31,15 @@ ve satır aralığı bulundu (DOSYA-YOK 0, EOF 0).
 | langgraph.md:66 → `_loop.py:692` | `self.updated_channels = apply_writes(` | ✓ (`Send`/`Command` düzyazı token'ıydı) |
 | langgraph.md:82 → `main.py:2968` | `[t for t in loop.tasks.values() if not t.writes]` | ✓ — araç `task.writes.append` aramış, o `_runner.py`'de |
 | langgraph.md:123 → `_loop.py:960-971` | önceki koşuda elle doğrulandı (`DURUM.md`: `_put_checkpoint({"source": "fork"})` satır 971) | ✓ (önceki kontrol) |
-| langgraph.md:96 → `_loop.py:733-745` | — | **bakılmadı** (token Türkçe düzyazı; önceki koşuda da bakılmamıştı) |
+| langgraph.md:96 → `_loop.py:733-745` | 736-745: `_reapply_writes_to_succeeded_nodes` — docstring: “failed/interrupted tasks remain with empty writes and will be re-executed” | ✓ iddia birebir |
 | portkey-gateway.md:66 → `requestContext.ts:151-152` | 150: `attempts: retry?.attempts ?? 0`, 151-153: `onStatusCodes: retry?.attempts ? … ?? RETRY_STATUS_CODES : []` | ✓ (`max 5` token'ı başka cümleden) |
-| portkey-gateway.md:121 → `handlerUtils.ts:646-659` | `isHandlingCircuitBreaker`, `.filter((t: any) => !t.isOpen)` (653) | ✓ kısmen — `cbConfig`/`handleCircuitBreakerResponse` için 792-799 aralığına bakılmadı |
+| portkey-gateway.md:121 → `handlerUtils.ts:646-659` | `isHandlingCircuitBreaker`, `.filter((t: any) => !t.isOpen)` (653) | ✓ — 793-799: `c.get('handleCircuitBreakerResponse')?.(response, currentInheritedConfig.id, currentTarget.cbConfig, …)`; `grep -rn` ile `src/` altında tanım yok, iddia doğru |
 | reflexion.md:219, OZET.md:242 → `agents.py:113` | `self.reflections += [self.prompt_reflection()]` | ✓ birebir |
 | reflexion.md:295 → `reflexion.py:29-31` | `reflections = []`, `implementations = []`, `test_feedback = []` — yerel listeler | ✓ "durum süreç belleğinde" iddiası doğru |
 | OZET.md:298 → `reflexion.py:43` | `is_passing, feedback, _ = exe.execute(cur_func_impl, tests_i)` | ✓ yargıyı test veriyor |
 
-**Sonuç:** 19 şüphelinin 17'si elle kontrol edildi, **17'si tuttu** (biri YAKIN
-nüanslı, biri kısmen); 2'si bakılmadı. Yanlış iddia bulunmadı. Bütün
+**Sonuç:** 19 şüphelinin **19'u elle kontrol edildi, 19'u tuttu** (biri YAKIN
+nüanslı). Yanlış iddia bulunmadı. Bütün
 şüpheliler araç kusuru: Türkçe düzyazı token sanıldı, satıra bölünmüş
 alıntı, ya da çıplak dosya adı (`README.md`) depo kökündeki yerine iç
 içe kopyaya çözüldü.
