@@ -38,3 +38,21 @@ export interface RecoveryManager {
   /** Ustel geri cekilme + jitter. Saf fonksiyon; test edilebilir olmali. */
   bekleme_ms(deneme: number): number;
 }
+
+/** Sozlesmedeki dokuz hata turu; siniflandirma tablosunun anahtarlari. */
+export declare const HATA_TURLERI: readonly HataTuru[];
+
+/**
+ * Kurar. `duzelt_hakki` (varsayilan 2) baglami koruyarak yapilacak deneme
+ * sayisi, `temiz_sayfa_hakki` (varsayilan 1) ondan sonra baglam atilarak
+ * yapilacak deneme sayisidir; toplami asan deneme `durdur` olur.
+ * `rastgele` jitter kaynagidir ve enjekte edilir — sabitlendiginde
+ * `bekleme_ms` saf bir fonksiyondur.
+ */
+export declare function kurtarmaYoneticisi(secenekler?: {
+  duzelt_hakki?: number;
+  temiz_sayfa_hakki?: number;
+  taban_ms?: number;
+  tavan_ms?: number;
+  rastgele?: () => number;
+}): RecoveryManager;
