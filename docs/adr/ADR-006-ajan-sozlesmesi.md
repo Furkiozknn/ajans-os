@@ -89,7 +89,7 @@ Her satır bir bağlayıcı kurala bağlıdır; kuralsız alan eklenmedi.
 
 | Alan | Değişiklik | Gerekçe |
 |---|---|---|
-| `contract_version` | `"1.0"` → `"2.0"` | Aşağıdaki değişiklikler uyumsuz. |
+| `contract_version` | `"1.0"` → `"2.0"` | Aşağıdaki değişiklikler uyumsuz. (Sonraki adım `"2.1"`: zorunlu `triggers`, [ADR-010](ADR-010-tetikleyici-ifade.md).) |
 | `identity.status` | **yeni, zorunlu** (`draft`/`active`/`deprecated`/`archived`) + `supersedes` | Yaşam döngüsünün arşiv ucu makine-okur olmalı; kayıt defteri durumu türetmez, sözleşmeden okur. |
 | `tools[]` | `risk: high` + `scope ≠ read` ise `requires_human_approval: true` **şema ile zorunlu** | Kural 1 / AP1: kapı bir yapılandırma değeri olamaz. `false` yazılamaz — şema reddeder. |
 | `permissions.filesystem.read/write` | `default: []` ve açıklama netleşti | Kural 7 / AP6: kapsam belirtilmemişse sonuç boş kümedir, "hepsi" değil. |

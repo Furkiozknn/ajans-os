@@ -9,10 +9,10 @@
 | Kontrol | Sonuç |
 |---|---|
 | Şema geçerli JSON, draft 2020-12 | ✓ |
-| ADR-000'in 16 sözleşme alanı | 16/16 var; ek olarak `contract_version` ve `x-host` → 18 alan, 17 zorunlu |
+| ADR-000'in 16 sözleşme alanı | 16/16 var; ek olarak `contract_version`, `x-host` ve (şema 2.1, ADR-010) `triggers` → 19 alan, 18 zorunlu |
 | `additionalProperties` | `false` — tanımsız alan reddediliyor |
 | Sabit sınır: `permissions.filesystem.delete` | `const: false` korunmuş |
-| Belge ↔ şema örtüşmesi | 18 alanın 18'i `01-AJAN.md` içinde geçiyor |
+| Belge ↔ şema örtüşmesi | 19 alanın 19'u `01-AJAN.md` içinde geçiyor |
 | İki örnek sözleşme | `kod-gozden-gecirici` ve `kanit-denetcisi`: 18'er alan, **eksik zorunlu yok, şemada olmayan alan yok** (şemadan bağımsız betikle sayıldı) |
 | `arac/sema-dogrula.js --test` | Çıkış 0; 12 bozma senaryosunun 12'si reddedildi |
 | Alıntı izlenebilirliği (`arac/iz-izle.js`) | `00-BLUEPRINT.md` 9/9 birebir; `01-AJAN.md` kod alıntısı içermiyor (tasarım belgesi, beklenen) |
@@ -30,7 +30,7 @@ doğrulamıyordur" dersi.
 ve tek adımlı, diğeri yazma izni tek glob ile sınırlı, döngülü ve kalıcı
 bellek yazıyor. Yani şemanın `if/then` dalları örneklerle fiilen kapsanıyor.
 
-**Not: `contract_version` zorunlu ve `"2.0"` sabit.** Bu, eski (v1) sözleşme
+**Not: `contract_version` zorunlu ve sabit** (bu inceleme sırasında `"2.0"`; U15 ile `"2.1"`, [ADR-010](../adr/ADR-010-tetikleyici-ifade.md)). Bu, eski (v1) sözleşme
 dosyalarını geçersiz kılar. Depoda v1 sözleşme kalmadığı için şu an sorun
 değil; Faz 4'te `turkce-ajanlar` ajanları bu şemaya taşınırken göç adımı
 gerekecek — `01-AJAN.md` §6 bunu "ev sahibi türetme" boşluğu olarak zaten

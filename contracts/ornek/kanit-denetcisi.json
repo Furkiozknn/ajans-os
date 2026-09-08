@@ -1,5 +1,5 @@
 {
-  "contract_version": "2.0",
+  "contract_version": "2.1",
 
   "identity": {
     "id": "kanit-denetcisi",
@@ -23,6 +23,13 @@
     { "id": "kaynakta-arama", "description": "Atfı klon deposunda arar; kısaltılmış yolları ve çıplak dosya adlarını çözer.", "confidence": 0.85 },
     { "id": "supheli-siniflandirma", "description": "Bulunamayan atfı 'dosya yok', 'satır kaymış', 'alıntı farklı' diye ayırır; hepsini uydurma saymaz.", "confidence": 0.8 },
     { "id": "karar-yazma", "description": "İzin sentezde kullanılabilirliğine dair gerekçeli karar yazar.", "confidence": 0.75 }
+  ],
+
+  "triggers": [
+    "bu izin kanıtlarını denetle",
+    "atıflar gerçek mi",
+    "DENETIM.md yaz",
+    "bu rapordaki dosya:satır atıflarını doğrula"
   ],
 
   "inputs": [

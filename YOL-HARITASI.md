@@ -38,19 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U15 — Tetikleyici ifade alanı ve K8'in uçtan uca kanıtı** —
-      U2 incelemesinde ölçüldü: `agent-registry.turet(ad, "claude-code")`
-      yapısal olarak geçerli bir `.md` üretiyor ama komşu projenin
-      doğrulayıcısı (`turkce-ajanlar/arac/dogrula.js`) onu **reddediyor**:
-      `description` içinde tetikleyici ifade yok. Sözleşmede bu bilgiyi
-      taşıyan alan yok (`capabilities` yetenek, `mission` amaç). İki
-      seçenek bir ADR ile karara bağlanır: (a) `triggers: string[]` alanı
-      ve şema v2.1, (b) `x-host` altından okuma. Seçilen yol uygulanır,
-      `turet` çıktısı komşu doğrulayıcıdan **geçirilerek** kanıtlanır ve
-      bu kontrol `src/agent-registry/index.test.js` içine test olarak girer.
-      Bitti ölçütü: türetilen dosya için `node arac/dogrula.js <dosya>`
-      çıkış 0.
-
 - [ ] **U14 — Uçtan uca kabul koşusu** — gerçek modüllerle tek görev
       (sahte olan yalnızca `ModelTasiyici`). Bitti: üretilen her belge
       `arac/sema-dogrula.js`'ten geçiyor; koşu ortasından öldürülüp
@@ -69,6 +56,24 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ---
 
 ## Bitti
+
+- [x] **U15 — Tetikleyici ifade alanı ve K8'in uçtan uca kanıtı** —
+      2026-09-08. Seçilen yol (a): sözleşmeye zorunlu `triggers: string[]`
+      alanı, `contract_version` `"2.0"` → `"2.1"`. Gerekçe ve elenen
+      `x-host` seçeneği [ADR-010](docs/adr/ADR-010-tetikleyici-ifade.md)'da:
+      tetikleyici ifade ajana aittir, ev sahibine değil; `x-host`'tan okumak
+      K8'i tersine çevirir ve şemayla zorlanamaz. `aciklamaTuret` tetikleri
+      `description` sonuna tırnak içinde ekliyor. Yan karar: `yamlDeger`
+      çift tırnak içeren metni artık YAML'ın tek tırnaklı biçimiyle yazıyor —
+      `JSON.stringify`'ın `\"` kaçışını naif frontmatter ayrıştırıcıları
+      çözmüyordu ve tetik ifadesi tırnak içinde görünmez kalıyordu.
+      **Kanıt:** `node arac/dogrula.js <türetilen>.md --kati` → *2/2 dosya
+      geçti, 0 hata, 0 uyarı*, çıkış 0. İki test `index.test.js`'e girdi:
+      biri komşudan bağımsız (her tetik tırnaklı geçiyor mu), biri komşu
+      doğrulayıcıyı alt süreçte koşuyor ve depo yoksa `t.skip` ile işaretli
+      atlıyor. 139/139 test, `sema-dogrula --test` temiz (18/18 zorunlu
+      alan), `yapi-dogrula` temiz. Belgeler: 01-AJAN.md §3.7/§4/§5/§6 (B3
+      boşluğu kapandı), inceleme ve ADR-006 sayıları güncellendi.
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 

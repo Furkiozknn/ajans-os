@@ -12,7 +12,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, readdirSync, writeFileSync, mkdtempSync, copyFileSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, mkdtempSync, copyFileSync, statSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -157,4 +157,57 @@ test("arac/sema-dogrula.js ile ayni karar (iki dogrulayici surukleyemez)", () =>
     assert.equal(aracGecti, beklenen, "arac beklenenden farkli karar verdi");
     assert.equal(kayit.dogrula(belge).gecerli, aracGecti, "modul ile arac ayni belgede ayristi");
   }
+});
+
+test("triggers description'a tirnak icinde gecer (sema 2.1, ADR-010)", async () => {
+  const { kayit } = geciciKayit();
+  for (const ad of ORNEKLER) {
+    const sozlesme = ornekOku(ad);
+    const uretilen = await kayit.turet(sozlesme.identity.id, "claude-code");
+    const icerik = Object.values(uretilen)[0];
+    const aciklama = icerik.match(/^description: (.*)$/m)?.[1];
+    assert.ok(aciklama, `${ad}: description satiri yok`);
+    assert.ok(sozlesme.triggers.length > 0, `${ad}: sozlesmede triggers yok`);
+    for (const t of sozlesme.triggers) {
+      assert.ok(aciklama.includes(`"${t}"`), `${ad}: tetik ifadesi tirnaksiz ya da eksik — ${t}`);
+    }
+    // Tirnaklar frontmatter'i bolmemeli: cift tirnakli metin tek tirnakli YAML olur.
+    assert.match(aciklama, /^'.*'$/, `${ad}: cift tirnakli metin tek tirnakli YAML'a alinmamis`);
+  }
+});
+
+/**
+ * U15'in bitti olcutu: turetilen dosya komsu projenin dogrulayicisindan gecer.
+ *
+ * Bu test ajans-os'un kendi iddiasini degil, **baska birinin** kabul kapisini
+ * olcer; K8 ("ev sahibi bicimi turetilir") ancak turetilen dosya o ev sahibinin
+ * araclarinca kabul edilirse dogrudur. Komsu depo yoksa test atlanir — ajans-os
+ * disariya bagimli degildir (ADR-002) — ama atlanma sessiz degil, isaretlidir.
+ */
+test("turetilen dosya turkce-ajanlar/arac/dogrula.js'ten gecer (U15)", async (t) => {
+  const dogrulayici = join(KOK, "..", "turkce-ajanlar", "arac", "dogrula.js");
+  if (!existsSync(dogrulayici)) {
+    t.skip(`komsu dogrulayici yok: ${dogrulayici}`);
+    return;
+  }
+
+  const { kayit } = geciciKayit();
+  const cikti = mkdtempSync(join(tmpdir(), "ajans-os-u15-"));
+  const dosyalar = [];
+  for (const ad of ORNEKLER) {
+    const uretilen = await kayit.turet(ornekOku(ad).identity.id, "claude-code");
+    for (const [yol, icerik] of Object.entries(uretilen)) {
+      const hedef = join(cikti, yol.split("/").pop());
+      writeFileSync(hedef, icerik, "utf8");
+      dosyalar.push(hedef);
+    }
+  }
+
+  // --kati: uyari da hata sayilir. Turetilen bir dosyada uyari birakmak,
+  // "gecti ama biraz" demektir; turetici bunu hak etmiyorsa duzeltilir.
+  const sonuc = execFileSync(process.execPath, [dogrulayici, "--kati", ...dosyalar], {
+    encoding: "utf8",
+    cwd: join(KOK, ".."),
+  });
+  assert.match(sonuc, /0 hata, 0 uyari/, `komsu dogrulayici temiz demedi:\n${sonuc}`);
 });

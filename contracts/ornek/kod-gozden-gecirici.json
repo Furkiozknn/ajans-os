@@ -1,5 +1,5 @@
 {
-  "contract_version": "2.0",
+  "contract_version": "2.1",
 
   "identity": {
     "id": "kod-gozden-gecirici",
@@ -25,6 +25,14 @@
     { "id": "performans-incelemesi", "description": "Bariz darboğaz, gereksiz döngü, N+1 sorgu arar. Mikro-optimizasyon önermez.", "confidence": 0.6 },
     { "id": "test-kapsami-incelemesi", "description": "Kritik yolların test edilip edilmediğine bakar.", "confidence": 0.7 },
     { "id": "windows-tuzaklari", "description": "PowerShell 5.1 sözdizimi, cp1254 kodlama, ters bölü bozulması ve PATH'te python olmaması gibi bu makineye özgü hataları yakalar.", "confidence": 0.9 }
+  ],
+
+  "triggers": [
+    "şu kodu incele",
+    "gözden geçir",
+    "bu değişiklikte sorun var mı",
+    "commit öncesi kontrol et",
+    "güvenlik açığı var mı"
   ],
 
   "inputs": [

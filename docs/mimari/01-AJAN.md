@@ -209,6 +209,7 @@ kontrolü de budur:
 | `contract_version` | ● | | | | | |
 | `identity` | ● | ● | | | | ● |
 | `role`, `capabilities` | | ● | | | | |
+| `triggers` | | ● | | | | |
 | `mission` | | ● | ● | | | |
 | `inputs` | | | ● | | | |
 | `outputs` | | | | | ● | |
@@ -229,8 +230,9 @@ kontrolü de budur:
 ## 4. Sözleşme ne kadar katı — İ1'in S4 sorusu
 
 Blueprint §6 bu soruyu bu maddeye havale etmişti. Cevap: **katı çekirdek, tek
-kaçış kapısı.** Her nesne `additionalProperties: false`, 17 alan zorunlu, ev
+kaçış kapısı.** Her nesne `additionalProperties: false`, 18 alan zorunlu, ev
 sahibine özgü her şey yalnızca `x-host` altında ve çekirdek orayı okumaz.
+(18'incisi `triggers`; şema 2.1 ile eklendi, [ADR-010](../adr/ADR-010-tetikleyici-ifade.md).)
 
 Bedeli açık: yeni ajan eklemek beş satır frontmatter değil, ~150 satır JSON.
 Bu bedel bilinçli kabul edildi — gerekçe ve elenen iki seçenek
@@ -261,8 +263,8 @@ doğrulayıcı doğrulamıyor demektir.
 
 ```
 $ node arac/sema-dogrula.js --test
-✓ kanit-denetcisi.json — geçerli, 17/17 zorunlu alan dolu
-✓ kod-gozden-gecirici.json — geçerli, 17/17 zorunlu alan dolu
+✓ kanit-denetcisi.json — geçerli, 18/18 zorunlu alan dolu
+✓ kod-gozden-gecirici.json — geçerli, 18/18 zorunlu alan dolu
 Öz-test — bozulmuş sözleşmeler reddedilmeli:   12 durumun 12'si reddedildi
 Sonuç: temiz.
 ```
@@ -276,7 +278,7 @@ Bu, "şema kuralları zorluyor" iddiasının kanıtıdır — iddianın kendisi 
 
 ---
 
-## 6. Ev sahibi türetme (ADR-000 K8) ve iki boşluk
+## 6. Ev sahibi türetme (ADR-000 K8) ve üç boşluk
 
 Sözleşme kaynaktır; `.claude/agents/*.md` frontmatter'ı ondan **üretilir**.
 Eşleme:
@@ -284,14 +286,15 @@ Eşleme:
 | Sözleşme | Claude Code frontmatter |
 |---|---|
 | `identity.id` | `name` |
-| `role.summary` + `capabilities[].description` | `description` (elle yazılmaz) |
+| `role.summary` + `capabilities[].description` + `triggers` | `description` (elle yazılmaz) |
 | `tools[].name` | `tools` |
 | izin verilmeyen araçlar | `disallowedTools` |
 | `dependencies.models.preferred` | `model` |
 | `mission` + `workflow.steps` | gövde metni |
 | `x-host.claude-code.*` | doğrudan (renk, skills vb.) |
 
-Türetme sırasında iki gerçek boşluk çıktı. İkisi de düzeltilmedi, **yazıldı**:
+Türetme sırasında üç gerçek boşluk çıktı. İlk ikisi düzeltilmedi, **yazıldı**;
+üçüncüsü (B3) U15'te kapatıldı:
 
 **B1 — kapısız `Bash`.** `kod-gozden-gecirici` bugün `Bash`'i onaysız
 kullanıyor (paket var mı diye `npm view`, `git diff`). Sözleşmeye çevrilince
@@ -307,6 +310,16 @@ kalır ve dışa aktarıcı bunu ajan metnindeki bir sınır cümlesine çevirir
 ev sahibi katmanında kapsam bir **temenniye** dönüşür. Gerçek zorlama Permission
 Manager'dadır; Claude Code'da bugün karşılığı yoktur. Bilinen ve kayıtlı
 zayıflık.
+
+**B3 — tetikleyici ifade (kapandı, U15).** Üçüncü boşluk türetme sırasında
+değil, türetilen dosya komşu projenin doğrulayıcısına verilince çıktı:
+`description` içinde "ne zaman çağrılır" sinyali yoktu ve dosya **reddedildi**.
+Sözleşmede o bilgiyi taşıyan alan yoktu (`capabilities` yetenek, `mission`
+amaç). Zorunlu `triggers: string[]` alanı ve şema 2.1 ile kapatıldı —
+gerekçe ve elenen `x-host` seçeneği
+[ADR-010](../adr/ADR-010-tetikleyici-ifade.md)'da. Kanıt sözle değil komşunun
+kapısıyla: `node arac/dogrula.js <türetilen>.md --kati` çıkış 0, ve bu koşu
+`src/agent-registry/index.test.js` içinde bir test.
 
 ---
 

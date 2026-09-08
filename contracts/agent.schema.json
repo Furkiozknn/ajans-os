@@ -11,6 +11,7 @@
     "role",
     "mission",
     "capabilities",
+    "triggers",
     "inputs",
     "outputs",
     "tools",
@@ -26,9 +27,9 @@
   ],
   "properties": {
     "contract_version": {
-      "description": "Bu şemanın sürümü. Uyumsuz değişiklikte major artar. 2.0: ADR-006 ile compensation, identity.status, koşullu insan kapısı ve eleştiri üst sınırı eklendi.",
+      "description": "Bu şemanın sürümü. Uyumsuz değişiklikte major artar. 2.0: ADR-006 ile compensation, identity.status, koşullu insan kapısı ve eleştiri üst sınırı eklendi. 2.1: ADR-010 ile zorunlu `triggers` eklendi — zorunlu alan eklemek eski sözleşmeleri geçersiz kıldığı için sürüm arttı.",
       "type": "string",
-      "const": "2.0"
+      "const": "2.1"
     },
 
     "identity": {
@@ -94,6 +95,15 @@
           }
         }
       }
+    },
+
+    "triggers": {
+      "description": "Kullanıcının bu ajanı çağırmak için söyleyeceği ifadeler. `capabilities` yeteneği, `mission` amacı taşır; ne zaman çağrılacağını taşıyan alan yoktu ve ev sahibi biçimleri bunu `description` içinde arıyor (ADR-010). Tırnaksız, kullanıcının ağzından yazılır: \"şu kodu incele\" değil, şu kodu incele.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 5, "maxLength": 120 }
     },
 
     "inputs": {

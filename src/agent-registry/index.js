@@ -114,10 +114,23 @@ function semaDogrula(deger, sema, kok, yol) {
 
 // --- ev sahibi bicimleri (K8) ----------------------------------------------
 
-/** Frontmatter icin kucuk YAML: yalnizca skaler ve duz dize dizisi. */
+/**
+ * Frontmatter icin kucuk YAML: yalnizca skaler ve duz dize dizisi.
+ *
+ * Cift tirnak iceren metin YAML'in **tek tirnakli** bicimiyle yazilir. Sebep
+ * olculdu: JSON.stringify `\\"` kacisi uretir ve ev sahiplerinin frontmatter
+ * ayristiricilari (ornek: turkce-ajanlar/arac/dogrula.js) ters bolulu kacisi
+ * cozmez — tetik ifadesi tirnak icinde gorunmez hale gelir. Tek tirnakli
+ * bicimde tek kacis kurali `'` -> `''` ve icerideki cift tirnak oldugu gibi
+ * kalir.
+ */
 function yamlDeger(deger) {
   if (Array.isArray(deger)) return `[${deger.map((d) => JSON.stringify(String(d))).join(", ")}]`;
-  if (typeof deger === "string") return /^[A-Za-z0-9_.\-/]+$/.test(deger) ? deger : JSON.stringify(deger);
+  if (typeof deger === "string") {
+    if (/^[A-Za-z0-9_.\-/]+$/.test(deger)) return deger;
+    if (deger.includes('"')) return `'${deger.replace(/'/g, "''")}'`;
+    return JSON.stringify(deger);
+  }
   return JSON.stringify(deger);
 }
 
@@ -142,10 +155,20 @@ function sinirlar(sozlesme) {
   return satirlar;
 }
 
-/** description elle yazilmaz: role.summary + capabilities metinlerinden turer. */
+/**
+ * description elle yazilmaz: role.summary + capabilities + triggers'tan turer.
+ *
+ * `triggers` (sema 2.1, ADR-010) sozlesmenin "ne zaman cagrilir" alanidir ve
+ * burada tirnak icinde description'a girer. Bu sus degil, kabul olcutu: ev
+ * sahibi dogrulayicilari description'da tetikleyici ifade arar ve bulamazsa
+ * turetilen dosyayi **reddeder** (U15). Tirnaklari sozlesme degil turetici koyar
+ * — bicim ev sahibinin isi, sozlesme cumlenin kendisini tasir.
+ */
 function aciklamaTuret(sozlesme) {
   const yetenekler = (sozlesme.capabilities || []).map((y) => y.description).join(" ");
-  return `${sozlesme.role.summary} ${yetenekler}`.trim();
+  const tetikler = (sozlesme.triggers || []).map((t) => `"${t}"`).join(", ");
+  const tetikCumlesi = tetikler ? `Kullanici ${tetikler} dediginde kullan.` : "";
+  return `${sozlesme.role.summary} ${yetenekler} ${tetikCumlesi}`.trim();
 }
 
 function claudeCodeUret(sozlesme, eslem) {
