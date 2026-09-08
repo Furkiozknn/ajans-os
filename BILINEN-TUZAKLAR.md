@@ -181,3 +181,23 @@ değil.
 - İz yarım kalacaksa `docs/arastirma/<iz>/DURUM.md` yaz: bitenler,
   hazır klonlar, kalanların odak soruları, aday dışı bırakılanlar ve
   nedeni. Sonraki tur bunu okur ve incelenmişi tekrar incelemez.
+
+## 17. Kapsam sınırı işe yarıyor — ölçüldü (#16'nın doğrulaması)
+
+#16 "alt ajanın maliyetini sayısı değil, ne kadar kod okuduğu belirler; ona
+kapsam sınırı ver" diyordu. 8 Eylül İ4 turu bunu ölçtü: iki `sonnet` alt ajan,
+prompt'larında **hangi klasörlere girecekleri ve hangilerine girmeyecekleri**
+açıkça yazılı ("`src/providers/` klasörüne GİRME", "`tests/`, `docs/`,
+`examples/` klasörlerine girme", "toplam 25 araç çağrısını aşma", "dosyayı
+baştan sona okuma; `grep -n` ile satırı bul, o civarı oku").
+
+Sonuç: 26 ve 25 araç çağrısı, 62k ve 69k token, toplam **~1,3 USD**. #16'daki
+açık uçlu turda aynı iki-ajan yapısı **~3,3 USD** yakmıştı. Yaklaşık **2,5 kat**
+fark, ve çıktı kalitesi düşmedi — iki ajan da kapsam dışı bıraktıkları şeyi
+raporda açıkça yazdı, bu da dürüstlük açısından artı.
+
+- Alt ajan prompt'una üç şeyi **her zaman** yaz: (1) okunacak klasörlerin
+  listesi, (2) **girilmeyecek** klasörlerin listesi, (3) araç çağrısı tavanı.
+- "Depoyu incele" yasak. Açık uçlu her görev bütçeyi sonuna kadar kullanır.
+- Ajanın kapsam dışına çıkması gerekirse bunu raporda gerekçesiyle yazmasını
+  iste — sessizce genişletmesindense.

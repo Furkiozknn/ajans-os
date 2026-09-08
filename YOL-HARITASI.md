@@ -23,13 +23,6 @@ yerden sürer.
 
 
 
-- [ ] **İ4 Güvenilirlik araştırması** — Protokol İ4: değerlendirici /
-      eleştirmen / gözden geçirici ajanlar, reflection & self-correction,
-      arıza tespiti, retry / fallback / checkpoint / rollback. Özellikle:
-      checkpoint durum modeli nasıl (immutable snapshot mı, event log
-      mu), rollback gerçekten geri alıyor mu yoksa "yeniden dene" mi.
-      Çıktı: `docs/arastirma/i4-guvenilirlik/`.
-
 - [ ] **İ5 Gözlem ve ekonomi araştırması** — Protokol İ5: tracing
       (OpenTelemetry GenAI kuralları birincil kaynak), değerlendirme ve
       benchmark araçları, maliyet/gecikme optimizasyonu, model
@@ -193,3 +186,19 @@ graphiti, cognee, graphrag, llamaindex, LightRAG).
 Tamamlandı: 2026-09-07 — 7 kaynak dosyası + OZET.md yazıldı (mcp-spec,
 a2a-spec, e2b, microsandbox, llamafirewall, mcp-scan, mcp-vet). ADR-000 K6:
 çürüten kanıt bulunamadı, güçlendi; eksik bir madde Faz 3'e not düşüldü.
+
+- [x] **İ4 Güvenilirlik araştırması** — Protokol İ4: değerlendirici /
+      eleştirmen / gözden geçirici ajanlar, reflection & self-correction,
+      arıza tespiti, retry / fallback / checkpoint / rollback. Özellikle:
+      checkpoint durum modeli nasıl (immutable snapshot mı, event log
+      mu), rollback gerçekten geri alıyor mu yoksa "yeniden dene" mi.
+      Çıktı: `docs/arastirma/i4-guvenilirlik/`.
+
+Tamamlandı: 2026-09-08 — 7 proje dosyası + OZET.md yazıldı (langgraph,
+temporal, dbos-transact-py, dspy, instructor, portkey-gateway, reflexion).
+Ana bulgu: durum modeli üç yola ayrılıyor (tam snapshot / event log+replay /
+adım-sonucu tablosu) ve rollback yedi projenin hiçbirinde gerçek değil —
+hepsinde "durumu geri sar + yeniden dene", dünyayı geri alma değil. En güçlü
+yinelenen desen: yargı deterministik kaynaktan gelir, LLM yalnızca eleştiri
+yazar. İnsan kapısı yedi projeden yalnızca birinde birinci sınıf. Otomatik
+kanıt doğrulaması %93; elle DENETIM.md protokol §4 gereği ayrı koşuda yazılacak.
