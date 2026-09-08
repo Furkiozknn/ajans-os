@@ -10,8 +10,14 @@
 import type { Adim, AdimDurumu, AdimKaydi, GorevSozlesmesi, HataTuru, KebabId } from "../tipler";
 
 export interface TaskManager {
+  /** Kaydin disk yolu. Kaydi `arac/sema-dogrula.js --dosya` ile denetlemek icin. */
+  kayit_yolu(task_id: KebabId): string;
+
   /** Gorev kaydini diskten okur. Yoksa null — "yeni gorev" karari cagirandadir. */
   yukle(task_id: KebabId): Promise<GorevSozlesmesi | null>;
+
+  /** Yeni gorev kaydini ilk kez diske indirir. Var olan kaydin uzerine yazmaz. */
+  olustur(gorev: GorevSozlesmesi): Promise<GorevSozlesmesi>;
 
   /**
    * Bagimliliklari karsilanmis, henuz calismamis bir sonraki adim.
@@ -27,7 +33,18 @@ export interface TaskManager {
   bitti_yaz(
     gorev: GorevSozlesmesi,
     adim_id: KebabId,
-    sonuc: { result_summary: string; artifacts?: unknown[]; cost_usd?: number | null },
+    sonuc: {
+      result_summary: string;
+      artifacts?: string[];
+      cost_usd?: number | null;
+      side_effects_done?: string[];
+      /**
+       * Sema BITTI kaydinda zorunlu tutar. Verilmezse DEGERLENDIRILMEDI olur ve
+       * o zaman `approval_ref` sarttir — "kontrol edilmedi" temiz sayilmaz (D11).
+       */
+      evaluation_result?: "GECTI" | "KALDI" | "DEGERLENDIRILMEDI";
+      approval_ref?: string;
+    },
   ): Promise<AdimKaydi>;
 
   basarisiz_yaz(
@@ -36,11 +53,14 @@ export interface TaskManager {
     hata: { error_type: HataTuru; error_message: string },
   ): Promise<AdimKaydi>;
 
-  /** Bekleme durumlarina gecis: GIRDI_BEKLIYOR, ONAY_BEKLIYOR. */
+  /**
+   * Bekleme durumlarina gecis; baska durum kabul edilmez. ONAY_BEKLIYOR icin
+   * `not` bir `approval_ref`tir ve zorunludur — onay bir durumdur, izi vardir.
+   */
   durum_degistir(
     gorev: GorevSozlesmesi,
     adim_id: KebabId,
-    durum: AdimDurumu,
+    durum: Extract<AdimDurumu, "GIRDI_BEKLIYOR" | "ONAY_BEKLIYOR">,
     not?: string,
   ): Promise<AdimKaydi>;
 
@@ -50,3 +70,10 @@ export interface TaskManager {
    */
   tamamlandi_mi(gorev: GorevSozlesmesi, adim_id: KebabId): boolean;
 }
+
+/**
+ * Uygulama (`index.js`). Kayitlar `dizin` altinda `<task_id>.json` olarak
+ * tutulur; her yazma gecici dosya + rename ile atomiktir (yarim JSON diske
+ * dusmez), cunku ADR-003'un iki yazmasi ancak diskteki kayit butunse anlamlidir.
+ */
+export function gorevYoneticisi(secenekler: { dizin: string }): TaskManager;

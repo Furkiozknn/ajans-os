@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U1 — `src/task-manager/`** — ADR-003 iki yazma, durum makinesi,
-      `sonraki_adim`. Bitti: süreç ölümü benzetiminden sonra
-      `tamamlandi_mi` doğru cevap veriyor; kayıt `task.schema.json`'a uyuyor.
 - [ ] **U2 — `src/agent-registry/`** — yükleme, `dogrula`, `turet`.
       Bitti: iki örnek ajan geçiyor, eksik alanlı sözleşme reddediliyor,
       `turet` diske **yazmıyor**.
@@ -95,6 +92,25 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U1 — `src/task-manager/`** — 2026-09-08. `src/task-manager/index.js`
+      (ADR-003 iki yazma, durum makinesi, `sonraki_adim`) +
+      `src/task-manager/index.test.js` (6 test) + `index.d.ts` imza
+      güncellemesi. Süreç ölümü benzetimi **bellekteki nesneyi atıp kaydı
+      diskten yeniden okumaktır**: `basladi_yaz`'dan sonra ölen koşuda
+      `tamamlandi_mi` → `false` ve adım aynı `attempt` ile sürdürülür (yeni
+      deneme açılmaz), `bitti_yaz`'dan sonra ölende → `true` ve ikinci
+      `basladi_yaz` istisna atar. Yazmalar geçici dosya + `rename` ile
+      atomik; yarım JSON diske düşerse iki yazmanın garantisi kalmazdı.
+      Şema uyumu **iddia değil ölçüm**: `arac/sema-dogrula.js` bu turda
+      `--dosya <yol> --sema <ad>` kipini kazandı ve test, ürettiği kaydı bu
+      araca doğrulatıyor (bozuk kayıtla çıkış kodu 1 olduğu ayrıca sınandı).
+      Şemanın gördüğü, `.d.ts`'in görmediği iki kural uygulamaya girdi:
+      `BITTI` kaydı `evaluation_result` ister — verilmezse
+      `DEGERLENDIRILMEDI` olur ve `approval_ref` zorunludur (D11: kontrol
+      edilmedi ≠ temiz); `ONAY_BEKLIYOR` `approval_ref`siz yazılamaz.
+      Doğrulama: `npm run kapi` (8 test + yapı kapısı) ve
+      `node arac/sema-dogrula.js` temiz.
 
 - [x] **U0 — Çalışma zamanı iskeleti ve test kapısı** — 2026-09-08.
       `package.json` (`"type": "module"`, `npm test` →

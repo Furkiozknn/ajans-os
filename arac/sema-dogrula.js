@@ -7,6 +7,8 @@
 // Kullanım:
 //   node arac/sema-dogrula.js          contracts/ornek/*.json dosyalarını doğrular
 //   node arac/sema-dogrula.js --test   doğrulayıcının kendi öz-testi (bozuk sözleşmeler reddedilmeli)
+//   node arac/sema-dogrula.js --dosya <yol.json> --sema task.schema.json
+//                                      çalışma anında üretilmiş tek bir belgeyi doğrular (U1+)
 //
 // Neden ajv değil: bu depoda hiç bağımlılık yok ve olmasın (arac/ altındaki dört
 // script de saf Node). Desteklenmeyen bir anahtar kelime görürse hata verir —
@@ -530,6 +532,32 @@ const SEMALAR = [
   { ad: 'span', sema: 'span.schema.json', ornekDizin: ['contracts', 'ornek', 'gozlem'], enAz: 3 },
   { ad: 'proposal', sema: 'proposal.schema.json', ornekDizin: ['contracts', 'ornek', 'oneri'], enAz: 3 }
 ];
+
+// Tek dosya kipi: `node arac/sema-dogrula.js --dosya <yol> --sema task.schema.json`
+// Örnek klasörlerinde durmayan, çalışma anında ÜRETİLMİŞ bir belgeyi doğrular
+// (U1+ modüllerinin kaydını kapıya sokan yol budur). Çıkış kodu 0 = temiz.
+const CAPRAZ = { task: gorevCaprazKontrol, permission: izinCaprazKontrol, span: spanCaprazKontrol, proposal: oneriCaprazKontrol };
+const dosyaBayragi = process.argv.indexOf('--dosya');
+if (dosyaBayragi !== -1) {
+  const hedefDosya = process.argv[dosyaBayragi + 1];
+  const semaAdi = process.argv[process.argv.indexOf('--sema') + 1];
+  const secilen = SEMALAR.find((s) => s.sema === semaAdi);
+  if (!hedefDosya || !secilen) {
+    console.error(`Kullanım: --dosya <json> --sema <${SEMALAR.map((s) => s.sema).join('|')}>`);
+    process.exit(2);
+  }
+  const semaKok = oku('contracts', secilen.sema);
+  const belge = JSON.parse(fs.readFileSync(hedefDosya, 'utf8'));
+  const h = dogrula(belge, semaKok, semaKok, '');
+  if (CAPRAZ[secilen.ad]) h.push(...CAPRAZ[secilen.ad](belge));
+  if (h.length) {
+    console.error(`✗ ${hedefDosya} — ${secilen.sema} ile ${h.length} hata:`);
+    h.forEach((x) => console.error(`    ${x}`));
+    process.exit(1);
+  }
+  console.log(`✓ ${hedefDosya} — ${secilen.sema} ile geçerli.`);
+  process.exit(0);
+}
 
 let toplamHata = 0;
 const yuklenen = {};
