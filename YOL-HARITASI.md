@@ -134,6 +134,17 @@ yerden sürer.
       ekle; sonra bu maddeyi işaretle ve **aynısını en sona tekrar
       ekle**. Döngü böyle sürer.
 
+- [ ] **kanit-dogrula iyileştirmesi** — Üç denetimin (İ4, İ5, İ6
+      `DENETIM.md`) tekrar eden dersleri araca insin: (1) çıplak dosya adı
+      (`README.md:14`) önce depo kökünde aranır, iç içe kopya ancak kökte yoksa
+      aday olur; (2) `…/dosya.py:N` gibi kısaltılmış yollar depo içinde ada göre
+      aranır; (3) tek satırda birden çok `dosya:satır` varsa token'lar en yakın
+      alıntıya bağlanır, hepsine değil; (4) `xxx.md:N` atıfları aynı iz
+      klasöründeki kardeş belgede aranır; (5) izin "repo bölünmesi" notundaki
+      ikinci klon köküne de bakılır. Her kural için DENETIM.md'lerdeki gerçek
+      yanlış alarmdan bir regresyon testi (`arac/kanit-dogrula-test.js`);
+      İ4–İ6 üzerinde yeniden koşup şüpheli sayısının düştüğünü tabloyla göster.
+
 ---
 
 ## Bitti
