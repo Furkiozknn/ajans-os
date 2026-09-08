@@ -202,9 +202,18 @@ export type Kanit =
   | { tur: "test"; gecen: number; kalan: number }
   | { tur: "olcum"; ad: string; deger: number };
 
+/**
+ * Kapinin uc degeri (ADR-004, task.schema.json `evaluation_result`).
+ * Ucuncu deger zorunludur: "kontrol edilmedi" ile "temiz" ayni sey degildir
+ * (D11). `DEGERLENDIRILMEDI` isi durdurmaz, insan kapisina dusurur.
+ */
+export type DegerlendirmeKarari = "GECTI" | "KALDI" | "DEGERLENDIRILMEDI";
+
 export interface DegerlendirmeSonucu {
+  sonuc: DegerlendirmeKarari;
+  /** Kisayol; her zaman `sonuc === "GECTI"`. Iki alan asla ayrisamaz. */
   gecti: boolean;
-  /** Karari veren kanitlar; bos olamaz — kanitsiz "gecti" yoktur. */
+  /** Karari veren kanitlar; yalnizca `DEGERLENDIRILMEDI` bos olabilir. */
   kanitlar: Kanit[];
   aciklama: string;
 }
