@@ -38,3 +38,15 @@ export interface ContextManager {
   /** Formulu uygular ve gerekiyorsa siraya gore kisar. */
   butcele(bilesenler: ButceBilesenleri): ButceSonucu;
 }
+
+/**
+ * Kurar. `esik` 0 ile 1 arasindadir (1 kabul edilmez); `kisilma_sirasi`
+ * donmustur ve calisma aninda degistirilemez.
+ *
+ * Donen `ButceSonucu.bilesenler` **kisilma sonrasi** halidir; `asildi_mi`
+ * ise esigin kisilmadan once asilip asilmadigini soyler.
+ */
+export declare function baglamYoneticisi(secenekler?: {
+  esik?: number;
+  kisilma_sirasi?: KisilmaSirasi;
+}): ContextManager;
