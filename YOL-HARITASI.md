@@ -38,8 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U6 — `src/context-manager/`** — bütçe ve kısılma.
-      Bitti: atılan parçaların sırası önceden yazılı sırayla birebir.
 - [ ] **U7 — `src/model-router/`** — `sec` + `cagir`, taşıyıcı arkası.
       Bitti: `sec` testinde hiçbir sağlayıcı adı geçmiyor; `cagir` sahte
       taşıyıcıyla `usage` döndürüyor.
@@ -94,6 +92,25 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U6 — `src/context-manager/`** — 2026-09-08. `index.js`
+      (`baglamYoneticisi` → `esik`, `kisilma_sirasi`, `butcele`) +
+      `index.test.js` (11 test) + `index.d.ts`'ye fabrika bildirimi.
+      LightRAG formülü §2.7'den birebir; tavan `toplam * esik` ve `esik`
+      1'i **kabul etmiyor** (eşik %100'ün altındadır bir kural, kurulumda
+      doğrulanıyor). Kısılma sırası kuruluşta veriliyor, donuyor ve
+      çağıranın dizisi sonradan değişse bile modülünki değişmiyor;
+      `butcele` sırayı baştan sona gezip fazlayı parça parça kısıyor —
+      çalışma anında neyi atalım kararı yok. `sistem_sozlesmesi` ve
+      `tampon` kısılamaz; bu ikisi tek başına tavanı aşıyorsa **istisna
+      atılıyor**, çünkü taşmış bir bütçeyi sessizce döndürmek AP1'in ta
+      kendisidir. Bitti ölçütü ölçüldü: 400 fazlada yalnız `bilgi`;
+      700 fazlada `bilgi` sonra `gorev_durumu`, `sorgu`ya dokunulmadan;
+      özel sıra verildiğinde çıktı o sıraya uyuyor; `push` ve indeks
+      ataması `TypeError`; aynı girdi 100 çağrıda aynı sonuç. Kapsam dışı
+      yerinde: özetleme yok, kısılma atmaktır.
+      Doğrulama: `npm run kapi` çıkış 0 (56 test, 11'i U6),
+      `npx -p typescript@5.6 tsc -p tsconfig.json` çıkış 0.
 
 - [x] **U5 — `src/memory-manager/`** — 2026-09-08. `index.js`
       (`oku`, `yaz`, `gecersiz_kil`) + `index.test.js` (9 test) + genişletilmiş
