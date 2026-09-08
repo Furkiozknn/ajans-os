@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U10 — `src/critic/`** — `elestir` → `message.schema.json`.
-      Bitti: dönüş `string` değil şemaya uyan belge; eleştirinin geçme
-      kararına oyu yok.
 - [ ] **U11 — `src/recovery-manager/`** — dört mod, bekleme.
       Bitti: telafisi olmayan eylemden sonra daima `insan-kapisi`.
 - [ ] **U12 — `src/observability/`** — span yazımı, tek yönlü.
@@ -84,6 +81,23 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
 
+- [x] **U10 — `src/critic/`** — 2026-09-08. `index.js` (`elestirmen` →
+      `elestir`) + `index.test.js` (7 test) + `index.d.ts`'ye fabrika,
+      `ElestiriYaniti`/`ElestiriMaddesi` ve `EN_FAZLA_MADDE`. İki bitti
+      ölçütü de doğrudan ölçülüyor: **dönüş `string` değil şemaya uyan
+      belge** (üretilen mesaj `arac/sema-dogrula.js --sema
+      message.schema.json` ile denetleniyor; aracın gerçekten baktığı,
+      `items` silinmiş kopyanın **reddedilmesiyle** kanıtlanıyor) ve
+      **eleştirinin geçme kararına oyu yok** (eleştiri yalnızca `KALDI`
+      için üretilir — `GECTI`/`DEGERLENDIRILMEDI` istisna ve model hiç
+      çağrılmaz; `payload` yalnızca `items`/`truncated`/`raw_ref` taşır;
+      mesajın tamamında karar kelimeleri aranıp bulunmuyor; girdideki
+      `degerlendirme` nesnesi değişmiyor). Taşıyıcı çıktısı düzeltilmez,
+      reddedilir: kapalı madde biçimi, fazladan alan istisna (AP3). 20
+      madde üst sınırı şemadan gelir (AP11) — fazlası `truncated: true` ve
+      `raw_ref` ile kesilir (kural 12). ADR-002: Model Router import
+      edilmez, `cagir` dışarıdan verilir. Doğrulama: `npm run kapi` —
+      112/112 test, yapı doğrulama temiz; `tsc -p tsconfig.json` çıkış 0.
 - [x] **U9 — `src/evaluator/`** — 2026-09-08. `index.js` (`degerlendirici` →
       `gecerli_mi`, `esigi_asti_mi`) + `index.test.js` (20 test) +
       `index.d.ts`'ye fabrika ve sonuç sabitleri + `tipler.d.ts`'ye
