@@ -25,14 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-- [ ] **Agent Architecture** — Sözleşme (`contracts/agent.schema.json`)
-      temel alınır; araştırma bulgularıyla şema gözden geçirilir, eksik
-      alan varsa ADR ile eklenir. Ajan yaşam döngüsü: kayıt → seçim →
-      başlatma → yürütme → değerlendirme → arşiv. Çıktı:
-      `docs/mimari/01-AJAN.md`, güncellenmiş şema, `contracts/ornek/`
-      altında en az iki tam örnek sözleşme (biri mevcut
-      `turkce-ajanlar/agents/kod-gozden-gecirici.md`'den türetilmiş).
-
 - [ ] **Orchestration Architecture** — Planlayıcı (hedef → görev
       grafı), yönlendirici (görev → ajan), yürütücü (paralel/sıralı,
       checkpoint'li), ajan-ajan iletişim kuralları, konsensüs ne zaman
@@ -105,6 +97,37 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Agent Architecture** — 2026-09-08. `docs/mimari/01-AJAN.md` +
+      [ADR-006](docs/adr/ADR-006-ajan-sozlesmesi.md) + `agent.schema.json`
+      **v2.0** + `contracts/ornek/` altında iki tam sözleşme +
+      `arac/sema-dogrula.js` (bağımlılıksız doğrulayıcı, öz-testli).
+      İ1'in S4 sorusu ("sözleşme ne kadar katı") karara bağlandı: **katı
+      çekirdek, tek kaçış kapısı** (`additionalProperties: false` her yerde,
+      ev sahibine özgü her şey yalnızca `x-host` altında; terfi bir şema
+      değişikliğidir). Asıl bulgu şuydu: v1.0'ın eksiği alan eksikliği değil
+      **zorlama** eksikliğiydi — `03-ANTI-PATTERNLER.md` §6'nın 12 kuralından
+      ajan sözleşmesine düşen **beşi** (1, 7, 9, 10, 12) şemada yalnızca alan
+      açıklamasında yazan bir temenniydi, yani AP3'ün ("beyan edilen garantinin
+      kodda karşılığı yok") kendimize dönük hâli. v2.0 beşini de `if/then` ile
+      şemaya gömdü: `risk: high` + `scope ≠ read` araçta `requires_human_approval`
+      artık **const true** (`false` yazan sözleşme reddedilir); `rollback` alanı
+      **kaldırılıp** `compensation { side_effects, method, on_impossible:
+      "human-gate" }` geldi; bellek yazımı varsa `retention`, PII izni varsa
+      `pii_basis`, `iterative` akışta `max_iterations`, retry'da
+      `max_critique_items` zorunlu. Ayrıca `identity.status`
+      (draft/active/deprecated/archived) + `supersedes` eklendi — arşivin
+      makine-okur karşılığı yoktu (kanıtı en zayıf alan, dürüstlük notunda
+      yazılı). Yaşam döngüsünün altı aşaması sahibi, okuduğu sözleşme alanları
+      ve başarısızlık hâliyle yazıldı; §3.7'deki aşama × alan tablosu 17 zorunlu
+      alanın hepsinin en az bir aşamada kullanıldığını gösteriyor. Türetmede iki
+      gerçek boşluk çıktı ve düzeltilmeyip **yazıldı**: (B1) `kod-gozden-gecirici`
+      bugün `Bash`'i kapısız kullanıyor, sözleşme kapıyı zorunlu kılınca ajan gece
+      koşusunda `Bash` kullanamaz hâle geldi; (B2) Claude Code frontmatter'ı yazma
+      kapsamını glob ile daraltamıyor, kapsam ev sahibi katmanında temenniye
+      dönüşüyor. Doğrulama: `node arac/sema-dogrula.js --test` → iki örnek de
+      17/17 zorunlu alanla geçti, **12 bozma denemesinin 12'si de reddedildi**,
+      çıkış kodu 0.
 
 - [x] **kanit-dogrula iyileştirmesi** — Üç denetimin (İ4, İ5, İ6
       `DENETIM.md`) tekrar eden dersleri araca insin: (1) çıplak dosya adı

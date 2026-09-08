@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ajans-os.dev/contracts/agent.schema.json",
   "title": "Agent Contract",
-  "description": "Bir ajanın makine-okur sözleşmesi. Orkestratör, kayıt defteri, yönlendirici, izin yöneticisi ve değerlendirici yalnızca bu sözleşmeyi bilir; ajanın iç yapısını bilmez. ADR-000 K3.",
+  "description": "Bir ajanın makine-okur sözleşmesi. Orkestratör, kayıt defteri, izin yöneticisi ve değerlendirici yalnızca bu sözleşmeyi bilir; ajanın iç yapısını bilmez. ADR-000 K3, ADR-006.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -26,21 +26,30 @@
   ],
   "properties": {
     "contract_version": {
-      "description": "Bu şemanın sürümü. Uyumsuz değişiklikte major artar.",
+      "description": "Bu şemanın sürümü. Uyumsuz değişiklikte major artar. 2.0: ADR-006 ile compensation, identity.status, koşullu insan kapısı ve eleştiri üst sınırı eklendi.",
       "type": "string",
-      "const": "1.0"
+      "const": "2.0"
     },
 
     "identity": {
       "description": "Ajanı benzersiz ve sürümlü tanımlar. Kayıt defterinin anahtarı id + version.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "version", "owner"],
+      "required": ["id", "name", "version", "owner", "status"],
       "properties": {
         "id": { "$ref": "#/$defs/kebab_id" },
         "name": { "type": "string", "minLength": 2, "maxLength": 80 },
         "version": { "$ref": "#/$defs/semver" },
         "owner": { "type": "string", "description": "Sorumlu kişi/ekip. Boş bırakılamaz: sahipsiz ajan bakımsız kalır." },
+        "status": {
+          "description": "Yaşam döngüsündeki yeri. Yönlendirici yalnızca 'active' olanı seçer; 'deprecated' yalnızca adıyla çağrılırsa çalışır; 'archived' hiç çalışmaz, yalnızca okunur. Kayıt defteri durumu sözleşmeden okur, kendi tutmaz.",
+          "type": "string",
+          "enum": ["draft", "active", "deprecated", "archived"]
+        },
+        "supersedes": {
+          "description": "Bu sözleşmenin yerini aldığı ajan id'si. Arşive giden ajanın izleri kaybolmasın diye.",
+          "$ref": "#/$defs/kebab_id"
+        },
         "description": { "type": "string", "maxLength": 400 },
         "tags": { "type": "array", "items": { "$ref": "#/$defs/kebab_id" }, "uniqueItems": true }
       }
@@ -113,10 +122,25 @@
           "scope": { "type": "string", "enum": ["read", "write", "execute", "network"] },
           "risk": { "type": "string", "enum": ["low", "medium", "high"] },
           "requires_human_approval": {
-            "description": "true ise her çağrı insan kapısından geçer. Geri alınamaz işlemler için zorunlu (ADR-000 K6).",
+            "description": "true ise her çağrı insan kapısından geçer. Geri alınamaz işlemler için zorunlu (ADR-000 K6). risk=high ve scope≠read olan araçta yazılabilecek tek değer true'dur — şema false yazılmasını reddeder (AP1 → kural 1: kapı bir yapılandırma değeri değildir).",
             "type": "boolean", "default": false
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "risk": { "const": "high" },
+                "scope": { "enum": ["write", "execute", "network"] }
+              },
+              "required": ["risk", "scope"]
+            },
+            "then": {
+              "required": ["requires_human_approval"],
+              "properties": { "requires_human_approval": { "const": true } }
+            }
+          }
+        ]
       }
     },
 
@@ -130,8 +154,8 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "read": { "type": "array", "items": { "type": "string" }, "description": "Glob desenleri. Boş = hiçbir yer." },
-            "write": { "type": "array", "items": { "type": "string" } },
+            "read": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Glob desenleri. Yazılmamışsa veya boşsa sonuç boş kümedir — 'hepsi' değil (AP6 → kural 7)." },
+            "write": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Glob desenleri. Yazılmamışsa veya boşsa sonuç boş kümedir." },
             "delete": {
               "type": "boolean", "const": false,
               "description": "Her zaman false. Kalıcı silme sözleşmeyle verilemez; insan kapısı gerektirir."
@@ -191,9 +215,15 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["mode", "steps"],
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "iterative" } }, "required": ["mode"] },
+          "then": { "required": ["max_iterations"] }
+        }
+      ],
       "properties": {
         "mode": { "type": "string", "enum": ["single-shot", "iterative", "multi-step", "reactive"] },
-        "max_iterations": { "type": "integer", "minimum": 1 },
+        "max_iterations": { "type": "integer", "minimum": 1, "maximum": 50, "description": "mode=iterative ise zorunlu (AP11 → kural 12): üst sınırı olmayan döngü yazılamaz." },
         "steps": {
           "type": "array",
           "minItems": 1,
@@ -252,7 +282,7 @@
       "description": "Arızada ne yapılır. Recovery Manager bunu uygular; ajan kendi başına retry döngüsüne girmez.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["retry", "fallback"],
+      "required": ["retry", "fallback", "compensation"],
       "properties": {
         "retry": {
           "type": "object",
@@ -261,8 +291,18 @@
           "properties": {
             "max_attempts": { "type": "integer", "minimum": 0, "maximum": 10 },
             "backoff": { "type": "string", "enum": ["none", "linear", "exponential"] },
-            "retry_on": { "type": "array", "items": { "type": "string" }, "description": "Hangi arıza modlarında (failure_modes.id)." }
-          }
+            "retry_on": { "type": "array", "items": { "type": "string" }, "description": "Hangi arıza modlarında (failure_modes.id)." },
+            "max_critique_items": {
+              "description": "Sonraki denemeye taşınacak en fazla kaç eleştiri kaydı. max_attempts ≥ 1 ise zorunlu (AP11 → kural 12): yansıma belleği sınırsız büyüyemez. Taşınmayan eleştiriler silinmez, ham kayıtta kalır.",
+              "type": "integer", "minimum": 0, "maximum": 20
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "max_attempts": { "minimum": 1 } }, "required": ["max_attempts"] },
+              "then": { "required": ["max_critique_items"] }
+            }
+          ]
         },
         "fallback": {
           "type": "array",
@@ -270,7 +310,32 @@
           "description": "Sırayla denenecek: ajan id'leri veya 'human'. Boş liste = doğrudan escalate."
         },
         "checkpoint": { "type": "boolean", "default": false },
-        "rollback": { "type": "string", "description": "Geri alma yöntemi. Yazma izni olan her ajan için zorunlu." },
+        "compensation": {
+          "description": "Yarıda kesilen işin dünyada bıraktığı izin ne yapılacağı. AP8 → kural 9: geri alma diye bir alan yoktur; durumu geri sarmak Task Manager'ın işidir, buradaki soru dış etkinin telafisidir.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["side_effects"],
+          "properties": {
+            "side_effects": {
+              "description": "Bu ajan süreç dışında kalıcı bir etki bırakır mı (dosya yazma, komut çalıştırma, ağ isteği)? Salt okuma ajanı için false.",
+              "type": "boolean"
+            },
+            "method": {
+              "description": "Etkinin nasıl telafi edildiği — somut yaz: 'yazdığı dosya _eski/ altına taşınır', 'oluşturduğu dal silinir'. side_effects=true ise zorunlu.",
+              "type": "string", "minLength": 10, "maxLength": 400
+            },
+            "on_impossible": {
+              "description": "Telafisi olmayan eylemde tek geçerli değer: insan kapısı. side_effects=true ise zorunlu (ADR-000 K6).",
+              "const": "human-gate"
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "side_effects": { "const": true } }, "required": ["side_effects"] },
+              "then": { "required": ["method", "on_impossible"] }
+            }
+          ]
+        },
         "escalate_to": { "type": "string", "enum": ["coordinator", "human"], "default": "human" }
       }
     },
@@ -301,9 +366,26 @@
       "properties": {
         "read": { "type": "array", "items": { "$ref": "#/$defs/memory_layer" }, "uniqueItems": true },
         "write": { "type": "array", "items": { "$ref": "#/$defs/memory_layer" }, "uniqueItems": true },
-        "retention": { "type": "string", "enum": ["task", "session", "days-7", "days-30", "permanent"] },
-        "pii_allowed": { "type": "boolean", "default": false }
-      }
+        "retention": {
+          "description": "Yazılanın saklama süresi. write boş değilse zorunlu (AP9 → kural 10): saklama süresi tanımsız bellek katmanı yazılamaz.",
+          "type": "string", "enum": ["task", "session", "days-7", "days-30", "permanent"]
+        },
+        "pii_allowed": { "type": "boolean", "default": false },
+        "pii_basis": {
+          "description": "pii_allowed=true ise zorunlu: hangi kişisel veri, neden gerekli, nasıl sınırlanıyor. Gerekçesiz PII izni verilemez.",
+          "type": "string", "minLength": 10, "maxLength": 400
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "write": { "minItems": 1 } }, "required": ["write"] },
+          "then": { "required": ["retention"] }
+        },
+        {
+          "if": { "properties": { "pii_allowed": { "const": true } }, "required": ["pii_allowed"] },
+          "then": { "required": ["pii_basis"] }
+        }
+      ]
     },
 
     "communication_protocol": {
