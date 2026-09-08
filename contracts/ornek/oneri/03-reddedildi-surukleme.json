@@ -1,0 +1,49 @@
+{
+  "contract_version": "1.0",
+  "proposal_id": "oneri-2026-09-08-yonlendirme-ucuz-model",
+  "at": "2026-09-08T16:30:00+03:00",
+  "author": { "kind": "insan", "name": "furki" },
+  "evidence": {
+    "run_ids": ["kosu-2026-09-08-i5"],
+    "window_start": "2026-09-08T00:00:00+03:00",
+    "window_end": "2026-09-08T14:00:00+03:00",
+    "observation": {
+      "counter": "kosu_maliyeti_usd",
+      "runs": 1,
+      "before": 6.0,
+      "after": 6.0
+    },
+    "summary": "Sayac hareket etti ama hareketi aciklayan onayli bir oneri yok; surukleme detektoru golge modda sinyal uretti."
+  },
+  "target": {
+    "kind": "yonlendirme-politikasi",
+    "artifact": "docs/mimari/02-ORKESTRASYON.md",
+    "version_before": "1.0"
+  },
+  "change": {
+    "what": "Sentez adimlarinin varsayilan modeli ucuz modele cevrilsin.",
+    "why": "Maliyet sayaci yukseldi; ucuz model dususu geri alabilir.",
+    "risk": "yuksek"
+  },
+  "gates": {
+    "valid": {
+      "result": "gecti",
+      "method": "hedef belge var ve surumu okunabilir",
+      "evidence_kind": "denetim"
+    },
+    "threshold": {
+      "result": "calistirilmadi",
+      "method": "kalite karsilastirmasi kosulmadi",
+      "evidence_kind": "olcum",
+      "detail": "Ucuz modelin ayni belgeyi urettigini gosteren tek bir olcum yok."
+    }
+  },
+  "status": "REDDEDILDI",
+  "rejection_reason": "Esik kapisi calistirilmadi; calistirilmamis kapi 'gecti' sayilmaz. Kanitin tamami surukleme sinyali ve sinyal golge modda yetki almaz.",
+  "drift": {
+    "mode": "golge",
+    "counter": "kosu_maliyeti_usd",
+    "unexplained_delta": 1.8,
+    "note": "Hareketi aciklayan onayli oneri bulunamadi; olasi dis neden fiyat tablosu guncellemesi, dogrulanmadi."
+  }
+}

@@ -440,6 +440,79 @@ function spanCaprazKontrol(s) {
   return h;
 }
 
+// Öneri sözleşmesi öz-testi: 07'nin kuralları şema ile çapraz kontrole
+// dağılmış durumda; bozma denemesi hangisine takılırsa takılsın reddedilmiş
+// sayılır. Hiçbirine takılmıyorsa o kural yok demektir.
+function ozTestOneri(ornekler) {
+  const temel = ornekler.find((o) => o.status === 'UYGULANDI') || ornekler[0];
+  if (!temel) return [];
+  const kopya = () => JSON.parse(JSON.stringify(temel));
+  return [
+    ['otomatik uygulama alani yazilamaz', (() => { const z = kopya(); z.auto_apply = true; return z; })()],
+    ['onay kaydi olmadan UYGULANDI yazilamaz', (() => { const z = kopya(); delete z.approval; return z; })()],
+    ['onaylayan bir bilesen olamaz', (() => { const z = kopya(); z.approval.by = 'orchestrator'; return z; })()],
+    ['kalmis kapiyla uygulama olmaz', (() => { const z = kopya(); z.gates.threshold.result = 'kaldi'; return z; })()],
+    ['calistirilmamis kapi gecmis sayilmaz', (() => { const z = kopya(); z.gates.valid.result = 'calistirilmadi'; return z; })()],
+    ['tek basarili bayragi iki kapinin yerine gecemez', (() => { const z = kopya(); delete z.gates.threshold; z.gates.valid.result = 'gecti'; return z; })()],
+    ['kanitsiz oneri yazilamaz', (() => { const z = kopya(); z.evidence.run_ids = []; return z; })()],
+    ['canli sisteme bakan oneri yazilamaz', (() => { const z = kopya(); z.evidence.window_end = '2099-01-01T00:00:00+03:00'; return z; })()],
+    ['surukleme sinyali esik kapisini geciremez', (() => { const z = kopya(); z.gates.threshold.evidence_kind = 'surukleme'; return z; })()],
+    ['kapinin kendisi oneri hedefi olamaz', (() => { const z = kopya(); z.target.artifact = 'contracts/permission.schema.json'; return z; })()],
+    ['sabit sinirlar oneri hedefi olamaz', (() => { const z = kopya(); z.target.artifact = 'docs/adr/ADR-005-izin-siniri.md'; return z; })()],
+    ['surum ilerlemeden uygulama olmaz', (() => { const z = kopya(); z.target.version_after = z.target.version_before; return z; })()],
+    ['geri sarma baska bir surume sabitlenemez', (() => { const z = kopya(); z.status = 'GERI_SARILDI'; z.reversal = { at: '2026-09-08T18:00:00+03:00', pin_to: '9.9', reason: 'deneme' }; return z; })()],
+    ['kapali hedef listesi disina cikilamaz', (() => { const z = kopya(); z.target.kind = 'sabit-sinir'; return z; })()],
+    ['red gerekcesi zorunludur', (() => { const z = kopya(); z.status = 'REDDEDILDI'; delete z.rejection_reason; return z; })()]
+  ];
+}
+
+// Yasak hedefler: bu yollar bir onerinin hedefi olamaz (07 §4). Kapinin
+// kendisini, sabit sinirlari ve programin kararlarini oneri degistiremez.
+const ONERI_YASAK_HEDEF = [
+  'contracts/permission.schema.json',
+  'contracts/proposal.schema.json',
+  'docs/adr/ADR-000',
+  'docs/adr/ADR-005',
+  'docs/mimari/05-GUVENLIK.md',
+  'arac/sema-dogrula.js'
+];
+
+function oneriCaprazKontrol(o) {
+  const h = [];
+  const kapiGecti = (k) => k && k.result === 'gecti';
+  // 1: oneri olmus bitmis bir kosu hakkindadir (06-GOZLEM D7).
+  if (Date.parse(o.evidence.window_end) > Date.parse(o.at)) {
+    h.push("D7: kanit penceresi onerinin yazildigi andan sonra kapanamaz — canli sisteme bakan oneri.");
+  }
+  if (Date.parse(o.evidence.window_start) > Date.parse(o.evidence.window_end)) {
+    h.push("Kanit penceresi ters: window_start, window_end'den sonra olamaz.");
+  }
+  // 2: iki kapi ayridir ve ikisi de gecmeden uygulama olmaz (Desen A).
+  if (o.status === 'UYGULANDI' && !(kapiGecti(o.gates.valid) && kapiGecti(o.gates.threshold))) {
+    h.push("Desen A: UYGULANDI icin 'gecerli mi' ve 'esigi asti mi' kapilarinin IKISI de 'gecti' olmalidir.");
+  }
+  // 3: golge sinyal esik kapisini gecirmez (AP5 -> kural 6).
+  if (o.gates.threshold.evidence_kind === 'surukleme') {
+    h.push("AP5: surukleme sinyali golge modda yetki almaz, esik kapisinin kaniti olamaz.");
+  }
+  // 4: kapinin kendisi ve sabit sinirlar oneri hedefi olamaz (07 §4).
+  const yol = o.target.artifact.replace(/\\/g, '/');
+  for (const yasak of ONERI_YASAK_HEDEF) {
+    if (yol.startsWith(yasak)) h.push(`07 §4: '${yol}' oneri hedefi olamaz — kapinin kendisi onerilerek degistirilemez.`);
+  }
+  // 5: surumsuz uygulama geri sarilamaz.
+  if (o.status === 'UYGULANDI' && o.target.version_after === o.target.version_before) {
+    h.push("Uygulanan oneri hedefin surumunu ilerletmek zorundadir; ayni surum geri sarmayi imkansiz kilar.");
+  }
+  // 6: geri sarma onceki surume sabitlenir (kural 9: geri alma degil, surum sabitleme).
+  if (o.reversal && o.reversal.pin_to !== o.target.version_before) {
+    h.push("Kural 9: geri sarma yalnizca target.version_before'a sabitlenebilir.");
+  }
+  // 7: insan kapisi bir bilesene devredilemez.
+  if (o.approval && o.approval.by !== 'insan') h.push("AP1: onaylayan yalnizca 'insan' olabilir.");
+  return h;
+}
+
 // --- ana ------------------------------------------------------------------
 
 const kokDizin = path.resolve(__dirname, '..');
@@ -454,7 +527,8 @@ const SEMALAR = [
   { ad: 'task', sema: 'task.schema.json', ornekDizin: ['contracts', 'ornek', 'gorev'], enAz: 1 },
   { ad: 'message', sema: 'message.schema.json', ornekDizin: ['contracts', 'ornek', 'mesaj'], enAz: 3 },
   { ad: 'permission', sema: 'permission.schema.json', ornekDizin: ['contracts', 'ornek', 'izin'], enAz: 3 },
-  { ad: 'span', sema: 'span.schema.json', ornekDizin: ['contracts', 'ornek', 'gozlem'], enAz: 3 }
+  { ad: 'span', sema: 'span.schema.json', ornekDizin: ['contracts', 'ornek', 'gozlem'], enAz: 3 },
+  { ad: 'proposal', sema: 'proposal.schema.json', ornekDizin: ['contracts', 'ornek', 'oneri'], enAz: 3 }
 ];
 
 let toplamHata = 0;
@@ -475,6 +549,7 @@ for (const s of SEMALAR) {
     if (s.ad === 'task') hatalar.push(...gorevCaprazKontrol(icerik));
     if (s.ad === 'permission') hatalar.push(...izinCaprazKontrol(icerik));
     if (s.ad === 'span') hatalar.push(...spanCaprazKontrol(icerik));
+    if (s.ad === 'proposal') hatalar.push(...oneriCaprazKontrol(icerik));
     if (hatalar.length === 0) {
       const eksik = kok.required.filter((a) => !(a in icerik));
       yuklenen[s.ad].ornekler.push(icerik);
@@ -562,6 +637,16 @@ if (process.argv.includes('--test')) {
     console.log('\nSpan sözleşmesi (şema + çapraz kontrol):');
     for (const [ad, bozuk] of ozTestSpan(yuklenen.span.ornekler)) {
       const h = dogrula(bozuk, yuklenen.span.kok, yuklenen.span.kok, '').concat(spanCaprazKontrol(bozuk));
+      if (h.length === 0) { console.log(`  ✗ ${ad} — ama kontrol GEÇTİ dedi`); toplamHata++; }
+      else console.log(`  ✓ ${ad}`);
+    }
+
+    // Öneri: aynı kural — K7 zincirinin üçüncü halkası (07-KENDINI-GELISTIRME).
+    console.log('\nÖneri sözleşmesi (şema + çapraz kontrol):');
+    for (const [ad, bozuk] of ozTestOneri(yuklenen.proposal.ornekler)) {
+      let h;
+      try { h = dogrula(bozuk, yuklenen.proposal.kok, yuklenen.proposal.kok, '').concat(oneriCaprazKontrol(bozuk)); }
+      catch (e) { h = ['çapraz kontrol bozuk kayıtta çöktü: ' + e.message]; }
       if (h.length === 0) { console.log(`  ✗ ${ad} — ama kontrol GEÇTİ dedi`); toplamHata++; }
       else console.log(`  ✓ ${ad}`);
     }

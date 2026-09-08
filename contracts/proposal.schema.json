@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Furkiozknn/ajans-os/contracts/proposal.schema.json",
+  "title": "Öneri sözleşmesi",
+  "description": "ADR-000 K7 zincirinin üçüncü halkası: izler → değerlendirme → ÖNERİ → insan onayı → uygulama. Bir öneri VERİDİR, eylem değildir; kendisi hiçbir dosyayı değiştirmez. Uygulama yalnızca insan onayıyla ve sürüm bağıyla olur. Bir 'otomatik uygula' alanı YOKTUR ve additionalProperties:false yüzünden uydurulamaz — AP1'in (tek bayrakla kapanan insan kapısı) sözleşme düzeyindeki karşılığı. Alan adları İngilizce, açıklamalar Türkçe (ADR-000 K9).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "proposal_id",
+    "at",
+    "author",
+    "evidence",
+    "target",
+    "change",
+    "gates",
+    "status"
+  ],
+  "properties": {
+    "contract_version": {
+      "description": "Bu sözleşmenin sürümü. Şema değişirse burası değişir; eski kayıtlar eski sürümle okunur.",
+      "const": "1.0"
+    },
+    "proposal_id": { "$ref": "#/$defs/kebab_id" },
+    "at": {
+      "description": "Önerinin yazıldığı an. Kanıt penceresi bu andan ÖNCE kapanmış olmalıdır (06-GOZLEM D7: öneri olmuş bitmiş bir koşu hakkındadır).",
+      "$ref": "#/$defs/zaman"
+    },
+
+    "author": {
+      "description": "Öneriyi kim yazdı. Bugün 'insan' — öneri üreteci bir bileşen olarak yoktur (00-BLUEPRINT §4.5). 'uretec' değeri, üretecin ileride girmesi hâlinde kaydın biçimini değiştirmeden çalışması içindir.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": { "enum": ["insan", "uretec"] },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 }
+      }
+    },
+
+    "evidence": {
+      "description": "K7 girdi paketi (06-GOZLEM §7). Kanıtsız öneri yazılamaz: en az bir koşu kimliği zorunludur. Öneri span kayıtlarını okur, canlı sistemi değil.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_ids", "window_start", "window_end", "summary"],
+      "properties": {
+        "run_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/kebab_id" }
+        },
+        "span_refs": {
+          "description": "İlgili span kimlikleri (span.schema.json span_id).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/kebab_id" }
+        },
+        "doc_refs": {
+          "description": "Depo içi kanıt: dosya:satır biçiminde alıntı adresi.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 3, "maxLength": 200 }
+        },
+        "window_start": { "$ref": "#/$defs/zaman" },
+        "window_end": {
+          "description": "Kanıt penceresinin kapanışı. Önerinin yazıldığı andan sonra olamaz.",
+          "$ref": "#/$defs/zaman"
+        },
+        "observation": {
+          "description": "Ölçülen sayı: hangi sayaç, kaç koşuda, ne yönde. 06-GOZLEM §6'nın sekiz sayacından biri olmalıdır.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["counter", "runs", "before", "after"],
+          "properties": {
+            "counter": { "type": "string", "minLength": 2, "maxLength": 60 },
+            "runs": { "type": "integer", "minimum": 1 },
+            "before": { "type": "number" },
+            "after": { "type": "number" }
+          }
+        },
+        "summary": { "type": "string", "minLength": 10, "maxLength": 600 }
+      }
+    },
+
+    "target": {
+      "description": "Değişmesi önerilen sürümlü yapıt. Yasak hedefler (sabit sınırlar, izin sözleşmesi, kapının kendisi, ADR-000) enum'da yoktur ve çapraz kontrol yol düzeyinde de reddeder.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "artifact", "version_before"],
+      "properties": {
+        "kind": {
+          "description": "Önerilebilir dört sınıf. Bu liste kapalıdır: dışında kalan her şey öneri değil, normal bir değişikliktir ve kendi kapısından geçer.",
+          "enum": ["ajan-sozlesmesi", "prompt", "yonlendirme-politikasi", "esik"]
+        },
+        "artifact": {
+          "description": "Depo köküne göre yol.",
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "version_before": { "$ref": "#/$defs/surum" },
+        "version_after": {
+          "description": "Uygulanınca doğacak sürüm. ONERILDI aşamasında boş olabilir; UYGULANDI'da zorunludur ve version_before'dan farklı olmalıdır.",
+          "$ref": "#/$defs/surum"
+        }
+      }
+    },
+
+    "change": {
+      "description": "Ne değişecek. Metin, çünkü öneri okunmak için vardır; makine uygulamaz.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what", "why", "risk"],
+      "properties": {
+        "what": { "type": "string", "minLength": 10, "maxLength": 2000 },
+        "why": { "type": "string", "minLength": 10, "maxLength": 2000 },
+        "risk": {
+          "description": "Bu değişiklik yanlışsa ne olur. 'yok' yazılamaz — enum üç değerli.",
+          "enum": ["dusuk", "orta", "yuksek"]
+        }
+      }
+    },
+
+    "gates": {
+      "description": "İ6 Desen A: 'geçerli mi' ve 'eşiği aştı mı' AYRI iki kapıdır, tek bir 'başarılı' bayrağına indirgenmez. Üçüncü kapı (insan) ayrı alandadır — makine kapıları insan kapısının yerine geçemez.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["valid", "threshold"],
+      "properties": {
+        "valid": {
+          "description": "Biçimsel geçerlilik: şema tutuyor mu, test koşuyor mu, hedef yapıt var mı.",
+          "$ref": "#/$defs/kapi"
+        },
+        "threshold": {
+          "description": "Yeterince iyi mi: ölçülen fark eşiği aşıyor mu. Kaynağı sürüklenme detektörü OLAMAZ (gölge modu, kural 6).",
+          "$ref": "#/$defs/kapi"
+        }
+      }
+    },
+
+    "status": {
+      "description": "Önerinin durumu. ONERILDI → (REDDEDILDI | ONAYLANDI → UYGULANDI → GERI_SARILDI). Kayıt append-only'dir: durum değişince yeni kayıt yazılır, eskisi silinmez (İ6 Desen C).",
+      "enum": ["ONERILDI", "REDDEDILDI", "ONAYLANDI", "UYGULANDI", "GERI_SARILDI"]
+    },
+
+    "approval": {
+      "description": "İnsan kapısının kaydı. 05-GUVENLIK §4.3'ün deseni: onay bir DURUMDUR, kaydı vardır. Onaylayan yalnızca insan olabilir — enum tek değerlidir, bir bileşen buraya yazılamaz.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["by", "at", "recorded_in"],
+      "properties": {
+        "by": { "const": "insan" },
+        "at": { "$ref": "#/$defs/zaman" },
+        "recorded_in": {
+          "description": "raporlar/ONAY-BEKLEYENLER.md içindeki satır adresi.",
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "gate_ref": {
+          "description": "Doğan approval_request mesajının kimliği (message.schema.json).",
+          "$ref": "#/$defs/kebab_id"
+        }
+      }
+    },
+
+    "rejection_reason": {
+      "description": "REDDEDILDI ise neden. Reddedilen öneri silinmez — reddin kendisi de sinyaldir (GEPA _report_rejected_proposal deseni).",
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 1000
+    },
+
+    "reversal": {
+      "description": "Durumu geri sarma kaydı. 'Rollback' bir bileşen adı değildir (kural 9): burada olan tek şey, sürümün öncekine sabitlenmesidir. Dışarı açılan bir etki oluştuysa geri sarma yetmez, telafi gerekir ve o insan kapısına düşer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "pin_to", "reason"],
+      "properties": {
+        "at": { "$ref": "#/$defs/zaman" },
+        "pin_to": {
+          "description": "Sabitlenen sürüm. target.version_before ile aynı olmalıdır.",
+          "$ref": "#/$defs/surum"
+        },
+        "reason": { "type": "string", "minLength": 5, "maxLength": 1000 }
+      }
+    },
+
+    "drift": {
+      "description": "Sürüklenme sinyali: onaylı bir öneriyle açıklanamayan sayaç hareketi. Detektör gölge modunda başlar ve yetki almaz (AP5 → kural 6); bu yüzden mode tek değerlidir.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "counter", "unexplained_delta"],
+      "properties": {
+        "mode": { "const": "golge" },
+        "counter": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "unexplained_delta": { "type": "number" },
+        "note": { "type": "string", "maxLength": 600 }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "$comment": "Onaylanmış veya uygulanmış öneri, insan onayı kaydı olmadan yazılamaz.",
+      "if": { "properties": { "status": { "enum": ["ONAYLANDI", "UYGULANDI", "GERI_SARILDI"] } }, "required": ["status"] },
+      "then": { "required": ["approval"] }
+    },
+    {
+      "$comment": "Uygulanan öneri hedefin yeni sürümünü taşımak zorundadır — sürümsüz uygulama geri sarılamaz.",
+      "if": { "properties": { "status": { "const": "UYGULANDI" } }, "required": ["status"] },
+      "then": { "properties": { "target": { "required": ["version_before", "version_after"] } } }
+    },
+    {
+      "$comment": "Reddedilen önerinin gerekçesi zorunludur.",
+      "if": { "properties": { "status": { "const": "REDDEDILDI" } }, "required": ["status"] },
+      "then": { "required": ["rejection_reason"] }
+    },
+    {
+      "$comment": "Geri sarma kaydı olmadan GERI_SARILDI yazılamaz.",
+      "if": { "properties": { "status": { "const": "GERI_SARILDI" } }, "required": ["status"] },
+      "then": { "required": ["reversal"] }
+    }
+  ],
+
+  "$defs": {
+    "kebab_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "zaman": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "surum": {
+      "description": "Sürüm etiketi (ör. '1.0') veya içerik özeti ('sha256:...'). Sürüm numarası değişmeden içerik değişebildiği için özet tercih edilir.",
+      "type": "string",
+      "pattern": "^([0-9]+\\.[0-9]+(\\.[0-9]+)?|sha256:[0-9a-f]{64})$"
+    },
+    "kapi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "method"],
+      "properties": {
+        "result": {
+          "description": "Üç değerli: çalıştırılmamış kapı 'gecti' sayılmaz (05-GUVENLIK §2.5: kontrol edilmedi ≠ temiz).",
+          "enum": ["gecti", "kaldi", "calistirilmadi"]
+        },
+        "method": {
+          "description": "Kapıyı ne uyguladı: komut, test adı veya ölçüt. Serbest metin 'bakıldı' değil, tekrarlanabilir bir şey olmalı.",
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "evidence_kind": {
+          "description": "Kapının dayandığı kanıt sınıfı. 'surukleme' yalnızca gölge sinyaldir; eşik kapısında kullanılamaz.",
+          "enum": ["test", "olcum", "denetim", "surukleme"]
+        },
+        "detail": { "type": "string", "maxLength": 600 }
+      }
+    }
+  }
+}

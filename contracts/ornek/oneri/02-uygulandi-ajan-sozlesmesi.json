@@ -1,0 +1,50 @@
+{
+  "contract_version": "1.0",
+  "proposal_id": "oneri-2026-09-08-kanit-denetcisi-tavan",
+  "at": "2026-09-08T16:20:00+03:00",
+  "author": { "kind": "insan", "name": "furki" },
+  "evidence": {
+    "run_ids": ["kosu-2026-09-08-i6"],
+    "span_refs": ["span-i6-denetim-01"],
+    "window_start": "2026-09-08T09:00:00+03:00",
+    "window_end": "2026-09-08T12:00:00+03:00",
+    "observation": {
+      "counter": "duzeltme_turu_sayisi",
+      "runs": 1,
+      "before": 7,
+      "after": 3
+    },
+    "summary": "Kanit denetcisi ajani ayni alintiyi yedi tur ust uste yeniden dogrulamaya calisti; ust sinir olmadigi icin dongu butceyle durdu, gorevle degil."
+  },
+  "target": {
+    "kind": "ajan-sozlesmesi",
+    "artifact": "contracts/ornek/kanit-denetcisi.json",
+    "version_before": "1.0",
+    "version_after": "1.1"
+  },
+  "change": {
+    "what": "Ajan sozlesmesine duzeltme turu ust siniri (3) eklensin ve asildiginda gorev yarim cikti ile teslim edilsin.",
+    "why": "Aider max_reflections=3 desenini dogrudan uygular: sonsuz duzeltme dongusunun sinirini koda gommek, butce duvarina birakmaktan ucuzdur.",
+    "risk": "orta"
+  },
+  "gates": {
+    "valid": {
+      "result": "gecti",
+      "method": "node arac/sema-dogrula.js --test",
+      "evidence_kind": "test"
+    },
+    "threshold": {
+      "result": "gecti",
+      "method": "ayni ize yeniden kosum, tur sayisi karsilastirmasi",
+      "evidence_kind": "olcum",
+      "detail": "7 tur -> 3 tur, bulunan alinti sayisi degismedi"
+    }
+  },
+  "status": "UYGULANDI",
+  "approval": {
+    "by": "insan",
+    "at": "2026-09-08T17:05:00+03:00",
+    "recorded_in": "raporlar/ONAY-BEKLEYENLER.md:42",
+    "gate_ref": "mesaj-onay-2026-09-08-03"
+  }
+}
