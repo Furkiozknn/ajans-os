@@ -30,6 +30,10 @@ yerden sürer.
       `model-comparison-harness` ve `nvidia-nim-mcp` fallback zinciri
       adaylar arasında. ADR-000 K4 model sınırı için kanıt topla. Çıktı:
       `docs/arastirma/i5-gozlem-ekonomi/`.
+      **Yarım kaldı (2026-09-08):** 4/6 proje yazıldı, `OZET.md` yok.
+      Başlamadan önce `docs/arastirma/i5-gozlem-ekonomi/DURUM.md` oku —
+      bitenler, kalan altı adayın odak soruları, hazır klonlar ve OTel
+      spec'inin ayrı depoya taşındığı uyarısı orada.
 
 - [ ] **İ6 Otonom kodlama ve öğrenme araştırması** — Protokol İ6:
       otonom kodlama ajanları (OpenHands, SWE-agent, Aider, Cline,
