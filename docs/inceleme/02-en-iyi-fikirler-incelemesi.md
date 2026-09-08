@@ -22,9 +22,16 @@ Klonlarda örnekleme (D1'in kanıt tablosu): `BaseCheckpointSaver`
 - D1: tabloda 12 proje / 4 iz; gövdede sayıldı: İ1 5 + İ4 2 yeni + İ6 4 + İ2 1
   = **12**, izler İ1/İ2/İ4/İ6 = **4** ✓.
 - D3, D4, D7, D8, D11, D13: kaba ad sayımı tabloyla uyumlu (8, 7, 5, 4, 4, 3).
-- D2, D5, D6, D9, D10, D12: kaba sayım tablodan düşük çıktı; sayım sabit bir
-  ad listesiyle yapıldığından liste dışı depoları görmüyor — **doğrulanamadı**,
-  yanlış demek değil. Elle sayım sonraki incelemeye.
+- D2, D5, D6, D9, D10, D12 elle sayıldı (kanıt tabloları): şişirme yok, üç
+  küçük tutarsızlık var —
+  - **D2** tabloda 15: doğrudan kanıt 12 (İ1 4 + İ2 7 + İ5 1); 15'e ancak
+    RouteLLM (karşıt), OTel registry ve benzeri bağlam örnekleri katılınca
+    ulaşılıyor. "12 + 3 karşıt/bağlam" yazılması daha dürüst.
+  - **D5** 8 ve **D6** 8: gövde daha fazlasını sayıyor (D5 için 11, D6 için
+    14) — eksik sayım, şişirme değil. D6'da GEPA İ1 satırında listelenmiş;
+    GEPA İ6 projesidir (matris liderleri listesinden gelmiş).
+  - **D10** tabloda 5, gövde "dört bellek projesi ve iki kod ajanı" = 6.
+  - D9 (4 olumlu + 2 karşıt = 6) ve D12 (3 + kendi arızamız) tutuyor.
 - K2 dört maddesi 13 desenin hepsinde tablo olarak var; 7 aday için "neden
   geçemedi" gerekçesi yazılı; iki adayın iz özetlerinin "alınmalı" önerisine
   rağmen elendiği açıkça söylenmiş — ölçütün gerçekten elediğinin kanıtı.
@@ -42,5 +49,4 @@ Klonlarda örnekleme (D1'in kanıt tablosu): `BaseCheckpointSaver`
 ## Karar
 
 Belge Faz 2'nin sonraki adımı ("anti-pattern'ler") ve Faz 3 için
-**kullanılabilir**. Kanıt zinciri sağlam; açık iş yalnızca altı desenin
-proje sayımının elle doğrulanması.
+**kullanılabilir**. Kanıt zinciri sağlam; özet tablodaki üç sayı (D2 15, D6 GEPA'nın izi, D10 5) belge sahibi tarafından düzeltilmeli — puanlamayı ya da sıralamayı değiştirmiyor.
