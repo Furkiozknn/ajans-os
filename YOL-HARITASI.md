@@ -28,13 +28,6 @@ yerden sürer.
 
 ### Faz 4 — Tasarım
 
-- [ ] **Repository / folder structure ve core interfaces** — Faz 3'ten
-      türeyen klasör yapısı; her çekirdek bileşen için arayüz tanımı
-      (TypeScript `.d.ts` veya Python Protocol — dil kararı ADR ile).
-      Modüller birbirinden bağımsız, her biri tek başına test edilebilir.
-      Çıktı: `docs/mimari/08-YAPI-VE-ARAYUZLER.md` + `src/` iskeleti
-      (yalnızca arayüzler, uygulama yok).
-
 - [ ] **Implementation Roadmap** — Faz 5 için sıralı, birbirinden
       bağımsız modül maddeleri; her biri tek gece görevi büyüklüğünde,
       "bitti" ölçütü test. Bu maddeler **bu dosyanın Faz 5 bölümüne**
@@ -60,6 +53,20 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Repository / folder structure ve core interfaces** — 2026-09-08.
+      [`docs/mimari/08-YAPI-VE-ARAYUZLER.md`](docs/mimari/08-YAPI-VE-ARAYUZLER.md) +
+      `src/` iskeleti (13 modül klasörü + `src/tipler.d.ts`, yalnızca arayüz).
+      Dil kararı [ADR-008](docs/adr/ADR-008-arayuz-dili.md): **TypeScript
+      `.d.ts`** — ölçüt popülerlik değil doğrulanabilirlik (AP3); Python
+      `Protocol` kapatılmadı, Faz 5 dil kararına ertelendi. Taşıyıcı karar:
+      **mimari kural yorum değil imza olur** — `MemoryManager.yaz` zorunlu
+      `IzinKarari` argümanı alır (AP9 → kural 10), `Evaluator` yalnızca
+      `Kanit` tipini kabul eder (ADR-004), ADR-002'nin tek çağıran kuralı
+      import kısıtına çevrildi (kardeş modülü yalnızca `orchestrator` tanır).
+      Doğrulama: `npx -p typescript@5.6 tsc -p tsconfig.json` → 0 ve
+      `node arac/yapi-dogrula.js` → temiz (13 modül, blueprint §2 ile eşli,
+      import yönü tek).
 
 - [x] **Self-improvement Architecture** — 2026-09-08.
       [`docs/mimari/07-KENDINI-GELISTIRME.md`](docs/mimari/07-KENDINI-GELISTIRME.md) +
