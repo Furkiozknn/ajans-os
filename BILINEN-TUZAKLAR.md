@@ -347,3 +347,27 @@ Node en yakın `package.json`'a baktığı için `arac/*.js` CommonJS kalır,
   döner, yani "sıfır test bile olsa koşucu ayakta" ölçütü bu biçimle
   sağlanır. `npm test`'i yazdıktan sonra **bir kez koştur**; koşucunun
   ayakta olduğu varsayılmaz, görülür.
+
+
+---
+
+## 24. Türkçe yerel vermek metin karşılaştırmasını **bozar** (#4'ün tersi)
+
+Tuzak #4 sayı ayrıştırmada "her zaman `InvariantCulture` ver" diyordu. Metin
+karşılaştırmasında aynı refleks tersine çalışır ve U5'te bir testi düşürdü.
+
+`memory-manager` metin süzgeci iki tarafı `toLocaleLowerCase("tr")` ile
+küçültüyordu. Türkçe yerelde `"ISTANBUL"` → `"ıstanbul"` (noktasız ı) olur;
+sorgudaki `"istanbul"` ise zaten küçük olduğu için `"istanbul"` kalır. İki
+taraf da "doğru" küçültüldü ve **aynı kelime eşleşmedi**. Yerel vermek burada
+doğruluğu artırmıyor, azaltıyor: `toLowerCase()` iki tarafı da `i`'ye indirir
+ve eşleşme olur.
+
+- Kural tek yönlüdür: **sayı ayrıştırmada yerel ver** (`InvariantCulture`),
+  **metin katlamada yerel verme**. Karşılaştırmanın iki tarafı da aynı
+  fonksiyondan geçse bile Türkçe `I`/`i` haritası tek yönlü olmadığı için
+  simetri korunmaz.
+- Kalan sınır kabul edilir ve yazılır: noktalı `İ` ile noktasız `I` hâlâ ayrı
+  harftir. Tam çözüm metin normalizasyonu ister; gerekmedikçe açma.
+- Bir eşleşme testi "aynı görünen iki metin eşleşmiyor" diyorsa önce
+  küçültmeye bak, sorguya değil.
