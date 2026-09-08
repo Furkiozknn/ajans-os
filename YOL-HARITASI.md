@@ -38,9 +38,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
 
-- [ ] **U12 — `src/observability/`** — span yazımı, tek yönlü.
-      Bitti: yazma hatasında `span_yaz` istisna atmıyor, koşu düşmüyor;
-      `arac/iz-izle.js` üretilen izi okuyor.
 - [ ] **U13 — `src/orchestrator/`** — blueprint §3.2'nin 1–10 sırası,
       elle bağlanan bağımlılıklar. Bitti: 12 sahte bağımlılıkla çağrı sırası
       §3.2 ile birebir; `HUMAN_REQUIRED`'da koşu duruyor; `kosuyu_surdur`
@@ -78,6 +75,27 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U12 — `src/observability/`** — 2026-09-08. `index.js` (`gozlemci` →
+      `span_yaz`, `span_ac`, `kosu_izleri`, `iz_yolu`) + `index.test.js`
+      (7 test) + `index.d.ts`'ye fabrika. İz koşu başına bir JSONL dosyası,
+      satır başına bir span (06-GÖZLEM D1: iz bir dosya kaydıdır, canlı
+      toplayıcı boru hattı değil). Bitti ölçütü **yazma hatası benzetimiyle**
+      ölçüldü: iz klasörünün yerine aynı adda bir dosya bırakılıyor,
+      `mkdirSync` ENOTDIR ile düşüyor ve çağıran hiçbir şey görmüyor —
+      `span_yaz` da `span_ac`ın kapatıcısı da istisna atmıyor. Bozuk span
+      (null, string, kebab olmayan `run_id`) sessizce düşürülüyor. `span_ac`
+      açılış kaydını hemen `outcome.status = "kesildi"` olarak yazıyor,
+      kapanış aynı `span_id` ile onu bastırıyor; kapatılmayan span kayıp
+      değil görünür yarım kayıt oluyor. Ölçülemeyen süre `null`, sıfır değil
+      (kural 11). Üretilen span `arac/sema-dogrula.js --sema span.schema.json`
+      ile test içinden doğrulanıyor (çıkış 0). **Ölçütün bir cümlesi
+      uygulanmadı:** "`arac/iz-izle.js` üretilen izi okuyor" — o araç Faz 2/3
+      belgelerindeki `dosya:satır` alıntılarını `docs/arastirma/**` havuzuna
+      karşı sınıyor, span kaydı okumuyor; izin okunabilirliği `kosu_izleri` +
+      şema doğrulamasıyla kanıtlandı. Ölçüt metninin düzeltilmesi
+      `raporlar/ONAY-BEKLEYENLER.md`'ye yazıldı. Kapsam dışı, bilerek: OTLP
+      dışa aktarımı, gösterge paneli.
 
 - [x] **U11 — `src/recovery-manager/`** — 2026-09-08. `index.js`
       (`kurtarmaYoneticisi` → `mod_sec`, `bekleme_ms`) + `index.test.js`

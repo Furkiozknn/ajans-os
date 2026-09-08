@@ -22,3 +22,14 @@ export interface Observability {
   /** Bir kosunun spanlarini okur; K7'nin (izler → degerlendirme) girdi ucu. */
   kosu_izleri(run_id: KebabId): Promise<Span[]>;
 }
+
+/**
+ * Uygulama (`index.js`). Izler `dizin` altinda `<run_id>.jsonl` olarak
+ * tutulur, satir basina bir span. `span_ac` acilis kaydini da yazar
+ * (`outcome.status = "kesildi"`); `kosu_izleri` ayni `span_id`'nin son
+ * kaydini dondurur.
+ */
+export function gozlemci(secenekler: { dizin: string }): Observability & {
+  /** Izin disk yolu — kaydi disaridan denetlemek icin. */
+  iz_yolu(run_id: KebabId): string;
+};
