@@ -249,3 +249,23 @@ olsa bile.
 - Yazdıktan sonra **doğrula**: `grep -c ''` ile satır sayısı, `grep -n` ile
   yeni başlığın gerçekten dosyada olduğu. Komut hata verdiyse dosya hiç
   değişmemiştir; "herhalde yazıldı" varsayma.
+
+
+## 20. Kapanışta `git add -A` eş zamanlı oturumun işini süpürür
+
+Tuzak #12 "elle commit atmadan önce `git status`" diyordu; İ6 turu bunu **tur
+başında** yaptı (depo temizdi) ve kapanışta `git add -A` çalıştırdı. Aradaki
+~20 dakikada eş zamanlı çalışan başka bir oturum İ5 izinde dört dosya
+değiştirmişti (`i5-gozlem-ekonomi/DENETIM.md` dahil, yeni dosya). Hepsi
+"I6 izi tamamlandi" commit'ine karıştı.
+
+Kontrolün **başta** yapılması yetmiyor: bu makinede oturumlar paralel koşuyor,
+depo tur ortasında kirlenebilir.
+
+- Kapanış commit'inde `git add -A` / `git add .` **kullanma**. Turun kendi
+  ürettiği dosyaları **adıyla** ekle (`git add docs/arastirma/i6-.../OZET.md ...`).
+- Yol haritası gibi ortak dosyaları eklerken bile önce `git status --short`
+  çalıştır ve çıktıda **tanımadığın bir yol varsa ekleme** — o başka bir
+  oturumun yarım işidir.
+- Karıştıysa geri almaya çalışma: diğer oturum hâlâ çalışıyor olabilir.
+  `raporlar/ONAY-BEKLEYENLER.md` içine yaz, kullanıcı karar versin.
