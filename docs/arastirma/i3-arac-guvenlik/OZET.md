@@ -13,7 +13,7 @@ Görev K6'yı çürüten kanıtın açıkça aranmasını istiyordu; sonuç §6'
 
 ## 1. İncelenen kaynaklar
 
-| Kaynak | Tür | Yıldız | Son push | Lisans | Canlılık | Olg. | Mim. | Gen. | Güv.ilk. | Gözl. | Güvenlik | Dosya |
+| Proje | Tür | Yıldız | Son push | Lisans | Canlılık | Olg. | Mim. | Gen. | Güv.ilk. | Gözl. | Güvenlik | Dosya |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | modelcontextprotocol/modelcontextprotocol | spec | 9.151 | 2026-09-07 | MIT→Apache-2.0 geçişte | geçti | 5 | 5 | 4 | 2 | 2 | 3 | [mcp-spec.md](mcp-spec.md) |
 | a2aproject/A2A | spec | 25.678 | 2026-09-04 | Apache-2.0 | geçti | 5 | 5 | 4 | 3 | 2 | 4 | [a2a-spec.md](a2a-spec.md) |
@@ -21,7 +21,7 @@ Görev K6'yı çürüten kanıtın açıkça aranmasını istiyordu; sonuç §6'
 | microsandbox/microsandbox | sandbox | 8.113 | 2026-09-07 | Apache-2.0 | geçti | 3 | 4 | — | — | 2 | 4 | [microsandbox.md](microsandbox.md) |
 | meta-llama/PurpleLlama (LlamaFirewall) | guardrail | — | — | — | geçti | 3 | 4 | 4 | 3 | 2 | 3 | [llamafirewall.md](llamafirewall.md) |
 | invariantlabs-ai/mcp-scan (Snyk Agent Scan) | güven denetimi | 3.014 | 2026-09-07 | Apache-2.0 | geçti | 4 | 3 | 2 | 3 | 2 | 3 | [mcp-scan.md](mcp-scan.md) |
-| Furkiozknn/mcp-vet | güven denetimi | **0** | 2026-09-06 | MIT | **kısmen** | 2 | 5 | 3 | 3 | 3 | 4 | [mcp-vet.md](mcp-vet.md) |
+| Furkiozknn/mcp-vet | güven denetimi | **0** | 2026-09-06 | MIT | geçti (kısmen: tek geliştirici, sıfır dış kullanım) | 2 | 5 | 3 | 3 | 3 | 4 | [mcp-vet.md](mcp-vet.md) |
 
 microsandbox'ta iki puan bilerek boş: crate gövdeleri okunmadı, protokol
 §5 gereği "incelenmedi" yazıldı. Sıfırla doldurulmadı.
@@ -31,15 +31,15 @@ Tohum listesinde (protokol §2) **olmayan** adaylar: **mcp-scan** ve
 
 Matris cevapları (protokol §6.2):
 
-| Kaynak | saglayici_bagimsiz | sozlesme_var | insan_kapisi | checkpoint |
+| Proje | saglayici_bagimsiz | sozlesme_var | insan_kapisi | checkpoint |
 |---|---|---|---|---|
-| MCP spec | evet | evet | kısmen | hayır |
-| A2A spec | evet | evet | evet | hayır |
-| E2B | evet | evet | hayır | kısmen |
-| microsandbox | evet | evet | hayır | — |
-| LlamaFirewall | **hayır** | kısmen | evet | hayır |
-| mcp-scan | evet | kısmen | evet | hayır |
-| mcp-vet | evet | evet | hayır | hayır |
+| modelcontextprotocol/modelcontextprotocol | evet | evet | kısmen | hayır |
+| a2aproject/A2A | evet | evet | evet | hayır |
+| e2b-dev/E2B | evet | evet | hayır | kısmen |
+| microsandbox/microsandbox | evet | evet | hayır | — |
+| meta-llama/PurpleLlama (LlamaFirewall) | **hayır** | kısmen | evet | hayır |
+| invariantlabs-ai/mcp-scan (Snyk Agent Scan) | evet | kısmen | evet | hayır |
+| Furkiozknn/mcp-vet | evet | evet | hayır | hayır |
 
 "kısmen" gerekçeleri: MCP insan kapısı — ilkeler metninde var ama
 zorlayıcı değil, host'a devredilmiş; LlamaFirewall sözleşme — tarayıcı

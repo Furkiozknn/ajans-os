@@ -12,30 +12,23 @@ geri almıyor.** Ayrıntı §3 ve §5'te.
 
 ## 1. İncelenen projeler
 
-| Proje | Dosya | Yıldız | Son push | Lisans | Canlılık | Neden bu izde |
-|---|---|---|---|---|---|---|
-| langchain-ai/langgraph | [langgraph.md](langgraph.md) | 41.194 | 2026-09-06 | MIT | geçti | Checkpoint'in en olgun ajan-tarafı uygulaması |
-| temporalio/sdk-python | [temporal.md](temporal.md) | 1.178 | 2026-09-05 | MIT | geçti | Event-log/replay yolunun referansı |
-| dbos-inc/dbos-transact-py | [dbos-transact-py.md](dbos-transact-py.md) | 1.563 | 2026-09-04 | MIT | geçti | Üçüncü yol: kalıcı adım-sonucu tablosu |
-| stanfordnlp/dspy | [dspy.md](dspy.md) | 37.834 | 2026-09-05 | MIT | geçti | Öz-düzeltme: `Refine` / `BestOfN`, ödül fonksiyonu |
-| 567-labs/instructor | [instructor.md](instructor.md) | ölçülmedi | ölçülmedi | MIT | geçti (sürüm 1.16.1, aktif) | Doğrulama hatasını modele geri besleme |
-| Portkey-AI/gateway | [portkey-gateway.md](portkey-gateway.md) | 12.922 | 2026-05-25 | MIT | **tarihî referans** (~105 gün) | Fallback zinciri, devre kesici iddiası |
-| noahshinn/reflexion | [reflexion.md](reflexion.md) | 3.262 | 2025-01-13 | MIT | **tarihî referans** (~600 gün) | Öz-eleştiri fikrinin kökeni |
+| Proje | Kanıt | Yıldız | Son push | Lisans | Canlılık | Olgunluk | Mimari netlik | Genişletilebilirlik | Güvenilirlik ilkelleri | Gözlemlenebilirlik | Güvenlik duruşu | Neden bu izde |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| langchain-ai/langgraph | [langgraph](langgraph.md) | 41.194 | 2026-09-06 | MIT | geçti | 5 | 4 | 4 | 4 | 3 | 3 | Checkpoint'in en olgun ajan-tarafı uygulaması |
+| temporalio/sdk-python | [temporal](temporal.md) | 1.178 | 2026-09-05 | MIT | geçti | 4 | 4 | incelenmedi | 5 | incelenmedi | incelenmedi | Event-log/replay yolunun referansı |
+| dbos-inc/dbos-transact-py | [dbos-transact-py](dbos-transact-py.md) | 1.563 | 2026-09-04 | MIT | geçti | 5 | 4 | 3 | 4 | 4 | 3 | Üçüncü yol: kalıcı adım-sonucu tablosu |
+| stanfordnlp/dspy | [dspy](dspy.md) | 37.834 | 2026-09-05 | MIT | geçti | 4 | 4 | 4 | 3 | 3 | 3 | Öz-düzeltme: `Refine` / `BestOfN`, ödül fonksiyonu |
+| 567-labs/instructor | [instructor](instructor.md) | ölçülmedi | ölçülmedi | MIT | geçti (sürüm 1.16.1, aktif) | 4 | 3 | 4 | 3 | 3 | 3 | Doğrulama hatasını modele geri besleme |
+| Portkey-AI/gateway | [portkey-gateway](portkey-gateway.md) | 12.922 | 2026-05-25 | MIT | **tarihî referans** (~105 gün) | 4 | 4 | 3 | 3 | 3 | incelenmedi | Fallback zinciri, devre kesici iddiası |
+| noahshinn/reflexion | [reflexion](reflexion.md) | 3.262 | 2025-01-13 | MIT | **tarihî referans** (~600 gün) | 2 | 3 | 2 | 2 | 2 | 1 | Öz-eleştiri fikrinin kökeni |
 
 Yıldız/son-push değerleri 7 Eylül'de GitHub API'den ölçüldü; instructor'ınki bu
 turda ölçülmedi ve uydurulmadı (kanıtı yerel klonda yok).
 
 ### Puanlar (protokol §3 rubriği)
 
-| Proje | Olgunluk | Mimari netlik | Genişletilebilirlik | Güvenilirlik ilkelleri | Gözlemlenebilirlik | Güvenlik duruşu |
-|---|---|---|---|---|---|---|
-| langgraph | 5 | 4 | 4 | 4 | 3 | 3 |
-| temporal | 4 | 4 | incelenmedi | 5 | incelenmedi | incelenmedi |
-| dbos-transact-py | 5 | 4 | 3 | 4 | 4 | 3 |
-| dspy | 4 | 4 | 4 | 3 | 3 | 3 |
-| instructor | 4 | 3 | 4 | 3 | 3 | 3 |
-| portkey-gateway | 4 | 4 | 3 | 3 | 3 | incelenmedi |
-| reflexion | 2 | 3 | 2 | 2 | 2 | 1 |
+Puanlar yukarıdaki §1 tablosunda sütun olarak duruyor (tek kaynak, ikinci kopya yok).
+
 
 "incelenmedi" gerçek bir değerdir: o eksen bu izin kapsamına alınmadı, sıfır puan
 anlamına gelmez ve matris hesabına girmez.
@@ -44,13 +37,13 @@ anlamına gelmez ve matris hesabına girmez.
 
 | Proje | saglayici_bagimsiz | sozlesme_var | insan_kapisi | checkpoint |
 |---|---|---|---|---|
-| langgraph | evet | kismen | evet | evet |
-| temporal | evet | kismen | hayir | evet |
-| dbos-transact-py | kismen | evet | kismen | evet |
-| dspy | evet | kismen | hayir | hayir |
-| instructor | evet | kismen | hayir | hayir |
-| portkey-gateway | evet | kismen | hayir | hayir |
-| reflexion | hayir | hayir | hayir | hayir |
+| langchain-ai/langgraph | evet | kismen | evet | evet |
+| temporalio/sdk-python | evet | kismen | hayir | evet |
+| dbos-inc/dbos-transact-py | kismen | evet | kismen | evet |
+| stanfordnlp/dspy | evet | kismen | hayir | hayir |
+| 567-labs/instructor | evet | kismen | hayir | hayir |
+| Portkey-AI/gateway | evet | kismen | hayir | hayir |
+| noahshinn/reflexion | hayir | hayir | hayir | hayir |
 
 Dikkat çeken: **insan kapısı yedi projeden yalnızca birinde birinci sınıf** (LangGraph
 `interrupt()`, `langgraph/types.py:851`). Güvenilirlik literatürünün tamamı "makine kendini

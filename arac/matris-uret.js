@@ -27,6 +27,8 @@ const kuru = process.argv.includes("--kuru");
 const norm = (s) => String(s).toLowerCase().replace(/[çğıöşü]/g, (c) => ({ ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u" }[c])).replace(/[^a-z0-9]/g, "");
 const PUAN_ANAHTAR = ["olgunluk", "mimari_netlik", "genisletilebilirlik", "guvenilirlik", "gozlemlenebilirlik", "guvenlik"];
 const MATRIS_ANAHTAR = ["saglayici_bagimsiz", "sozlesme_var", "insan_kapisi", "checkpoint"];
+// puan sütunları başlıktan tanınır (kısaltmalar dahil: "Güv.ilk." -> guvilk, "Gözl." -> gozl)
+const PUAN_BASLIK = [/^olg/, /^mim/, /^gen/, /^guvenilirlik|^guvilk/, /^gozl/, /^guvenlik/];
 
 // ---------------------------------------------------------------- markdown tablo ayrıştırma
 function tablolar(md) {
@@ -61,7 +63,7 @@ for (const izKlasor of izler) {
   const md = fs.readFileSync(ozetYol, "utf8");
   const tl = tablolar(md);
 
-  const puanT = tl.find((t) => t.baslik.some((b) => norm(b) === "proje") && t.satirlar.some((r) => r.some((h) => /\]\([^)]+\.md\)/.test(h))));
+  const puanT = tl.find((t) => t.baslik.some((b) => norm(b) === "proje") && PUAN_BASLIK.every((re) => t.baslik.some((b) => re.test(norm(b)))));
   const matrisT = tl.find((t) => t.baslik.some((b) => /saglayici|sozlesme|insankapisi|checkpoint/.test(norm(b))));
   if (!puanT) { uyarilar.push(`${izKlasor}: puan tablosu bulunamadı`); continue; }
 
@@ -69,10 +71,9 @@ for (const izKlasor of izler) {
   const bas = puanT.baslik.map(norm);
   const idx = (re) => bas.findIndex((b) => re.test(b));
   const iProje = idx(/^proje$/), iDil = idx(/^dil$/), iYildiz = idx(/yildiz|star/), iPush = idx(/push|commit/), iLisans = idx(/lisans|license/), iCanli = idx(/canlilik/);
-  // puan sütunları: ilk veri satırında 1–5 tamsayı olan sütunlar (yıldız/push/lisans hariç)
-  const ilk = puanT.satirlar[0] || [];
-  const puanIdx = ilk.map((h, i) => ({ h, i })).filter(({ h, i }) => ![iProje, iDil, iYildiz, iPush, iLisans, iCanli].includes(i) && /^[1-5]$/.test(h.trim())).map(({ i }) => i);
-  if (puanIdx.length !== 6) uyarilar.push(`${izKlasor}: ${puanIdx.length} puan sütunu bulundu (6 bekleniyordu) — başlık: ${puanT.baslik.join(" | ")}`);
+  const puanIdx = PUAN_BASLIK.map((re) => bas.findIndex((b) => re.test(b)));
+  const puanTam = puanIdx.every((i) => i >= 0);
+  if (!puanTam) uyarilar.push(`${izKlasor}: puan sütunu eşleşmedi (${PUAN_ANAHTAR.filter((_, n) => puanIdx[n] < 0).join(", ")}) — başlık: ${puanT.baslik.join(" | ")}`);
 
   for (const r of puanT.satirlar) {
     if (r.length < 4) continue;
@@ -88,7 +89,7 @@ for (const izKlasor of izler) {
     if (iDil >= 0 && !kayit.dil) kayit.dil = r[iDil].trim();
     if (iCanli >= 0 && !kayit.canlilik) kayit.canlilik = norm(r[iCanli]).startsWith("gecti") ? "gecti" : "tarihi";
     if (!kayit.canlilik) kayit.canlilik = "gecti";
-    if (!Object.keys(kayit.puan).length && puanIdx.length === 6) PUAN_ANAHTAR.forEach((k, n) => { kayit.puan[k] = parseInt(r[puanIdx[n]], 10); });
+    if (!Object.keys(kayit.puan).length && puanTam) PUAN_ANAHTAR.forEach((k, n) => { const v = parseInt(r[puanIdx[n]], 10); kayit.puan[k] = v >= 1 && v <= 5 ? v : null; });
     if (kanitH) { const b = baglanti(kanitH); if (b) { const yol = `docs/arastirma/${izKlasor}/${b}`; if (!kayit.kanit.includes(yol)) kayit.kanit.push(yol); } }
     projeler.set(anahtar, kayit);
   }

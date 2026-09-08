@@ -2,16 +2,45 @@
 
 ## 1. İncelenen projeler
 
-| Proje | Kategori | Lisans | Canlılık | Olgunluk | Mimari netlik | Genişletilebilirlik | Güvenilirlik ilkelleri | Gözlemlenebilirlik | Güvenlik duruşu |
-|---|---|---|---|---|---|---|---|---|---|
-| `langfuse.md` | tracing platformu + maliyet hesabı | MIT (ee/ hariç) | geçti | 4 | 4 | 3 | 4 | 4 | — |
-| `otel-genai-semconv.md` | tracing standardı (birincil kaynak, taşınmış) | Apache-2.0 | KISMİ GEÇTİ — eski depo TARİHÎ REFERANS, yeni depo (tazeleme) geçti (son commit 5 gün) | 2 | 4 | 4 | 3 | 4 | 4 |
-| `nvidia-nim-mcp.md` | model failover (kullanıcının deposu) | MIT | geçti | 3 | 2 | 3 | 4 | 1 | 3 |
-| `model-comparison-harness.md` | benchmark/değerlendirme (kullanıcının deposu) | MIT | geçti | 3 | 4 | 4 | 3 | 2 | 2 |
-| `litellm-router.md` | model router (çalışma zamanı telemetrisi) | MIT | geçti | 5 | 4 | 4 | 4 | 3 | 3 |
-| `routellm.md` | model router (istek zorluğu tahmini) | Apache-2.0 | TARİHÎ REFERANS (~760 gün) | 2 | 4 | 3 | 2 | 1 | 2 |
+| Proje | Kategori | Yıldız | Son push | Lisans | Canlılık | Olgunluk | Mimari netlik | Genişletilebilirlik | Güvenilirlik ilkelleri | Gözlemlenebilirlik | Güvenlik duruşu | Kanıt |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| langfuse/langfuse | tracing platformu + maliyet hesabı | — | 2026-09-07 | MIT (ee/ hariç) | geçti (son commit 2026-09-07, prisma migration geçmişi 2026-09'a kadar aktif) | 4 | 4 | 3 | 4 | 4 | — | [langfuse](langfuse.md) |
+| open-telemetry/semantic-conventions-genai | tracing standardı (birincil kaynak, taşınmış) | — | 2026-09-03 (~5 gün önce) | Apache-2.0 | geçti (yeni depo `semantic-conventions-genai`, son commit 2026-09-03; eski depo `semantic-conventions`'daki GenAI içeriği bu depoya taşınıp orada deprecated/tarihî referans bırakıldı) | 2 | 4 | 4 | 3 | 4 | 4 | [otel-genai-semconv](otel-genai-semconv.md) |
+| Furkiozknn/nvidia-nim-mcp | model failover (kullanıcının deposu) | — | 2026-09-05 | MIT | geçti (son push 3 gün önce, arşivlenmemiş, OSI lisanslı) | 3 | 2 | 3 | 4 | 1 | 3 | [nvidia-nim-mcp](nvidia-nim-mcp.md) |
+| Furkiozknn/model-comparison-harness | benchmark/değerlendirme (kullanıcının deposu) | — | 2026-09-06 | MIT | geçti (son push 2 gün önce, arşivlenmemiş, OSI lisanslı) | 3 | 4 | 4 | 3 | 2 | 2 | [model-comparison-harness](model-comparison-harness.md) |
+| BerriAI/litellm | model router (çalışma zamanı telemetrisi) | — | 2026-09-07 | MIT | geçti (son commit çalıştırma anına göre 1 gün önce) | 5 | 4 | 4 | 4 | 3 | 3 | [litellm-router](litellm-router.md) |
+| lm-sys/RouteLLM | model router (istek zorluğu tahmini) | — | 2024-08-10 (~760 gün önce) | Apache-2.0 | tarihî referans (son push 2024-08-10, ~760 gün önce, 90 günlük eşiğin çok üzerinde) | 2 | 4 | 3 | 2 | 1 | 2 | [routellm](routellm.md) |
 
-Puanlar analiz dosyalarının "Puan" bölümlerinden birebir alındı. `langfuse.md` güvenlik duruşu satırında dosya kendisi "doğrulanmadı — kapsam dışı" yazıyor, sayı üretmedim; `otel-genai-semconv.md` puanları donmuş sürüme ait — tazeleme bölümü ayrı bir puan tablosu vermiyor, sadece üç soruyu yeniden cevaplıyor (aşağıda §2-§5'e işlendi).
+Puanlar analiz dosyalarının "Puan" bölümlerinden birebir alındı. `langfuse.md` güvenlik duruşu satırında dosya kendisi "doğrulanmadı — kapsam dışı" yazıyor, sayı üretmedim; `otel-genai-semconv.md` puanları donmuş sürüme (eski depo) ait — tazeleme bölümü ayrı bir puan tablosu vermiyor, sadece üç soruyu yeniden cevaplıyor (aşağıda §2-§5'e işlendi). Yıldız hiçbir kaynakta doğrulanamadı (tüm analizler ağ erişimi olmadan yerel klonlar üzerinden yapıldı) — uydurmak yerine tamamı `—` bırakıldı. Proje adı "open-telemetry/semantic-conventions-genai" olarak seçildi çünkü GenAI içeriği v1.42.0'da bu depoya taşındı ve eski depodaki karşılığı artık "deprecated"; canlılık/son push aktif olan (taşınan) depoya ait (otel-genai-semconv.md:5-7,118-119).
+
+### Sağlayıcı bağımsızlığı / sözleşme / insan kapısı / checkpoint
+
+| Proje | saglayici_bagimsiz | sozlesme_var | insan_kapisi | checkpoint |
+|---|---|---|---|---|
+| langfuse/langfuse | kısmen | evet | hayır | — |
+| open-telemetry/semantic-conventions-genai | kısmen | evet | — | — |
+| Furkiozknn/nvidia-nim-mcp | kısmen | hayır | hayır | — |
+| Furkiozknn/model-comparison-harness | kısmen | evet | — | hayır |
+| BerriAI/litellm | kısmen | kısmen | — | kısmen |
+| lm-sys/RouteLLM | hayır | evet | — | kısmen |
+
+- langfuse/langfuse — saglayici_bagimsiz kısmen: `usageDetails`/`costDetails` sözlüğü açık uçlu ama `OtelIngestionProcessor.ts:2846-2881` OpenAI ve Vercel AI SDK için ayrı if/else dalı taşıyor (langfuse.md:117-118, bkz. §2 Desen A).
+- langfuse/langfuse — sozlesme_var evet: `packages/shared/src/domain/` altında Trace/Observation/Score için zod şemaları var, tip üretiyor (langfuse.md:40). Bu bir ajan sözleşmesi değil, gözlemlenebilirlik veri modeli şeması — sınırı bu şekilde genişlettim.
+- langfuse/langfuse — insan_kapisi hayır: dosyada geçen "insan/otomatik skor" ayrımı (langfuse.md:9,131) riskli bir işlemi onaylayan bir kapı değil, trace'leri geriye dönük değerlendiren bir puanlama/etiketleme akışı; bu yüzden "onay mekanizması" tanımına uymuyor.
+- open-telemetry/semantic-conventions-genai — saglayici_bagimsiz kısmen: çekirdek `gen_ai.*` isim uzayı sağlayıcıdan bağımsız ama `openai.md`, `aws-bedrock.md`, `anthropic.md` gibi sağlayıcıya özel dosyalar ve zorunlu `aws.bedrock.guardrail.id` gibi alanlar duruyor (otel-genai-semconv.md:88).
+- open-telemetry/semantic-conventions-genai — sozlesme_var evet ama kırılgan: registry/span YAML'ları makine-okur şema tanımlıyor (otel-genai-semconv.md:29) fakat dosyanın kendisi "GenAI semconv'a sözleşme olarak bağlanılamaz" diyor çünkü 197 `stability:` alanının 197'si de `development` (otel-genai-semconv.md:154-160) — şema var ama kararlı değil, doğrudan koda gömülmemeli.
+- Furkiozknn/nvidia-nim-mcp — saglayici_bagimsiz kısmen: fallback zinciri `litellm` üzerinden çok sağlayıcılı ama NVIDIA modelleri özel `api_base` sarmalaması istiyor, ayrıca ikinci bir `VISION_PROVIDERS` listesi zorunlu (nvidia-nim-mcp.md, bkz. §2 Desen A, `nvidia_image.py:118-121,168-172`).
+- Furkiozknn/nvidia-nim-mcp — sozlesme_var hayır: model listeleri (`TRANSLATE_MODELS`, `LLM_MODELS`, `VISION_MODELS` vb.) modül-seviyesi sabit liste, şema yok, dışarıdan okunamıyor, sürümlenmiyor — dosyanın kendi ifadesiyle "makine-okur sözleşmenin en ilkel hâli" (nvidia-nim-mcp.md:86-89).
+- Furkiozknn/nvidia-nim-mcp — insan_kapisi hayır: fallback sırası "2026-08-22'de doğrulanan" tek seferlik bir insan gözlemi olarak koda gömülmüş, çalışma zamanında bir onay adımı değil (nvidia-nim-mcp.md:105-108).
+- Furkiozknn/model-comparison-harness — saglayici_bagimsiz kısmen: aynı `api_base` istisnası bu depoda da tekrarlanıyor (`grading.py:47-49`, bkz. §2 Desen A).
+- Furkiozknn/model-comparison-harness — sozlesme_var evet: `BackendError` (`backends.py:32-37`) ve `gateway_poll.py` submit/poll sözleşmesi girdi/çıktı ve hata sözleşmesini net tutuyor (model-comparison-harness.md:76-80).
+- Furkiozknn/model-comparison-harness — checkpoint hayır: dosya açıkça "Durum yok. Süreç içi, tek atışlık; kalıcılık, checkpoint, geçmiş yok" diyor (model-comparison-harness.md:103).
+- BerriAI/litellm — saglayici_bagimsiz kısmen: seçim stratejilerinin dördü tamamen provider-agnostik ama `router.py:10323` Azure fiyat-anahtarı çözümlemesi için özel dal taşıyor (bkz. §2 Desen A).
+- BerriAI/litellm — sozlesme_var kısmen: `RoutingStrategy` enum'una göre dispatch ve filtre/strateji ayrımı (`budget_limiter.py` herhangi bir stratejiyle birleşiyor) yapısal bir sözleşme izlenimi veriyor (litellm-router.md:17-20,68,85) ama `model_list` girdisinin şema/tip doğrulamasına dair bu analizde doğrudan kanıt yok — bu yüzden "evet" değil "kısmen".
+- BerriAI/litellm — checkpoint kısmen: cooldown ve bütçe durumu `DualCache` (bellek + opsiyonel Redis) üzerinde TTL'li tutuluyor; Redis kalıcıysa süreç yeniden başlasa da durum korunabilir, ama bu ajan-çalıştırma checkpoint'i değil, sağlık/bütçe durumu önbelleği (litellm-router.md:39-45,52).
+- lm-sys/RouteLLM — saglayici_bagimsiz hayır: `OPENAI_CLIENT = OpenAI()` modül seviyesinde sabit, karar katmanı tek sağlayıcıya kodda sabitlenmiş — ADR-000 K4 ile doğrudan çelişen örnek (routellm.md:78).
+- lm-sys/RouteLLM — sozlesme_var evet: beş farklı router yaklaşımı tek bir `calculate_strong_win_rate(prompt) -> float` sözleşmesine indirgenmiş (routellm.md:55,73).
+- lm-sys/RouteLLM — checkpoint kısmen: öğrenilmiş router'lar (`mf`/`bert`/`causal_llm`) için Hugging Face üzerinde hazır model-ağırlığı checkpoint'leri var (routellm.md:37) — bu model checkpoint'i, çalışma-zamanı durumdan-devam etme değil, bu yüzden "kısmen" işaretlendi.
 
 ## 2. Yinelenen desenler
 

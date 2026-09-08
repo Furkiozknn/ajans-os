@@ -1,0 +1,1139 @@
+{
+  "uretim_tarihi": "2026-09-08",
+  "kaynak": "docs/arastirma/*/OZET.md",
+  "arac": "arac/matris-uret.js",
+  "iz_sayisi": 6,
+  "projeler": [
+    {
+      "repo": "CrewAI",
+      "iz": [
+        "i1"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 58173,
+      "son_push": "2026-09-04",
+      "lisans": "MIT",
+      "dil": "Python",
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "evet",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i1-orkestrasyon/crewai.md"
+      ]
+    },
+    {
+      "repo": "LangGraph",
+      "iz": [
+        "i1",
+        "i4"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 41147,
+      "son_push": "2026-09-06",
+      "lisans": "MIT",
+      "dil": "Python",
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 5,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "kismen",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i1-orkestrasyon/langgraph.md",
+        "docs/arastirma/i4-guvenilirlik/langgraph.md"
+      ]
+    },
+    {
+      "repo": "OpenAI Agents SDK",
+      "iz": [
+        "i1"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 29230,
+      "son_push": "2026-09-05",
+      "lisans": "MIT",
+      "dil": "Python",
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 5,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 4
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "evet",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i1-orkestrasyon/openai-agents-sdk.md"
+      ]
+    },
+    {
+      "repo": "Mastra",
+      "iz": [
+        "i1"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 27745,
+      "son_push": "2026-09-07",
+      "lisans": "Apache-2.0 (+ `ee/` ticari)",
+      "dil": "TypeScript",
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "evet",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i1-orkestrasyon/mastra.md"
+      ]
+    },
+    {
+      "repo": "Strands Agents",
+      "iz": [
+        "i1"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 7165,
+      "son_push": "2026-09-04",
+      "lisans": "Apache-2.0",
+      "dil": "Python",
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 5,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "evet",
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i1-orkestrasyon/strands-agents.md"
+      ]
+    },
+    {
+      "repo": "Dapr Agents",
+      "iz": [
+        "i1"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 744,
+      "son_push": "2026-08-30",
+      "lisans": "Apache-2.0",
+      "dil": "Python",
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "evet",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i1-orkestrasyon/dapr-agents.md"
+      ]
+    },
+    {
+      "repo": "ai-workflow-engine",
+      "iz": [
+        "i1"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 0,
+      "son_push": "2026-09-06",
+      "lisans": "MIT",
+      "dil": "Python",
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 2,
+        "guvenilirlik": 1,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 4
+      },
+      "saglayici_bagimsiz": "hayir",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i1-orkestrasyon/ai-workflow-engine.md"
+      ]
+    },
+    {
+      "repo": "mem0ai/mem0",
+      "iz": [
+        "i2"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 64820,
+      "son_push": "2026-09-04",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i2-bellek/mem0.md"
+      ]
+    },
+    {
+      "repo": "run-llama/llama_index",
+      "iz": [
+        "i2"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 52045,
+      "son_push": "2026-09-05",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 2,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i2-bellek/llamaindex.md"
+      ]
+    },
+    {
+      "repo": "HKUDS/LightRAG",
+      "iz": [
+        "i2"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 39452,
+      "son_push": "2026-09-07",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "kismen",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i2-bellek/lightrag.md"
+      ]
+    },
+    {
+      "repo": "microsoft/graphrag",
+      "iz": [
+        "i2"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 35862,
+      "son_push": "2026-09-07",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 5,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i2-bellek/graphrag.md"
+      ]
+    },
+    {
+      "repo": "getzep/graphiti",
+      "iz": [
+        "i2"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 30648,
+      "son_push": "2026-09-06",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "kismen",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i2-bellek/graphiti.md"
+      ]
+    },
+    {
+      "repo": "topoteretes/cognee",
+      "iz": [
+        "i2"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 30542,
+      "son_push": "2026-09-06",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "hayir",
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i2-bellek/cognee.md"
+      ]
+    },
+    {
+      "repo": "letta-ai/letta",
+      "iz": [
+        "i2"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 24638,
+      "son_push": "2026-08-23",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "kismen",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i2-bellek/letta.md"
+      ]
+    },
+    {
+      "repo": "a2aproject/A2A",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 25678,
+      "son_push": "2026-09-04",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 5,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 4
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "evet",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/a2a-spec.md"
+      ]
+    },
+    {
+      "repo": "e2b-dev/E2B",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 13697,
+      "son_push": "2026-09-07",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "hayir",
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/e2b.md"
+      ]
+    },
+    {
+      "repo": "modelcontextprotocol/modelcontextprotocol",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 9151,
+      "son_push": "2026-09-07",
+      "lisans": "MIT→Apache-2.0 geçişte",
+      "dil": null,
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 5,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 2,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "kismen",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/mcp-spec.md"
+      ]
+    },
+    {
+      "repo": "microsandbox/microsandbox",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 8113,
+      "son_push": "2026-09-07",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": null,
+        "guvenilirlik": null,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 4
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "hayir",
+      "checkpoint": null,
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/microsandbox.md"
+      ]
+    },
+    {
+      "repo": "invariantlabs-ai/mcp-scan",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 3014,
+      "son_push": "2026-09-07",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 2,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "evet",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/mcp-scan.md"
+      ]
+    },
+    {
+      "repo": "meta-llama/PurpleLlama",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": null,
+      "son_push": null,
+      "lisans": "—",
+      "dil": null,
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "hayir",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "evet",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/llamafirewall.md"
+      ]
+    },
+    {
+      "repo": "Furkiozknn/mcp-vet",
+      "iz": [
+        "i3"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 0,
+      "son_push": "2026-09-06",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 5,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 4
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i3-arac-guvenlik/mcp-vet.md"
+      ]
+    },
+    {
+      "repo": "stanfordnlp/dspy",
+      "iz": [
+        "i4"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 37834,
+      "son_push": "2026-09-05",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i4-guvenilirlik/dspy.md"
+      ]
+    },
+    {
+      "repo": "Portkey-AI/gateway",
+      "iz": [
+        "i4"
+      ],
+      "canlilik": "tarihi",
+      "yildiz": 12922,
+      "son_push": "2026-05-25",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": null
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i4-guvenilirlik/portkey-gateway.md"
+      ]
+    },
+    {
+      "repo": "noahshinn/reflexion",
+      "iz": [
+        "i4"
+      ],
+      "canlilik": "tarihi",
+      "yildiz": 3262,
+      "son_push": "2025-01-13",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 2,
+        "guvenilirlik": 2,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 1
+      },
+      "saglayici_bagimsiz": "hayir",
+      "sozlesme_var": "hayir",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i4-guvenilirlik/reflexion.md"
+      ]
+    },
+    {
+      "repo": "dbos-inc/dbos-transact-py",
+      "iz": [
+        "i4"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 1563,
+      "son_push": "2026-09-04",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "kismen",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i4-guvenilirlik/dbos-transact-py.md"
+      ]
+    },
+    {
+      "repo": "temporalio/sdk-python",
+      "iz": [
+        "i4"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 1178,
+      "son_push": "2026-09-05",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": null,
+        "guvenilirlik": 5,
+        "gozlemlenebilirlik": null,
+        "guvenlik": null
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i4-guvenilirlik/temporal.md"
+      ]
+    },
+    {
+      "repo": "567-labs/instructor",
+      "iz": [
+        "i4"
+      ],
+      "canlilik": "gecti",
+      "yildiz": null,
+      "son_push": null,
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i4-guvenilirlik/instructor.md"
+      ]
+    },
+    {
+      "repo": "langfuse/langfuse",
+      "iz": [
+        "i5"
+      ],
+      "canlilik": "gecti",
+      "yildiz": null,
+      "son_push": "2026-09-07",
+      "lisans": "MIT (ee/ hariç)",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": null
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "evet",
+      "insan_kapisi": "hayir",
+      "checkpoint": null,
+      "kanit": [
+        "docs/arastirma/i5-gozlem-ekonomi/langfuse.md"
+      ]
+    },
+    {
+      "repo": "open-telemetry/semantic-conventions-genai",
+      "iz": [
+        "i5"
+      ],
+      "canlilik": "gecti",
+      "yildiz": null,
+      "son_push": "2026-09-03",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 4
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "evet",
+      "insan_kapisi": null,
+      "checkpoint": null,
+      "kanit": [
+        "docs/arastirma/i5-gozlem-ekonomi/otel-genai-semconv.md"
+      ]
+    },
+    {
+      "repo": "Furkiozknn/nvidia-nim-mcp",
+      "iz": [
+        "i5"
+      ],
+      "canlilik": "gecti",
+      "yildiz": null,
+      "son_push": "2026-09-05",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 2,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 1,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "hayir",
+      "insan_kapisi": "hayir",
+      "checkpoint": null,
+      "kanit": [
+        "docs/arastirma/i5-gozlem-ekonomi/nvidia-nim-mcp.md"
+      ]
+    },
+    {
+      "repo": "Furkiozknn/model-comparison-harness",
+      "iz": [
+        "i5"
+      ],
+      "canlilik": "gecti",
+      "yildiz": null,
+      "son_push": "2026-09-06",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "evet",
+      "insan_kapisi": null,
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i5-gozlem-ekonomi/model-comparison-harness.md"
+      ]
+    },
+    {
+      "repo": "BerriAI/litellm",
+      "iz": [
+        "i5"
+      ],
+      "canlilik": "gecti",
+      "yildiz": null,
+      "son_push": "2026-09-07",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "kismen",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": null,
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i5-gozlem-ekonomi/litellm-router.md"
+      ]
+    },
+    {
+      "repo": "lm-sys/RouteLLM",
+      "iz": [
+        "i5"
+      ],
+      "canlilik": "tarihi",
+      "yildiz": null,
+      "son_push": "2024-08-10",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 2,
+        "gozlemlenebilirlik": 1,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "hayir",
+      "sozlesme_var": "evet",
+      "insan_kapisi": null,
+      "checkpoint": "kismen",
+      "kanit": [
+        "docs/arastirma/i5-gozlem-ekonomi/routellm.md"
+      ]
+    },
+    {
+      "repo": "Aider-AI/aider",
+      "iz": [
+        "i6"
+      ],
+      "canlilik": "tarihi",
+      "yildiz": 48825,
+      "son_push": "2026-05-22",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 5,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 2,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "evet",
+      "checkpoint": null,
+      "kanit": [
+        "docs/arastirma/i6-kodlama-ogrenme/aider.md"
+      ]
+    },
+    {
+      "repo": "SWE-agent/SWE-agent",
+      "iz": [
+        "i6"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 20274,
+      "son_push": "2026-09-07",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": null,
+      "sozlesme_var": "evet",
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i6-kodlama-ogrenme/swe-agent.md"
+      ]
+    },
+    {
+      "repo": "codelion/openevolve",
+      "iz": [
+        "i6"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 7332,
+      "son_push": "2026-07-18",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": null,
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i6-kodlama-ogrenme/kendini-degistiren-sistemler.md"
+      ]
+    },
+    {
+      "repo": "gepa-ai/gepa",
+      "iz": [
+        "i6"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 6463,
+      "son_push": "2026-09-08",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 3,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 5,
+        "guvenilirlik": 3,
+        "gozlemlenebilirlik": 4,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": null,
+      "sozlesme_var": "evet",
+      "insan_kapisi": "hayir",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i6-kodlama-ogrenme/textgrad-ve-gepa.md"
+      ]
+    },
+    {
+      "repo": "zou-group/textgrad",
+      "iz": [
+        "i6"
+      ],
+      "canlilik": "tarihi",
+      "yildiz": 3718,
+      "son_push": "2025-07-25",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 1,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 1
+      },
+      "saglayici_bagimsiz": null,
+      "sozlesme_var": null,
+      "insan_kapisi": "hayir",
+      "checkpoint": "hayir",
+      "kanit": [
+        "docs/arastirma/i6-kodlama-ogrenme/textgrad-ve-gepa.md"
+      ]
+    },
+    {
+      "repo": "jennyzzt/dgm",
+      "iz": [
+        "i6"
+      ],
+      "canlilik": "tarihi",
+      "yildiz": 2287,
+      "son_push": "2025-08-13",
+      "lisans": "Apache-2.0",
+      "dil": null,
+      "puan": {
+        "olgunluk": 2,
+        "mimari_netlik": 4,
+        "genisletilebilirlik": 3,
+        "guvenilirlik": 2,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 2
+      },
+      "saglayici_bagimsiz": "evet",
+      "sozlesme_var": "kismen",
+      "insan_kapisi": "hayir",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i6-kodlama-ogrenme/kendini-degistiren-sistemler.md"
+      ]
+    },
+    {
+      "repo": "OpenHands/software-agent-sdk",
+      "iz": [
+        "i6"
+      ],
+      "canlilik": "gecti",
+      "yildiz": 1066,
+      "son_push": "2026-09-07",
+      "lisans": "MIT",
+      "dil": null,
+      "puan": {
+        "olgunluk": 4,
+        "mimari_netlik": 3,
+        "genisletilebilirlik": 4,
+        "guvenilirlik": 4,
+        "gozlemlenebilirlik": 3,
+        "guvenlik": 3
+      },
+      "saglayici_bagimsiz": null,
+      "sozlesme_var": "evet",
+      "insan_kapisi": "kismen",
+      "checkpoint": "evet",
+      "kanit": [
+        "docs/arastirma/i6-kodlama-ogrenme/openhands.md"
+      ]
+    }
+  ],
+  "uyarilar": [],
+  "istatistik": {
+    "olgunluk": {
+      "ort": 3.63,
+      "en_iyi": [
+        "CrewAI",
+        "LangGraph",
+        "OpenAI Agents SDK",
+        "a2aproject/A2A",
+        "modelcontextprotocol/modelcontextprotocol",
+        "dbos-inc/dbos-transact-py",
+        "BerriAI/litellm",
+        "Aider-AI/aider"
+      ]
+    },
+    "mimari_netlik": {
+      "ort": 3.77,
+      "en_iyi": [
+        "a2aproject/A2A",
+        "modelcontextprotocol/modelcontextprotocol",
+        "Furkiozknn/mcp-vet"
+      ]
+    },
+    "genisletilebilirlik": {
+      "ort": 3.71,
+      "en_iyi": [
+        "LangGraph",
+        "OpenAI Agents SDK",
+        "Strands Agents",
+        "microsoft/graphrag",
+        "gepa-ai/gepa"
+      ]
+    },
+    "guvenilirlik": {
+      "ort": 3.13,
+      "en_iyi": [
+        "temporalio/sdk-python"
+      ]
+    },
+    "gozlemlenebilirlik": {
+      "ort": 2.85,
+      "en_iyi": [
+        "CrewAI",
+        "Strands Agents",
+        "microsoft/graphrag",
+        "topoteretes/cognee",
+        "letta-ai/letta",
+        "dbos-inc/dbos-transact-py",
+        "langfuse/langfuse",
+        "open-telemetry/semantic-conventions-genai",
+        "gepa-ai/gepa"
+      ]
+    },
+    "guvenlik": {
+      "ort": 2.65,
+      "en_iyi": [
+        "OpenAI Agents SDK",
+        "ai-workflow-engine",
+        "a2aproject/A2A",
+        "microsandbox/microsandbox",
+        "Furkiozknn/mcp-vet",
+        "open-telemetry/semantic-conventions-genai"
+      ]
+    },
+    "saglayici_bagimsiz": {
+      "evet": 22,
+      "kismen": 9,
+      "hayir": 4,
+      "bos": 5
+    },
+    "sozlesme_var": {
+      "evet": 18,
+      "kismen": 19,
+      "hayir": 2,
+      "bos": 1
+    },
+    "insan_kapisi": {
+      "evet": 9,
+      "kismen": 7,
+      "hayir": 20,
+      "bos": 4
+    },
+    "checkpoint": {
+      "evet": 14,
+      "kismen": 7,
+      "hayir": 14,
+      "bos": 5
+    }
+  }
+}

@@ -2,17 +2,38 @@
 
 ## 1. İncelenen projeler
 
-| Proje | Kategori | Lisans | Canlılık | Olgunluk | Mimari netlik | Genişletilebilirlik | Güvenilirlik ilkelleri | Gözlemlenebilirlik | Güvenlik duruşu | Dosya |
-|---|---|---|---|---|---|---|---|---|---|---|
-| OpenHands (software-agent-sdk) | kodlama ajanı SDK + sunucu | MIT | geçti | 4 | 3 | 4 | 4 | 3 | 3 | openhands.md |
-| DGM (Darwin Gödel Machine) | kendini değiştiren ajan (araştırma) | Apache-2.0 | geçemedi — tarihî referans | 2 | 4 | 3 | 2 | 3 | 2 | kendini-degistiren-sistemler.md |
-| OpenEvolve | evrimsel kod optimizasyonu (harici hedef) | Apache-2.0 | geçti | 3 | 4 | 4 | 3 | 3 | 2 | kendini-degistiren-sistemler.md |
-| SWE-agent | otonom yazılım mühendisi ajanı | MIT | geçti | 4 | 4 | 4 | 3 | 3 | 2 | swe-agent.md |
-| Aider | AI çift-programlama CLI | Apache-2.0 | tarihî referans (~108 gün) | 5 | 4 | 4 | 3 | 2 | 3 | aider.md |
-| TextGrad | metin-gradyan otograd optimizasyonu | MIT | tarihî referans (~410 gün) | 2 | 4 | 4 | 1 | 3 | 1 | textgrad-ve-gepa.md |
-| GEPA | reflective prompt evrimi (Pareto) | MIT | geçti | 3 | 4 | 5 | 3 | 4 | 2 | textgrad-ve-gepa.md |
+| Proje | Kategori | Yıldız | Son push | Lisans | Canlılık | Olgunluk | Mimari netlik | Genişletilebilirlik | Güvenilirlik ilkelleri | Gözlemlenebilirlik | Güvenlik duruşu | Kanıt |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| OpenHands/software-agent-sdk | kodlama ajanı SDK + sunucu | 1.066 | 2026-09-07 | MIT | geçti | 4 | 3 | 4 | 4 | 3 | 3 | [openhands](openhands.md) |
+| jennyzzt/dgm | kendini değiştiren ajan (araştırma) | 2287 | 2025-08-13 | Apache-2.0 | tarihî referans (geçemedi, son push ~13 ay önce) | 2 | 4 | 3 | 2 | 3 | 2 | [kendini-degistiren-sistemler](kendini-degistiren-sistemler.md) |
+| codelion/openevolve | evrimsel kod optimizasyonu (harici hedef) | 7332 | 2026-07-18 | Apache-2.0 | geçti | 3 | 4 | 4 | 3 | 3 | 2 | [kendini-degistiren-sistemler](kendini-degistiren-sistemler.md) |
+| SWE-agent/SWE-agent | otonom yazılım mühendisi ajanı | 20274 | 2026-09-07 | MIT | geçti | 4 | 4 | 4 | 3 | 3 | 2 | [swe-agent](swe-agent.md) |
+| Aider-AI/aider | AI çift-programlama CLI | 48.825 | 2026-05-22 | Apache-2.0 | tarihî referans (~108 gün) | 5 | 4 | 4 | 3 | 2 | 3 | [aider](aider.md) |
+| zou-group/textgrad | metin-gradyan otograd optimizasyonu | 3718 | 2025-07-25 | MIT | tarihî referans (~410 gün) | 2 | 4 | 4 | 1 | 3 | 1 | [textgrad-ve-gepa](textgrad-ve-gepa.md) |
+| gepa-ai/gepa | reflective prompt evrimi (Pareto) | 6463 | 2026-09-08 | MIT | geçti | 3 | 4 | 5 | 3 | 4 | 2 | [textgrad-ve-gepa](textgrad-ve-gepa.md) |
 
-Puanlar analiz dosyalarının "Puan" bölümlerinden birebir alındı; uydurulmadı.
+Puanlar analiz dosyalarının "Puan" bölümlerinden birebir alındı; uydurulmadı. Proje/Yıldız/Son push kimlik satırlarından alındı; OpenHands için iki repo var (frontend All-Hands-AI/OpenHands 86.693 yıldız, backend OpenHands/software-agent-sdk 1.066 yıldız) — `openhands.md` bunu "gerçek analiz hedefi" olarak işaretlediği için backend kullanıldı.
+
+### Sağlayıcı bağımsızlığı / sözleşme / insan kapısı / checkpoint
+
+| Proje | saglayici_bagimsiz | sozlesme_var | insan_kapisi | checkpoint |
+|---|---|---|---|---|
+| OpenHands/software-agent-sdk | — | evet | kısmen | evet |
+| jennyzzt/dgm | evet | kısmen | hayır | evet |
+| codelion/openevolve | — | kısmen | hayır | evet |
+| SWE-agent/SWE-agent | — | evet | hayır | hayır |
+| Aider-AI/aider | evet | kısmen | evet | — |
+| zou-group/textgrad | — | — | hayır | hayır |
+| gepa-ai/gepa | — | evet | hayır | evet |
+
+Gerekçeler (kısmen ve beklenmedik değerler):
+- **OpenHands insan_kapisi = kısmen**: `ConfirmationPolicy` risk-eşikli onay uygulayabiliyor ama `NeverConfirm` politikasıyla tamamen kapatılabiliyor (`openhands.md:96,135`).
+- **DGM sozlesme_var = kısmen**: araç sözleşmesi yalnızca `tools/bash.py` ve `tools/edit.py` ile sınırlı, biçimsel bir şema/spec tanımı yok — sabit iki araçlık bir sözleşme (`kendini-degistiren-sistemler.md:56-57`).
+- **OpenEvolve sozlesme_var = kısmen**: "klasik anlamda çok-ajanlı bir sözleşme yok" diye açıkça belirtiliyor; bunun yerine `config.py` üzerinden tipli (`diff_based_evolution: bool`) dar bir girdi/çıktı sözleşmesi var (`kendini-degistiren-sistemler.md:199-200`).
+- **Aider sozlesme_var = kısmen**: `Coder` alt sınıfı + `edit_format` sabiti + `get_edits`/`apply_edits` override deseni bir arayüz sözleşmesi sayılabilir ama biçimsel şema değil (`aider.md:37`).
+- **Aider checkpoint = —**: dosya açıkça "kalıcı 'öğrenme' yok" diyor, durum yalnızca oturum içi `cur_messages`/`done_messages` listelerinde tutuluyor (`aider.md:29`); git commit geçmişi örtük bir geri dönüş noktası sağlayabilir ama bu doküman checkpoint/resume olarak tanımlamıyor, bu yüzden kanıtsız `—` bırakıldı.
+- **TextGrad saglayici_bagimsiz / sozlesme_var = —**: sağlayıcı adaptörleri ve `model.py`/`defaults.py` kapsam dışı bırakıldığı açıkça belirtiliyor (`textgrad-ve-gepa.md:120`), sözleşme konusunda da doğrudan kanıt yok.
+- **SWE-agent / OpenEvolve / GEPA saglayici_bagimsiz = —**: kanıt dosyalarında litellm/çoklu-sağlayıcı desteğine dair açık bir ifade bulunamadı (yalnızca DGM ve Aider için bu açıkça belgelenmiş).
 
 ## 2. Yinelenen desenler
 
