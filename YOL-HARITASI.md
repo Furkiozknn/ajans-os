@@ -23,13 +23,6 @@ yerden sürer.
 
 
 
-- [ ] **İ6 Otonom kodlama ve öğrenme araştırması** — Protokol İ6:
-      otonom kodlama ajanları (OpenHands, SWE-agent, Aider, Cline,
-      Claude Code'un alt-ajan modeli), self-learning / sürekli
-      optimizasyon (DSPy, TextGrad). ADR-000 K7 için: insan kapısız
-      kendini-değiştirmenin üretimde güvenle çalıştığı **tek bir** örnek
-      var mı, açıkça ara ve yaz. Çıktı: `docs/arastirma/i6-kodlama-ogrenme/`.
-
 ### Faz 2 — Karşılaştırma
 
 - [ ] **Architecture Comparison Matrix** — Matrisi **elle yazma**:
@@ -146,6 +139,18 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **İ6 Otonom kodlama ve öğrenme araştırması** — Protokol İ6:
+      otonom kodlama ajanları (OpenHands, SWE-agent, Aider, Cline,
+      Claude Code'un alt-ajan modeli), self-learning / sürekli
+      optimizasyon (DSPy, TextGrad). ADR-000 K7 için: insan kapısız
+      kendini-değiştirmenin üretimde güvenle çalıştığı **tek bir** örnek
+      var mı, açıkça ara ve yaz. Çıktı: `docs/arastirma/i6-kodlama-ogrenme/`.
+      **Bitti (2026-09-08):** 5 analiz dosyası / 7 proje (OpenHands, DGM,
+      OpenEvolve, SWE-agent, Aider, TextGrad, GEPA) + `OZET.md` + `DURUM.md`.
+      K7 sorusunun cevabı: **böyle tek bir örnek bulunamadı** — kendi kodunu
+      insan kapısız değiştiren tek aday DGM, canlılık ve üretim testini
+      kaybediyor. Cline ve resmî `DENETIM.md` sonraki tura kaldı.
 
 - [x] **İ5 Gözlem ve ekonomi araştırması** — Protokol İ5: tracing
       (OpenTelemetry GenAI kuralları birincil kaynak), değerlendirme ve
