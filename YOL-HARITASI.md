@@ -28,15 +28,62 @@ yerden sürer.
 
 ### Faz 4 — Tasarım
 
-- [ ] **Implementation Roadmap** — Faz 5 için sıralı, birbirinden
-      bağımsız modül maddeleri; her biri tek gece görevi büyüklüğünde,
-      "bitti" ölçütü test. Bu maddeler **bu dosyanın Faz 5 bölümüne**
-      yazılır. Çıktı: `docs/04-UYGULAMA-YOL-HARITASI.md` + aşağıdaki
-      Faz 5 bölümünün doldurulması.
-
 ### Faz 5 — Uygulama
 
-<!-- Faz 4'ün son maddesi burayı doldurur. Öncesinde buraya madde yazılmaz. -->
+Maddelerin tamamı — girdi, iş, "bitti" ölçütü, kapsam dışı —
+[`docs/04-UYGULAMA-YOL-HARITASI.md`](docs/04-UYGULAMA-YOL-HARITASI.md)
+içindedir; aşağısı o belgenin sırasıdır. **Ortak bitti kapısı** (her madde
+için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
+— ağ varsa — `npx -p typescript@5.6 tsc -p tsconfig.json`, üçü de 0.
+U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
+(12 modülü o çağırır), **U14 U13'ten sonra**.
+
+- [ ] **U0 — Çalışma zamanı iskeleti ve test kapısı** — `package.json`
+      (`node --test`), uygulama dili kararı **ADR-009**,
+      `arac/yapi-dogrula.js` import yönü denetimini `.js` dosyalarına
+      genişletir. Bitti: `npm test` 0 **ve** kasıtlı bir ihlal dosyasında
+      yapı denetimi hata veriyor.
+- [ ] **U1 — `src/task-manager/`** — ADR-003 iki yazma, durum makinesi,
+      `sonraki_adim`. Bitti: süreç ölümü benzetiminden sonra
+      `tamamlandi_mi` doğru cevap veriyor; kayıt `task.schema.json`'a uyuyor.
+- [ ] **U2 — `src/agent-registry/`** — yükleme, `dogrula`, `turet`.
+      Bitti: iki örnek ajan geçiyor, eksik alanlı sözleşme reddediliyor,
+      `turet` diske **yazmıyor**.
+- [ ] **U3 — `src/tool-registry/`** — MCP şemasıyla argüman doğrulama.
+      Bitti: izin sınıfı kayıttan okunuyor, araç **adından türetilmiyor**.
+- [ ] **U4 — `src/permission-manager/`** — üç değerli karar, insan kapısı.
+      Bitti: `BLOCK`/`HUMAN_REQUIRED` istisna değil belge döndürüyor;
+      onay gelmeden ikinci çağrı yine `HUMAN_REQUIRED`.
+- [ ] **U5 — `src/memory-manager/`** — katmanlı okuma/yazma.
+      Bitti: `ALLOW` olmayan kararla `yaz` yazmıyor; geçersiz kılınan kayıt
+      `oku`'dan dönmüyor.
+- [ ] **U6 — `src/context-manager/`** — bütçe ve kısılma.
+      Bitti: atılan parçaların sırası önceden yazılı sırayla birebir.
+- [ ] **U7 — `src/model-router/`** — `sec` + `cagir`, taşıyıcı arkası.
+      Bitti: `sec` testinde hiçbir sağlayıcı adı geçmiyor; `cagir` sahte
+      taşıyıcıyla `usage` döndürüyor.
+- [ ] **U8 — `src/cost-manager/`** — fiyat tablosu, eşik, adım tavanı.
+      Bitti: bilinmeyen model → maliyet `null` + `bilinmeyen_cagri` sayacı;
+      ondalık ayırıcı testi (tuzak #4).
+- [ ] **U9 — `src/evaluator/`** — ADR-004 deterministik kapı.
+      Bitti: aynı girdi 100 çağrıda aynı sonuç; LLM metni `Kanit` yerine
+      geçemiyor.
+- [ ] **U10 — `src/critic/`** — `elestir` → `message.schema.json`.
+      Bitti: dönüş `string` değil şemaya uyan belge; eleştirinin geçme
+      kararına oyu yok.
+- [ ] **U11 — `src/recovery-manager/`** — dört mod, bekleme.
+      Bitti: telafisi olmayan eylemden sonra daima `insan-kapisi`.
+- [ ] **U12 — `src/observability/`** — span yazımı, tek yönlü.
+      Bitti: yazma hatasında `span_yaz` istisna atmıyor, koşu düşmüyor;
+      `arac/iz-izle.js` üretilen izi okuyor.
+- [ ] **U13 — `src/orchestrator/`** — blueprint §3.2'nin 1–10 sırası,
+      elle bağlanan bağımlılıklar. Bitti: 12 sahte bağımlılıkla çağrı sırası
+      §3.2 ile birebir; `HUMAN_REQUIRED`'da koşu duruyor; `kosuyu_surdur`
+      biten adımı tekrarlamıyor.
+- [ ] **U14 — Uçtan uca kabul koşusu** — gerçek modüllerle tek görev
+      (sahte olan yalnızca `ModelTasiyici`). Bitti: üretilen her belge
+      `arac/sema-dogrula.js`'ten geçiyor; koşu ortasından öldürülüp
+      sürdürüldüğünde yan etki tekrarlanmıyor.
 
 ### Sürekli
 
@@ -53,6 +100,23 @@ yerden sürer.
 ## Bitti
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **Implementation Roadmap** — 2026-09-08.
+      [`docs/04-UYGULAMA-YOL-HARITASI.md`](docs/04-UYGULAMA-YOL-HARITASI.md) +
+      yukarıdaki Faz 5 bölümünün 15 maddesi (U0–U14). Maddeleştirme kuralı
+      08 §7'den geldi: **her modül klasörü bir madde**, ölçüt uygulama +
+      test. Üç sınır yazıldı: yeni modül klasörü açılmaz (14.'sü ADR-001'i
+      yeniden açar), arayüz sessizce değişmez (AP3), import yönü kuralı
+      uygulamada da geçerli — bu yüzden U0 `arac/yapi-dogrula.js`'yi `.js`
+      dosyalarına genişletir. Taşıyıcı karar: **her maddenin "bitti"si mutlu
+      yol değil, mimariden gelen kısıt** (iki yazma, üç değerli izin, `null`
+      maliyet, `insan-kapisi`, span'in koşuyu düşürmemesi); yalnızca mutlu
+      yolu sınayan test AP3'ü gizler. Bağımlılık: U1–U12 birbirini beklemez
+      (hepsi `tipler.d.ts` + U0), yalnızca U13 ve U14 sıralıdır. Test
+      koşucusu Node'un kendi `node:test`'i — ek paket yok (Node v24.19.0
+      doğrulandı). Doğrulama: belgedeki 14 göreli bağlantının hepsi çözülüyor
+      (dosya dosya kontrol edildi); `yapi-dogrula.js`'nin bugün yalnızca
+      `index.d.ts` taradığı kaynaktan doğrulandı (satır 68).
 
 - [x] **Repository / folder structure ve core interfaces** — 2026-09-08.
       [`docs/mimari/08-YAPI-VE-ARAYUZLER.md`](docs/mimari/08-YAPI-VE-ARAYUZLER.md) +
