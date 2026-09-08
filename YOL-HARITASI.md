@@ -25,7 +25,6 @@ yerden sürer.
 
 ### Faz 3 — Mimari sentez
 
-
 ### Faz 4 — Tasarım
 
 ### Faz 5 — Uygulama
@@ -37,11 +36,6 @@ için geçerli): `node --test src/<modul>/`, `node arac/yapi-dogrula.js` ve
 — ağ varsa — `npx -p typescript@5.6 tsc -p tsconfig.json`, üçü de 0.
 U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en sonda**
 (12 modülü o çağırır), **U14 U13'ten sonra**.
-
-- [ ] **U14 — Uçtan uca kabul koşusu** — gerçek modüllerle tek görev
-      (sahte olan yalnızca `ModelTasiyici`). Bitti: üretilen her belge
-      `arac/sema-dogrula.js`'ten geçiyor; koşu ortasından öldürülüp
-      sürdürüldüğünde yan etki tekrarlanmıyor.
 
 ### Sürekli
 
@@ -76,6 +70,12 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
       boşluğu kapandı), inceleme ve ADR-006 sayıları güncellendi.
 
 <!-- Tamamlanan maddeler tarihiyle buraya taşınır -->
+
+- [x] **U14 — Uçtan uca kabul koşusu** — gerçek modüllerle tek görev
+      (sahte olan yalnızca `ModelTasiyici`). Bitti: üretilen her belge
+      `arac/sema-dogrula.js`'ten geçiyor; koşu ortasından öldürülüp
+      sürdürüldüğünde yan etki tekrarlanmıyor.
+      *(2026-09-08 — 13 gerçek modülle tek görev; sahte yalnızca ModelTaşıyıcı. Üç kabul testi: öldürülüp sürdürülünce yan etki tekrarlanmıyor, dar kapsamlı sözleşmede araç çağrısı BLOCK, özet sözleşmenin o hâline bağlanıyor. Koşu bütçe duvarına çarptığı için kutucuk canlı oturum denetiminde işaretlendi: `node --test src/kabul-kosusu.test.js` 3/3, `npm test` 142/142, `npm run kapi` temiz.)*
 
 - [x] **U13 — `src/orchestrator/`** — 2026-09-08. `index.js`
       (`orkestrator(bagimliliklar, secenekler)` → `kosuyu_yurut`,
@@ -582,7 +582,6 @@ U1–U12 arası sıra tavsiyedir, hepsi yalnızca U0'a bağlıdır; **U13 en son
       bozma denemesinin 38'i reddedildi**, çıkış kodu 0; `node arac/iz-izle.js`
       belgede 2 alıntının 2'sini de BIREBIR buldu; tuzak #22 taraması bir yanlış
       beyan yakaladı ve düzeltildi.
-
 
 - [x] **Agent Architecture** — 2026-09-08. `docs/mimari/01-AJAN.md` +
       [ADR-006](docs/adr/ADR-006-ajan-sozlesmesi.md) + `agent.schema.json`
