@@ -66,7 +66,11 @@ function belgeyiTara(belge) {
   }
   const sonuc = { birebir: [], yakin: [], yok: [] };
   for (const [anahtar, v] of gorulen) {
-    const base = path.basename(v.dosya).replace(/\./g, "\\.");
+    // Dosya adi bir RegExp'e gomuluyor: yalniz nokta kacirmak yetmez.
+    // "a+b.js" gibi bir ad, kacirilmadiginda "+" yuzunden tamamen
+    // baska bir desene donusur (ya da SyntaxError atar). Butun RegExp
+    // ozel karakterleri kaciriliyor.
+    const base = path.basename(v.dosya).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const re = new RegExp(base + ":(\\d+)(?:-(\\d+))?", "g");
     let tam = false, yakin = false, m2;
     while ((m2 = re.exec(havuzYerel)) !== null) {
