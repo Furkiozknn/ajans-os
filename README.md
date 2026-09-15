@@ -6,9 +6,32 @@ paralel/sıralı çalıştıran, sonucu eleştirmen ajanlarla denetleyen,
 hatayı yakalayıp toparlayan, her adımı izleyen ve kendi geçmişinden
 öğrenen bir çekirdek.
 
-> Durum: **Faz 1 — Araştırma.** Henüz çalışan kod yok; bilerek.
-> Önce ekosistem araştırılır, sonra mimari sentezlenir, en son kod
-> yazılır. Sırayı bozan proje, en iyi ihtimalle iyi bir klon olur.
+> Durum: **Faz 5 — Uygulama.** Çekirdek çalışıyor: `src/` altında 13 modül,
+> ~2.827 satır kaynak (test dosyaları hariç), 142 geçen test ve uçtan uca
+> bir kabul koşusu. Araştırma → karşılaştırma → sentez → tasarım → uygulama
+> sırası korundu; kod en sona yazıldı.
+
+## Çalıştır
+
+Bağımlılık yok; Node 22+ yeterli.
+
+```bash
+npm test        # 142 test (uçtan uca kabul koşusu dahil)
+npm run yapi    # yapı doğrulama: 13 modül, blueprint §2 ile eşli, import yönü tek
+npm run kapi    # ikisi birden — kapı kontrolü
+```
+
+Deponun en güçlü kanıtı **kabul koşusudur**: 13 modülün gerçek uygulamaları
+elle bağlanır, tek bir görev baştan sona koşar, koşunun ürettiği her belge
+(görev kaydı, izin kararları, span'ler) deponun kendi şema doğrulayıcısından
+geçirilir; sonra koşu ortasından öldürülüp görev **diskten** yeniden
+yüklenerek sürdürülür ve yan etkinin tekrarlanmadığı ölçülür. Ağa çıkmaz,
+gerçek LLM çağırmaz — sahte olan tek şey model taşıyıcısıdır.
+
+```bash
+node --test src/kabul-kosusu.test.js
+# tests 3 / pass 3 / fail 0
+```
 
 ## Neden var
 
@@ -59,7 +82,7 @@ Sıradaki işler: [YOL-HARITASI.md](YOL-HARITASI.md)
 | `docs/adr/` | Architecture Decision Record'lar — her kararın gerekçesi |
 | `docs/mimari/` | Blueprint ve alt mimariler (Faz 3'te dolar) |
 | `contracts/` | JSON Schema sözleşmeleri: ajan, görev, mesaj, izin |
-| `src/` | Çekirdek (Faz 5'te dolar) |
+| `src/` | Çekirdek: 13 modül, her biri `index.js` + `index.d.ts` + `index.test.js`; ayrıca `kabul-kosusu.test.js` (uçtan uca) |
 
 ## Dil
 
