@@ -80,14 +80,24 @@ jobs:
       - name: U15 atlanmadi mi
         run: |
           set -e
-          if ! grep -qE '^# skipped 0' kapi-ciktisi.txt; then
+          # node:test'in ozet satiri KOSUCUNUN RAPORLAYICISINA gore degisiyor:
+          # Node 22 TAP basiyor ("# skipped 0"), Node 24 spec basiyor
+          # ("<bilgi isareti> skipped 0"). Ilk surum yalnizca '^#' ariyordu,
+          # matrisin 24 bacagi bu yuzden dustu -- oysa U15 GECMISTI.
+          # Oneke degil satirin kendisine bak.
+          ozet() { grep -E "(^|[^a-zA-Z])$1 [0-9]+" kapi-ciktisi.txt | tail -1 || true; }
+          if ! grep -qE "(^|[^a-zA-Z])skipped 0( |$)" kapi-ciktisi.txt; then
             echo "HATA: bir test atlandi. U15 komsu dogrulayiciyi bulamamis olabilir."
-            grep -E '^# (tests|pass|fail|skipped)' kapi-ciktisi.txt || true
+            for a in tests pass fail skipped; do ozet "$a"; done
             echo "Beklenen yol: $AJANS_OS_KOMSU/arac/dogrula.js"
             ls -la "$AJANS_OS_KOMSU/arac/" || echo "(komsu dizini yok)"
             exit 1
           fi
-          grep -E '^# (tests|pass|skipped)' kapi-ciktisi.txt
+          # U15'i ADIYLA da ara: "skipped 0" tek basina yeterli degil, test
+          # hic kaydedilmemis olsa da o satir yine 0 derdi.
+          grep -qE "(ok [0-9]+ - |✔ ).*\(U15\)" kapi-ciktisi.txt \
+            || { echo "HATA: U15 testi ciktida hic gorunmuyor"; exit 1; }
+          for a in tests pass skipped; do ozet "$a"; done
           echo "U15 dahil butun testler kostu"
         env:
           AJANS_OS_KOMSU: ${{ github.workspace }}/_komsu/turkce-ajanlar
