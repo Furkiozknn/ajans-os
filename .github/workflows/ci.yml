@@ -29,6 +29,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # U15 kapisi komsu projenin dogrulayicisini kullanir: turetilen ajan
+      # dosyasi turkce-ajanlar/arac/dogrula.js --kati'dan gecmeli. Komsu
+      # yoksa test KENDINI ATLAR (ADR-002) ve ilk CI kosusunda tam da bu
+      # oldu: "# tests 142 / # pass 141 / # skipped 1". Yani baska birinin
+      # kabul kapisini olcen tek test, olcmesi gereken yerde hic kosmuyordu.
+      #
+      # Komsu ayni sahibin PUBLIC deposu ve burada yalnizca DOGRULAYICI
+      # olarak kosuyor; ajans-os'un kendi kodu ondan hicbir sey import
+      # etmiyor (ADR-002 duruyor). Surum sabitlenmis bir SHA'ya pinli:
+      # komsuda yapilan bir degisiklik bu kosuyu kendiliginden degistiremez.
+      - name: Komsu dogrulayici (U15)
+        uses: actions/checkout@v4
+        with:
+          repository: Furkiozknn/turkce-ajanlar
+          ref: 7d77df64062668455313ed17870ed9dcb1c0dd55
+          path: _komsu/turkce-ajanlar
+          persist-credentials: false
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -42,4 +60,34 @@ jobs:
       # uydurmuyor, gelistiricinin yerelde calistirdigi ayni kapiyi kosuyor -
       # boylece ikisi birbirinden kayamaz.
       - name: Kapi (testler + yapi dogrulama)
-        run: npm run kapi
+        env:
+          # Testin varsayilani `../turkce-ajanlar` (gelistirme makinesinde iki
+          # depo yan yana). CI'da checkout calisma alaninin disina yazamaz,
+          # o yuzden yol acikca veriliyor.
+          AJANS_OS_KOMSU: ${{ github.workspace }}/_komsu/turkce-ajanlar
+        # pipefail SART: `tee` her zaman 0 doner, onsuz DUSEN bir kapi
+        # yesil gorunurdu. Actions'in varsayilan kabugu `bash -e` ve
+        # pipefail icermiyor, o yuzden acikca veriliyor.
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run kapi 2>&1 | tee kapi-ciktisi.txt
+
+      # U15'in GERCEKTEN kostugunu kanitla. Bu adim olmadan komsu checkout'u
+      # sessizce bozulabilir (yol degisir, pinli SHA silinir) ve test yine
+      # kendini atlar -- kosu YESIL kalir, kapsam kaybi fark edilmez. Tam da
+      # bu is akisinin kapatmak icin var oldugu korluk.
+      - name: U15 atlanmadi mi
+        run: |
+          set -e
+          if ! grep -qE '^# skipped 0' kapi-ciktisi.txt; then
+            echo "HATA: bir test atlandi. U15 komsu dogrulayiciyi bulamamis olabilir."
+            grep -E '^# (tests|pass|fail|skipped)' kapi-ciktisi.txt || true
+            echo "Beklenen yol: $AJANS_OS_KOMSU/arac/dogrula.js"
+            ls -la "$AJANS_OS_KOMSU/arac/" || echo "(komsu dizini yok)"
+            exit 1
+          fi
+          grep -E '^# (tests|pass|skipped)' kapi-ciktisi.txt
+          echo "U15 dahil butun testler kostu"
+        env:
+          AJANS_OS_KOMSU: ${{ github.workspace }}/_komsu/turkce-ajanlar

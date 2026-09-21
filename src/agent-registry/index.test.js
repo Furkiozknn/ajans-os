@@ -183,9 +183,17 @@ test("triggers description'a tirnak icinde gecer (sema 2.1, ADR-010)", async () 
  * olcer; K8 ("ev sahibi bicimi turetilir") ancak turetilen dosya o ev sahibinin
  * araclarinca kabul edilirse dogrudur. Komsu depo yoksa test atlanir — ajans-os
  * disariya bagimli degildir (ADR-002) — ama atlanma sessiz degil, isaretlidir.
+ *
+ * KOMSU NEREDE ARANIR. Varsayilan `../turkce-ajanlar`: iki depo yan yana
+ * klonlanmissa (gelistirme makinesi) kendiliginden bulunur. CI'da checkout
+ * calisma alaninin disina yazamaz, o yuzden yol `AJANS_OS_KOMSU` ile
+ * verilebiliyor. Bu degisken olmadan davranis birebir eskisi gibi —
+ * ADR-002 bozulmuyor, komsu yoksa test yine isaretli bicimde atlaniyor.
  */
+const KOMSU_KOK = process.env.AJANS_OS_KOMSU || join(KOK, "..", "turkce-ajanlar");
+
 test("turetilen dosya turkce-ajanlar/arac/dogrula.js'ten gecer (U15)", async (t) => {
-  const dogrulayici = join(KOK, "..", "turkce-ajanlar", "arac", "dogrula.js");
+  const dogrulayici = join(KOMSU_KOK, "arac", "dogrula.js");
   if (!existsSync(dogrulayici)) {
     t.skip(`komsu dogrulayici yok: ${dogrulayici}`);
     return;
@@ -205,9 +213,12 @@ test("turetilen dosya turkce-ajanlar/arac/dogrula.js'ten gecer (U15)", async (t)
 
   // --kati: uyari da hata sayilir. Turetilen bir dosyada uyari birakmak,
   // "gecti ama biraz" demektir; turetici bunu hak etmiyorsa duzeltilir.
+  // Dosya yollari mutlak, dogrulayici kendi kokunu __dirname'den cozuyor:
+  // cwd sonucu etkilemiyor. Yine de komsunun ust dizinine ayarli kalsin ki
+  // hata metinlerindeki goreli yollar gelistirme makinesindekiyle ayni cikssin.
   const sonuc = execFileSync(process.execPath, [dogrulayici, "--kati", ...dosyalar], {
     encoding: "utf8",
-    cwd: join(KOK, ".."),
+    cwd: join(KOMSU_KOK, ".."),
   });
   assert.match(sonuc, /0 hata, 0 uyari/, `komsu dogrulayici temiz demedi:\n${sonuc}`);
 });
