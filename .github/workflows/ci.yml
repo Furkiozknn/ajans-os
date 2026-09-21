@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Furkiozknn/turkce-ajanlar
-          ref: 7d77df64062668455313ed17870ed9dcb1c0dd55
+          ref: 7e1dbbbacc9aae62ff9a1fa8ea3f8d569cb413e6
           path: _komsu/turkce-ajanlar
           persist-credentials: false
 
