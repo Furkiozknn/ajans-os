@@ -1,0 +1,45 @@
+name: CI
+
+# NEDEN SONRADAN EKLENDI. Depo 142 testle geliyordu ve hepsi yerelde
+# geciyordu, ama `.github/workflows/` hic yoktu - yani hicbiri push'ta
+# kosmuyordu. Tek CI kosusu GitHub'in kendiliginden ekledigi CodeQL'di.
+# 21 Eylul 2026'da test sayisi denetimi bunu "yalnizca test disi akis var
+# (CodeQL)" diye bildirdi: README 142 diyordu, dogrulayan yoktu.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  kapi:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # package.json engines: node >=22. Alt sinir ve guncel surum.
+        node-version: ["22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # ADR-009: uygulama da testler de duz ESM, kosucu node:test.
+      # Bagimlilik yok, package-lock.json da yok - `npm ci` eklenirse her
+      # kosuda "no package-lock.json" ile duser.
+
+      # Kapi zaten package.json'da tanimli: testler + yapi dogrulama +
+      # yapi kapisinin kendi testi. CI burada yeni bir komut zinciri
+      # uydurmuyor, gelistiricinin yerelde calistirdigi ayni kapiyi kosuyor -
+      # boylece ikisi birbirinden kayamaz.
+      - name: Kapi (testler + yapi dogrulama)
+        run: npm run kapi
