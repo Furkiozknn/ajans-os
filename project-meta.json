@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "id": "ajans-os",
+  "owner": "Furkiozknn",
+  "repository": "https://github.com/Furkiozknn/ajans-os",
+  "homepage": null,
+  "releases": "https://github.com/Furkiozknn/ajans-os/releases",
+  "status": "active",
+  "category": "agent-infrastructure",
+  "platform": [
+    "node"
+  ],
+  "primary_language": "JavaScript",
+  "technologies": [
+    "Node.js 22+",
+    "JavaScript",
+    "JSON Schema",
+    "zero dependencies"
+  ],
+  "version": null,
+  "license": "MIT",
+  "topics": [
+    "adr",
+    "agent-infrastructure",
+    "agent-orchestration",
+    "ai-agents",
+    "architecture",
+    "architecture-decision-records",
+    "contracts",
+    "javascript",
+    "json-schema",
+    "multi-agent-systems",
+    "nodejs",
+    "research",
+    "turkce"
+  ],
+  "summary": "An AI agency OS built research-first: 40 agent projects read with file:line evidence, then 11 ADRs, 6 machine-readable contracts and 13 modules. Its strongest proof is an acceptance run killed mid-task, reloaded from disk and resumed - then checked that no side effect repeated. Zero dependencies, 142 tests.",
+  "key_features": [
+    "Built research-first: 40 agent projects read with file:line evidence before a line was written",
+    "11 architecture decision records, 6 machine-readable contracts, 13 modules",
+    "Acceptance run is killed mid-task, reloaded from disk and resumed - then checked that no side effect repeated",
+    "The gate tests itself: a deliberate violation is planted in the tree and CI fails if the validator misses it"
+  ],
+  "media": {
+    "hero": "assets/banner.svg",
+    "screenshots": [],
+    "gifs": [],
+    "videos": []
+  },
+  "tests": {
+    "count": 142,
+    "source": "`node --test`: `pass 142`",
+    "measured": "2026-09-15"
+  },
+  "ci": {
+    "workflows": [
+      "ci.yml"
+    ],
+    "badge": "https://github.com/Furkiozknn/ajans-os/actions/workflows/ci.yml/badge.svg"
+  },
+  "docs": {
+    "readme": "README.md",
+    "changelog": null,
+    "roadmap": "YOL-HARITASI.md",
+    "security": null,
+    "contributing": null,
+    "license_file": "LICENSE"
+  },
+  "social": {
+    "headline": "An agency OS whose strongest test is being killed mid-task and resumed.",
+    "hashtags": [
+      "aiagents",
+      "nodejs",
+      "architecture",
+      "opensource"
+    ],
+    "primary_link": "https://github.com/Furkiozknn/ajans-os"
+  },
+  "provenance": {
+    "generated_at": "2026-09-22",
+    "generator": "ghcc/gen_meta.py",
+    "rule": "mechanical fields read from the repository and the GitHub API; editorial fields hand-written and reviewed; no field is generated from a guess"
+  }
+}
