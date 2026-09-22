@@ -105,3 +105,12 @@ katmanda çeviri yapmak hata kaynağı. Gerekçe ADR-000'da.
 ## Lisans
 
 MIT.
+
+---
+
+## Bu ekosistemden başka projeler
+
+- **[mcp-census](https://github.com/Furkiozknn/mcp-census)** — resmî MCP Registry'nin yeniden üretilebilir sayımı
+- **[mcp-vet](https://github.com/Furkiozknn/mcp-vet)** — bir MCP sunucusunun kaynağını kurmadan önce denetler
+
+<sub>Hepsi tek bir aranabilir sayfada: **[furkiozknn.github.io](https://furkiozknn.github.io/)** — her kart, o deponun kendi <code>project-meta.json</code> dosyasından üretiliyor.</sub>
