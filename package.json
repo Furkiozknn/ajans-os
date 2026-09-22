@@ -7,9 +7,11 @@
   "scripts": {
     "test": "node --test \"src/**/*.test.js\"",
     "yapi": "node arac/yapi-dogrula.js",
-    "kapi": "npm test && node arac/yapi-dogrula.js && node arac/yapi-dogrula-test.js"
+    "kapi": "npm test && node arac/yapi-dogrula.js && node arac/yapi-dogrula-test.js && npm run sema && node arac/kanit-dogrula-test.js",
+    "sema": "node arac/sema-dogrula.js && node arac/sema-dogrula.js --test && node arac/sema-mutasyon.js"
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "//kapi": "Kapi dort sey kosar: testler, yapi dogrulamasi (+kendi testi), sozlesme dogrulamasi (ornekler + dogrulayicinin oz-testi + sema-mutasyon.js: oz-testin gercekten her zorlama noktasini olctugunun kaniti) ve kanit dogrulayicinin regresyon testi. sema-* eskiden kapida yoktu: sozlesme dogrulayicisi 106 kontrolluk bir oz-teste sahipti ve hicbir push'ta kosmuyordu."
 }

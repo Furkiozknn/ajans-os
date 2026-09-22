@@ -202,6 +202,73 @@ function izinCaprazKontrol(izin) {
   return hatalar;
 }
 
+// --- öz-test: doğrulayıcının KENDİ mekaniği ---------------------------------
+//
+// Aşağıdaki öz-testler sözleşmeleri sınıyor: "ajan sözleşmesi şu kuralı
+// zorluyor mu". Onlar doğrulayıcıyı ancak kullandıkları anahtar kelimeler
+// kadar sınar. `arac/sema-mutasyon.js` bunu ölçtü: zorlama noktalarının
+// 8'ini tamamen kaldırdığımızda ne öz-test ne de örnek doğrulaması bir şey
+// fark ediyordu — `type` dahil. Yani doğrulayıcı o kurallar için sessizce
+// doğrulamayı bırakabilirdi.
+//
+// Bu blok sözleşmelerden bağımsız: her anahtar kelime için en küçük şema ve
+// onu ihlal eden en küçük değer. Yeni bir anahtar kelime desteklenirse
+// buraya bir satır, sema-mutasyon.js'e bir mutasyon eklenir.
+function ozTestMekanik() {
+  const durumlar = [
+    ['type: string şemasına sayı geçemez', { type: 'string' }, 5],
+    ['type: dizi şemasına nesne geçemez', { type: ['number', 'null'] }, {}],
+    ['minLength', { type: 'string', minLength: 3 }, 'ab'],
+    ['maxLength', { type: 'string', maxLength: 3 }, 'abcd'],
+    ['minimum', { type: 'number', minimum: 10 }, 9],
+    ['maximum', { type: 'number', maximum: 10 }, 11],
+    ['minItems', { type: 'array', minItems: 2 }, [1]],
+    ['maxItems', { type: 'array', maxItems: 1 }, [1, 2]],
+    ['uniqueItems', { type: 'array', uniqueItems: true }, ['a', 'a']],
+    ['uniqueItems: nesneler için de', { type: 'array', uniqueItems: true }, [{ a: 1 }, { a: 1 }]],
+    ['pattern', { type: 'string', pattern: '^[a-z]+$' }, 'Abc'],
+    ['enum', { enum: ['a', 'b'] }, 'c'],
+    ['const', { const: 7 }, 8],
+    ['required', { type: 'object', required: ['a'] }, {}],
+    ['additionalProperties:false', { type: 'object', additionalProperties: false, properties: { a: {} } }, { b: 1 }],
+    ['items: öğeler de doğrulanır', { type: 'array', items: { type: 'string' } }, ['a', 2]],
+    ['properties: alt alan da doğrulanır', { type: 'object', properties: { a: { type: 'string' } } }, { a: 2 }],
+    // allOf'suz if/then: DESTEKLENEN listesinde olduğu için bir zamanlar
+    // sessizce geçiyordu; kaldırılırsa yine sessizce geçer.
+    ['if/then: koşul tutunca then zorlanır',
+      { type: 'object', properties: { t: {} }, if: { properties: { t: { const: 'x' } } }, then: { required: ['y'] } },
+      { t: 'x' }],
+    ['allOf', { allOf: [{ type: 'string' }] }, 5]
+  ];
+
+  let hata = 0;
+  for (const [ad, sema, deger] of durumlar) {
+    let h;
+    try {
+      h = dogrula(deger, sema, sema, '');
+    } catch (e) {
+      console.log(`  ✗ ${ad} — doğrulayıcı istisna attı: ${e.message}`);
+      hata++;
+      continue;
+    }
+    if (h.length === 0) { console.log(`  ✗ ${ad} — ama doğrulayıcı GEÇTİ dedi`); hata++; }
+    else console.log(`  ✓ ${ad}`);
+  }
+
+  // Bu ikisi hata DÖNDÜRMEZ, ATAR: sessizce geçmemeleri tasarım kararıdır.
+  const atmali = [
+    ['bilinmeyen anahtar kelime sessizce geçmemeli', { type: 'string', uydurmaAnahtar: 1 }, 'a'],
+    ['çözülemeyen $ref sessizce geçmemeli', { $ref: '#/$defs/olmayan' }, 'a']
+  ];
+  for (const [ad, sema, deger] of atmali) {
+    let atti = false;
+    try { dogrula(deger, sema, { $defs: {} }, ''); } catch { atti = true; }
+    if (atti) console.log(`  ✓ ${ad}`);
+    else { console.log(`  ✗ ${ad} — ama doğrulayıcı sessizce geçti`); hata++; }
+  }
+  return hata;
+}
+
 // --- öz-test: bozuk sözleşmeler reddedilmeli -------------------------------
 
 function ozTest(kok, temel) {
@@ -595,6 +662,9 @@ if (process.argv.includes('--test')) {
   const gorev = yuklenen.task.ornekler[0];
   if (!ajan || !gorev) { console.log('\nÖz-test için her şemadan en az bir geçerli örnek gerekiyor.'); toplamHata++; }
   else {
+    console.log('\nÖz-test — doğrulayıcının kendi mekaniği:');
+    toplamHata += ozTestMekanik();
+
     console.log('\nÖz-test — bozulmuş sözleşmeler reddedilmeli:');
     toplamHata += ozTest(yuklenen.agent.kok, ajan);
     toplamHata += testKos('Görev sözleşmesi:', yuklenen.task.kok, ozTestGorev(yuklenen.task.kok, gorev));

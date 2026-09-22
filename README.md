@@ -29,8 +29,27 @@ Bağımlılık yok; Node 22+ yeterli.
 ```bash
 npm test        # 142 test (uçtan uca kabul koşusu dahil)
 npm run yapi    # yapı doğrulama: 13 modül, blueprint §2 ile eşli, import yönü tek
-npm run kapi    # ikisi birden — kapı kontrolü
+npm run sema    # sözleşmeler: örnekler + doğrulayıcının öz-testi + mutasyon ölçümü
+npm run kapi    # hepsi birden — kapı kontrolü (CI'ın koştuğu komutun aynısı)
 ```
+
+`npm run sema`'nın üçüncü adımı (`arac/sema-mutasyon.js`) alışılmadık ve
+kasıtlı. Sözleşme doğrulayıcısının 106 kontrollük bir öz-testi var ve
+"temiz" diyordu; bu, kontrollerin geçtiğini söyler, hangi kuralların
+*korunduğunu* söylemez. Araç her zorlama noktası için doğrulayıcının bir
+kopyasını üretip o tek satırı etkisizleştiriyor ve kopyanın kendi
+`--test`inin bunu yakalamasını bekliyor. İlk ölçüm: 19 noktanın **8'i**
+hayatta kaldı — `type` dahil. Yani doğrulayıcı o kurallar için sessizce
+doğrulamayı bırakabilirdi ve ne öz-test ne örnekler ne de kapı fark
+ederdi. `sema-dogrula.js --test` içine doğrulayıcının kendi mekaniğini
+sınayan bir blok eklendi; ölçüm şimdi 19/19.
+
+Kapı bunların hepsini koşar, ve CI aynı komutu koşar — ikisi birbirinden
+kayamasın diye. `.github/workflows/ci.yml` ayrıca sözleşme kapısının ve
+komşu doğrulayıcıyı kullanan U15 testinin çıktıda **gerçekten göründüğünü**
+ayrı adımlarda arıyor: bu depo bir kez 142 testi hiç koşmadan yeşil kaldı
+(o zaman `.github/workflows/` yoktu), bir kez de U15 kendini atlarken yeşil
+kaldı. Bir kapının koştuğunu varsaymak, koştuğunu ölçmek değildir.
 
 Deponun en güçlü kanıtı **kabul koşusudur**: 13 modülün gerçek uygulamaları
 elle bağlanır, tek bir görev baştan sona koşar, koşunun ürettiği her belge

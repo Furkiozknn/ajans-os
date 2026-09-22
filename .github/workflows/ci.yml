@@ -73,6 +73,22 @@ jobs:
           set -o pipefail
           npm run kapi 2>&1 | tee kapi-ciktisi.txt
 
+      # Sozlesme kapisinin GERCEKTEN kostugunu kanitla. `npm run kapi` zinciri
+      # bir gun kisaltilirsa (ya da `sema` betigi package.json'dan dusrulurse)
+      # kosu yine yesil kalirdi -- kaybedilen sey, 6 sozlesme semasini ve
+      # dogrulayicinin kendi mekanigini tutan tek ag olurdu. Ciktida ariyoruz.
+      - name: Sozlesme kapisi kostu mu
+        run: |
+          set -e
+          grep -qE "mutant oldu: her zorlama noktasi gercekten olculuyor" kapi-ciktisi.txt \
+            || { echo "HATA: sema-mutasyon.js ciktida gorunmuyor"; exit 1; }
+          grep -q "Oz-test — dogrulayicinin kendi mekanigi\|Öz-test — doğrulayıcının kendi mekaniği" kapi-ciktisi.txt \
+            || { echo "HATA: sema-dogrula.js --test ciktida gorunmuyor"; exit 1; }
+          grep -qE "^[0-9]+ gecti, 0 kaldi" kapi-ciktisi.txt \
+            || { echo "HATA: kanit-dogrula-test.js ciktida gorunmuyor"; exit 1; }
+          grep -E "gecti, .* atlandi" kapi-ciktisi.txt | tail -1
+          echo "Sozlesme kapisi kostu"
+
       # U15'in GERCEKTEN kostugunu kanitla. Bu adim olmadan komsu checkout'u
       # sessizce bozulabilir (yol degisir, pinli SHA silinir) ve test yine
       # kendini atlar -- kosu YESIL kalir, kapsam kaybi fark edilmez. Tam da

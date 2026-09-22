@@ -6,6 +6,10 @@
  *   node arac/kanit-dogrula.js i2-bellek --yaz      # + <iz>/DENETIM-otomatik.md
  *   node arac/kanit-dogrula.js i1-orkestrasyon --ayrinti
  *
+ * Klon kökleri: AJANS_OS_KLONLAR (incelenen projelerin klonlari) ve
+ * AJANS_OS_DEPOLAR (kullanicinin kendi depolari). Verilmezse bu aracin
+ * yazildigi makinenin yollari kullanilir.
+ *
  * v3 — token eşleme düzeltmeleri (v2 hâlâ %11 yanlış alarm üretiyordu):
  *   - `ad(arg)` → `ad`; `Sinif.metot` → hem tamı hem `metot`; `k=v` → `k` ve `v`
  *   - Backtick içindeki boşluklu kod parçaları (`a = b.c`) alt-dizge olarak aranır
@@ -27,8 +31,12 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const KOK = path.resolve(__dirname, "..");
-const KLON_KOK = "D:/Repolar/_inceleme";
-const KULLANICI_DEPOLARI = "D:/Repolar";
+// Klon kökleri makineye bağlı. Varsayılanlar bu aracın yazıldığı makinenin
+// yolları; başka bir makinede (ve CI'da) ortam değişkeniyle verilir. Sabit
+// mutlak yol, aracı yazanın dışında kimsenin çalıştıramayacağı bir araç
+// demekti - depo herkese açık.
+const KLON_KOK = process.env.AJANS_OS_KLONLAR || "D:/Repolar/_inceleme";
+const KULLANICI_DEPOLARI = process.env.AJANS_OS_DEPOLAR || "D:/Repolar";
 const iz = process.argv[2];
 const yaz = process.argv.includes("--yaz");
 const ayrinti = process.argv.includes("--ayrinti");
