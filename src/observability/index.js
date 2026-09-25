@@ -49,7 +49,15 @@ function sure(basladi, bitti) {
 export function gozlemci({ dizin }) {
   if (!dizin) throw new Error("gozlemci: `dizin` zorunlu");
 
-  const yol = (run_id) => join(dizin, `${run_id}.jsonl`);
+  // run_id diskte dosya adidir: kebab olmayan kimlik yol yapilmaz (`../x`
+  // iz klasorunun disini okurdu). Yazma ucu bunu zaten sessizce dusuruyor (D1);
+  // okuma ucu ve iz_yolu istisna atar.
+  const yol = (run_id) => {
+    if (typeof run_id !== "string" || !KEBAB.test(run_id)) {
+      throw new Error(`run_id kebab_id degil, dosya yolu yapilmaz: ${JSON.stringify(run_id)}`);
+    }
+    return join(dizin, `${run_id}.jsonl`);
+  };
 
   return {
     /** Izin disk yolu — kaydi disaridan denetlemek icin. */
@@ -107,6 +115,8 @@ export function gozlemci({ dizin }) {
         } catch {
           continue;
         }
+        // Gecerli JSON ama span degil ("null", "7", "[]"): o da bozuk satirdir.
+        if (!span || typeof span !== "object" || Array.isArray(span) || typeof span.span_id !== "string") continue;
         sonKayit.set(span.span_id, span);
       }
       return [...sonKayit.values()];
