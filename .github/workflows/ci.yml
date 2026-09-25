@@ -21,6 +21,7 @@ concurrency:
 jobs:
   kapi:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # olculen en uzun kosu 20 sn
     strategy:
       fail-fast: false
       matrix:
