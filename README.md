@@ -1,10 +1,10 @@
-![ajans-os — araştırma-önce kurulmuş bir ajans işletim sistemi: 13 modül, 142 test, 11 ADR, 6 sözleşme](assets/banner.svg)
+![ajans-os — araştırma-önce kurulmuş bir ajans işletim sistemi: 13 modül, 145 test, 11 ADR, 6 sözleşme](assets/banner.svg)
 
 <p align="center">
   <img src="https://img.shields.io/badge/lisans-MIT-4ade9e?style=flat-square&labelColor=0e0d12" alt="lisans: MIT">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-4ade9e?style=flat-square&labelColor=0e0d12" alt="Node 22 ve üzeri">
   <img src="https://img.shields.io/badge/ba%C4%9F%C4%B1ml%C4%B1l%C4%B1k-0-4ade9e?style=flat-square&labelColor=0e0d12" alt="bağımlılık yok">
-  <img src="https://img.shields.io/badge/test-142%20ge%C3%A7iyor-6cb6ff?style=flat-square&labelColor=0e0d12" alt="142 test geçiyor">
+  <img src="https://img.shields.io/badge/test-145%20ge%C3%A7iyor-6cb6ff?style=flat-square&labelColor=0e0d12" alt="145 test geçiyor">
   <img src="https://img.shields.io/badge/ADR-11%20karar-c9a961?style=flat-square&labelColor=0e0d12" alt="11 mimari karar kaydı">
   <img src="https://img.shields.io/badge/s%C3%B6zle%C5%9Fme-6%20%C5%9Fema-e857c3?style=flat-square&labelColor=0e0d12" alt="6 makine-okunur sözleşme şeması">
 </p>
@@ -18,7 +18,7 @@ hatayı yakalayıp toparlayan, her adımı izleyen ve kendi geçmişinden
 öğrenen bir çekirdek.
 
 > Durum: **Faz 5 — Uygulama.** Çekirdek çalışıyor: `src/` altında 13 modül,
-> ~2.827 satır kaynak (test dosyaları hariç), 142 geçen test ve uçtan uca
+> ~2.848 satır kaynak (test dosyaları hariç), 145 geçen test ve uçtan uca
 > bir kabul koşusu. Araştırma → karşılaştırma → sentez → tasarım → uygulama
 > sırası korundu; kod en sona yazıldı.
 
@@ -27,11 +27,39 @@ hatayı yakalayıp toparlayan, her adımı izleyen ve kendi geçmişinden
 Bağımlılık yok; Node 22+ yeterli.
 
 ```bash
-npm test        # 142 test (uçtan uca kabul koşusu dahil)
+git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os
+npm test        # 145 test (uçtan uca kabul koşusu dahil)
 npm run yapi    # yapı doğrulama: 13 modül, blueprint §2 ile eşli, import yönü tek
 npm run sema    # sözleşmeler: örnekler + doğrulayıcının öz-testi + mutasyon ölçümü
 npm run kapi    # hepsi birden — kapı kontrolü (CI'ın koştuğu komutun aynısı)
 ```
+
+**İlk koşuda göreceğiniz iki atlama bilinçli, hata değil:**
+
+- `npm test` → `# pass 144`, `# skipped 1`. Atlanan U15'tir: türetilen ajan
+  dosyasını komşu projenin doğrulayıcısından ([turkce-ajanlar](https://github.com/Furkiozknn/turkce-ajanlar)
+  `arac/dogrula.js`) geçirir ve onu varsayılan olarak `../turkce-ajanlar`'da
+  arar. Tam 145/145 için komşuyu yanına klonlayın ya da yolunu verin:
+  `AJANS_OS_KOMSU=/yol/turkce-ajanlar npm test`. CI bunu pinli bir SHA ile
+  yapar ve U15 atlanırsa kırmızıya düşer.
+- `npm run kapi` sonunda `5 gecti, 0 kaldi, 1 atlandi`. Atlanan, araştırma
+  kanıt doğrulayıcısının uçtan uca bölümüdür; incelenen projelerin yerel
+  klonlarını ister (`AJANS_OS_KLONLAR=<klon-kök>`). Kapı yine 0 döner.
+
+Arayüz tipleri (`src/**/*.d.ts`) CI'da ayrıca denetlenir; yerelde aynısı:
+`npx -p typescript@5.9.3 tsc -p .` (TypeScript bağımlılık değil, yalnızca bu
+denetim için indirilir).
+
+### Nereden başlamalı
+
+1. **[src/kabul-kosusu.test.js](src/kabul-kosusu.test.js)** — bileşim kökü:
+   13 modül nasıl birbirine bağlanır, bir görev nasıl koşar, nasıl öldürülüp
+   diskten sürdürülür. Kodu okumaya buradan başlayın.
+2. **[docs/mimari/00-BLUEPRINT.md](docs/mimari/00-BLUEPRINT.md)** — bir adımın
+   orkestratörde izlediği sıra (§3.2) ve bileşenlerin sınırları.
+3. **[docs/adr/](docs/adr/)** — her kararın gerekçesi ve reddedilen seçenekler.
+4. **[BILINEN-TUZAKLAR.md](BILINEN-TUZAKLAR.md)** — bu depoda gerçekten yaşanmış
+   hatalar ve neden oldukları.
 
 `npm run sema`'nın üçüncü adımı (`arac/sema-mutasyon.js`) alışılmadık ve
 kasıtlı. Sözleşme doğrulayıcısının 106 kontrollük bir öz-testi var ve
@@ -59,7 +87,7 @@ yüklenerek sürdürülür ve yan etkinin tekrarlanmadığı ölçülür. Ağa �
 gerçek LLM çağırmaz — sahte olan tek şey model taşıyıcısıdır.
 
 <p align="center">
-  <img src="assets/kabul-kosusu.svg" alt="Üç komutun gerçek çıktısı: kabul koşusunun 3 testi de geçiyor, yapı doğrulama 13 modülü temiz buluyor, tam suite 142 testin 142&#39;sini geçiriyor" width="800">
+  <img src="assets/kabul-kosusu.svg" alt="Üç komutun gerçek çıktısı: kabul koşusunun 3 testi de geçiyor, yapı doğrulama 13 modülü temiz buluyor, tam suite 145 testin 145&#39;ini geçiriyor" width="800">
 </p>
 
 <p align="center"><sub><i>Gerçek bir koşu, üç komut: <code>node --test src/kabul-kosusu.test.js</code>, <code>npm run yapi</code>, <code>npm test</code>. Ağ bağlantınız kapalıyken de aynı çıktı — koşu ağa çıkmaz.</i></sub></p>
@@ -111,9 +139,21 @@ Sıradaki işler: [YOL-HARITASI.md](YOL-HARITASI.md)
 |---|---|
 | `docs/arastirma/<iz>/` | Proje başına analiz dosyaları + iz özeti |
 | `docs/adr/` | Architecture Decision Record'lar — her kararın gerekçesi |
-| `docs/mimari/` | Blueprint ve alt mimariler (Faz 3'te dolar) |
-| `contracts/` | JSON Schema sözleşmeleri: ajan, görev, mesaj, izin |
+| `docs/mimari/` | Blueprint ve 8 alt mimari (ajan, orkestrasyon, bellek, değerlendirme, güvenlik, gözlem, kendini geliştirme, yapı) |
+| `contracts/` | 6 JSON Schema sözleşmesi — ajan, görev, mesaj, izin, span, öneri — ve `ornek/` altında geçerli örnekleri |
 | `src/` | Çekirdek: 13 modül, her biri `index.js` + `index.d.ts` + `index.test.js`; ayrıca `kabul-kosusu.test.js` (uçtan uca) |
+| `arac/` | Kapı araçları: yapı doğrulama, bağımlılıksız şema doğrulayıcı + mutasyon ölçümü, araştırma kanıt doğrulayıcı |
+| `veri/` | Model fiyat tablosu — maliyet yöneticisi fiyatı koddan değil buradan okur |
+
+## Sınırlar
+
+- Bir **referans çekirdek**, yayımlanmış bir paket ya da CLI değil
+  (`package.json` `private: true`). Kullanım yolu: modülleri kendi bileşim
+  kökünüzde bağlamak — kabul koşusu bunun çalışan örneği.
+- Depoda gerçek bir LLM sağlayıcı taşıyıcısı yok; `ModelTasiyici` arayüzü var,
+  testler sahtesini kullanır. Ağa çıkan kod yok.
+- Kalıcılık yerel dosya sistemi (görev kaydı JSON, iz JSONL); tek süreç
+  varsayılır, eş zamanlı yazıcılar için kilit yok.
 
 ## Dil
 
