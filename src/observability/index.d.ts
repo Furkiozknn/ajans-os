@@ -19,7 +19,10 @@ export interface Observability {
    */
   span_ac(span: Omit<Span, "ended_at" | "outcome">): (sonuc: Span["outcome"]) => void;
 
-  /** Bir kosunun spanlarini okur; K7'nin (izler → degerlendirme) girdi ucu. */
+  /**
+   * Bir kosunun spanlarini okur; K7'nin (izler → degerlendirme) girdi ucu.
+   * `run_id` kebab_id degilse istisna atar: kimlik dosya adidir, `../` yol olmaz.
+   */
   kosu_izleri(run_id: KebabId): Promise<Span[]>;
 }
 
@@ -30,6 +33,6 @@ export interface Observability {
  * kaydini dondurur.
  */
 export function gozlemci(secenekler: { dizin: string }): Observability & {
-  /** Izin disk yolu — kaydi disaridan denetlemek icin. */
+  /** Izin disk yolu — kaydi disaridan denetlemek icin. Kebab olmayan kimlikte istisna. */
   iz_yolu(run_id: KebabId): string;
 };

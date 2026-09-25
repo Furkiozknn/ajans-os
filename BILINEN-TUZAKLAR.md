@@ -402,3 +402,26 @@ hata yalnızca tüketici tarafında görünür.
   tırnağa geri çevirmez, yani kesme işaretli metin (`PATH'te` → `PATH''te`)
   onun gözünde çift görünür. Türkçe metinde bu sık olur; kabulü etkilemiyorsa
   bırakılır, etkilediği gün çözüm ayrıştırıcı tarafındadır.
+
+## 26. Şemada duran sınır, koda kendiliğinden geçmez: kimlik dosya adı olunca
+
+`task.id` ve `run_id` sözleşmede `kebab_id` (`^[a-z0-9]+(-[a-z0-9]+)*$`).
+Task Manager ile Observability bu kimliği **dosya adı** yapıyor
+(`<dizin>/<task_id>.json`, `<dizin>/<run_id>.jsonl`) ama "şemayı tekrar
+etmiyoruz, ona uyuyoruz" ilkesiyle kimliği hiç denetlemiyordu. Ölçülen
+sonuç: `task.id = "../kacti"` ile `olustur` kayıt klasörünün **dışına**
+yazdı; `yukle("../x")` ve `kosu_izleri("../sir")` klasör dışındaki bir
+dosyayı okuyup döndürdü. `span_yaz` aynı kimliği zaten denetliyordu —
+yazma ucu korunmuş, okuma ucu açık kalmıştı.
+
+İkinci, aynı ailede bir hata: `kosu_izleri` "bozuk satır atlanır" diyordu
+ama yalnızca JSON olmayan satırı atlıyordu. `null` satırı geçerli JSON'dur;
+`span.span_id` okunurken `TypeError` fırlatıp bütün izi okunamaz yaptı.
+
+- Bir kimlik dosya yoluna girecekse sınırı **yolu kuran fonksiyonda** tut;
+  "çağıran şemadan geçirmiştir" varsayımı bir güvenlik sınırı değildir.
+- Okuma ve yazma ucu aynı kuralı paylaşmalı; birini korumak diğerini korumaz.
+- "Ayrıştırılabilir" ile "beklenen biçimde" aynı şey değil: `JSON.parse`
+  başarılı olduktan sonra da nesnenin şeklini denetle.
+- Regresyon testleri: `src/task-manager/index.test.js` ve
+  `src/observability/index.test.js` (kebab olmayan kimlik, span olmayan satır).
