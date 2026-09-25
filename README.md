@@ -1,4 +1,4 @@
-![ajans-os — araştırma-önce kurulmuş bir ajans işletim sistemi: 13 modül, 145 test, 11 ADR, 6 sözleşme](assets/banner.svg)
+![ajans-os — araştırma-önce kurulmuş bir ajans işletim sistemi; kabul koşusu görevin ortasında öldürülse de kaldığı yerden sürüyor](assets/banner.svg)
 
 <p align="center">
   <img src="https://img.shields.io/badge/lisans-MIT-4ade9e?style=flat-square&labelColor=0e0d12" alt="lisans: MIT">
