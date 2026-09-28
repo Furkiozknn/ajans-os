@@ -11,6 +11,9 @@
 
 # ajans-os
 
+<p align="center"><img src="docs/reel/reel.gif" alt="ajans-os - 15 saniyelik tanıtım videosu" width="720"></p>
+<p align="center"><sub><a href="docs/reel/reel.mp4">Sesli MP4 sürümü</a></sub></p>
+
 **Bir AI Agency Operating System.** Sıradan bir "ajan koleksiyonu" değil:
 kullanıcı hedefini alan, parçalara ayıran, doğru uzman ajanları seçen,
 paralel/sıralı çalıştıran, sonucu eleştirmen ajanlarla denetleyen,
