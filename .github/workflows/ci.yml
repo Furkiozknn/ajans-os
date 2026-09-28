@@ -28,7 +28,7 @@ jobs:
         # package.json engines: node >=22. Alt sinir ve guncel surum.
         node-version: ["22", "24"]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # U15 kapisi komsu projenin dogrulayicisini kullanir: turetilen ajan
       # dosyasi turkce-ajanlar/arac/dogrula.js --kati'dan gecmeli. Komsu
@@ -41,14 +41,14 @@ jobs:
       # etmiyor (ADR-002 duruyor). Surum sabitlenmis bir SHA'ya pinli:
       # komsuda yapilan bir degisiklik bu kosuyu kendiliginden degistiremez.
       - name: Komsu dogrulayici (U15)
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           repository: Furkiozknn/turkce-ajanlar
           ref: 7e1dbbbacc9aae62ff9a1fa8ea3f8d569cb413e6
           path: _komsu/turkce-ajanlar
           persist-credentials: false
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
 
