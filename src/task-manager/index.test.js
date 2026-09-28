@@ -7,7 +7,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, existsSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -160,4 +160,29 @@ test("uretilen kayit task.schema.json'a uyuyor (arac/sema-dogrula.js)", async ()
     ["arac/sema-dogrula.js", "--dosya", tm.kayit_yolu("u1-deneme-gorevi"), "--sema", "task.schema.json"],
     { cwd: kok, stdio: "pipe" },
   );
+});
+
+// Gorev kimligi diskte dosya adi olur. Sema onu kebab_id ile sinirliyor
+// (task.schema.json $defs.kebab_id), ama modul semayi tekrar etmedigi icin bu
+// sinir kodda yoktu: `task.id = "../kacti"` kayit klasorunun DISINA yaziyordu,
+// `yukle("../x")` de klasor disindaki herhangi bir .json'u okuyordu.
+test("kebab olmayan gorev kimligi diske yol olamaz: klasor disina yazma/okuma yok", async () => {
+  const kokDizin = mkdtempSync(join(tmpdir(), "ajans-os-u1-yol-"));
+  const tm = gorevYoneticisi({ dizin: join(kokDizin, "gorevler") });
+  writeFileSync(join(kokDizin, "disarida.json"), '{"gizli":true}\n', "utf8");
+
+  for (const id of ["../kacti", "..", "alt/klasor", "Buyuk-Harf", "a\\b", "", "x.json"]) {
+    const gorev = ornekGorev();
+    gorev.task.id = id;
+    await assert.rejects(tm.olustur(gorev), /kebab/, `olustur kabul etti: ${JSON.stringify(id)}`);
+    await assert.rejects(tm.yukle(id), /kebab/, `yukle kabul etti: ${JSON.stringify(id)}`);
+    assert.throws(() => tm.kayit_yolu(id), /kebab/);
+  }
+  await assert.rejects(tm.yukle("../disarida"), /kebab/);
+  assert.equal(existsSync(join(kokDizin, "kacti.json")), false);
+  assert.deepEqual(readdirSync(kokDizin).sort(), ["disarida.json"]);
+
+  // Gecerli kimlik hala calisiyor.
+  await tm.olustur(ornekGorev());
+  assert.equal((await tm.yukle("u1-deneme-gorevi")).task.id, "u1-deneme-gorevi");
 });

@@ -8,7 +8,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, appendFileSync } from "node:fs";
+import { mkdtempSync, writeFileSync, appendFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -108,6 +108,37 @@ test("bozuk satir izin geri kalanini okunamaz yapmiyor", async () => {
 
   const izler = await g.kosu_izleri("kosu-u12-deneme");
   assert.deepEqual(izler.map((s) => s.span_id).sort(), ["span-bir", "span-iki"]);
+});
+
+// JSON olarak gecerli ama span olmayan satir ("null", "7", "[]") da bozuk
+// satirdir. Eskiden `null` satiri `span.span_id` okurken TypeError firlatip
+// butun izi okunamaz yapiyordu; sayi satiri da `undefined` anahtariyla izin
+// icine sahte bir "span" olarak giriyordu.
+test("span olmayan JSON satiri da atlanir; izi okunamaz yapmaz", async () => {
+  const g = gozlemci({ dizin: join(gecici(), "izler") });
+  g.span_yaz(ornekSpan({ span_id: "span-bir" }));
+  appendFileSync(g.iz_yolu("kosu-u12-deneme"), "null\n7\n[]\n\"metin\"\n{}\n", "utf8");
+  g.span_yaz(ornekSpan({ span_id: "span-iki" }));
+
+  const izler = await g.kosu_izleri("kosu-u12-deneme");
+  assert.deepEqual(izler.map((s) => s.span_id).sort(), ["span-bir", "span-iki"]);
+});
+
+// run_id diskte dosya adidir. span_yaz kebab olmayan run_id'yi zaten
+// dusuruyordu, ama okuma ucu (kosu_izleri / iz_yolu) denetlemiyordu:
+// `kosu_izleri("../sir")` iz klasorunun disindaki bir .jsonl'i okuyordu.
+test("kebab olmayan run_id ile iz klasoru disi okunamaz", async () => {
+  const kokDizin = gecici();
+  const g = gozlemci({ dizin: join(kokDizin, "izler") });
+  writeFileSync(join(kokDizin, "sir.jsonl"), '{"span_id":"x","gizli":1}\n', "utf8");
+
+  for (const id of ["../sir", "..", "a/b", "Buyuk", ""]) {
+    await assert.rejects(g.kosu_izleri(id), /kebab/, `kosu_izleri kabul etti: ${JSON.stringify(id)}`);
+    assert.throws(() => g.iz_yolu(id), /kebab/);
+  }
+  // Yazma ucu tek yonlu kalir: istisna yok, dosya da yok (D1).
+  g.span_yaz(ornekSpan({ run_id: "../sir2" }));
+  assert.equal(existsSync(join(kokDizin, "sir2.jsonl")), false);
 });
 
 test("iz olmayan kosu bos dizi doner", async () => {

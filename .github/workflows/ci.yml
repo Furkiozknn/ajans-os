@@ -21,13 +21,14 @@ concurrency:
 jobs:
   kapi:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # olculen en uzun kosu 20 sn
     strategy:
       fail-fast: false
       matrix:
         # package.json engines: node >=22. Alt sinir ve guncel surum.
         node-version: ["22", "24"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # U15 kapisi komsu projenin dogrulayicisini kullanir: turetilen ajan
       # dosyasi turkce-ajanlar/arac/dogrula.js --kati'dan gecmeli. Komsu
@@ -40,16 +41,23 @@ jobs:
       # etmiyor (ADR-002 duruyor). Surum sabitlenmis bir SHA'ya pinli:
       # komsuda yapilan bir degisiklik bu kosuyu kendiliginden degistiremez.
       - name: Komsu dogrulayici (U15)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: Furkiozknn/turkce-ajanlar
           ref: 7e1dbbbacc9aae62ff9a1fa8ea3f8d569cb413e6
           path: _komsu/turkce-ajanlar
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
+
+      # Arayuzler (src/**/*.d.ts) tsconfig.json ile tanimliydi ama hicbir yerde
+      # tip denetiminden gecmiyordu: bir .d.ts'deki bozuk import ya da yanlis
+      # tip adi sessizce kalirdi. TypeScript bagimlilik DEGIL (package.json
+      # bos kalir); yalnizca CI'da, surumu sabit, bir kez indirilip kosuyor.
+      - name: Arayuz tip denetimi (tsc --noEmit)
+        run: npx --yes -p typescript@5.9.3 tsc -p .
 
       # ADR-009: uygulama da testler de duz ESM, kosucu node:test.
       # Bagimlilik yok, package-lock.json da yok - `npm ci` eklenirse her

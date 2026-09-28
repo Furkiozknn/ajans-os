@@ -10,7 +10,11 @@
 import type { Adim, AdimDurumu, AdimKaydi, GorevSozlesmesi, HataTuru, KebabId } from "../tipler";
 
 export interface TaskManager {
-  /** Kaydin disk yolu. Kaydi `arac/sema-dogrula.js --dosya` ile denetlemek icin. */
+  /**
+   * Kaydin disk yolu. Kaydi `arac/sema-dogrula.js --dosya` ile denetlemek icin.
+   * Gorev kimligi dosya adidir: kebab_id olmayan kimlik (`../x`, `a/b`)
+   * `kayit_yolu`, `yukle` ve `olustur`da istisna atar.
+   */
   kayit_yolu(task_id: KebabId): string;
 
   /** Gorev kaydini diskten okur. Yoksa null — "yeni gorev" karari cagirandadir. */

@@ -34,7 +34,7 @@
     "research",
     "turkce"
   ],
-  "summary": "An AI agency OS built research-first: 40 agent projects read with file:line evidence, then 11 ADRs, 6 machine-readable contracts and 13 modules. Its strongest proof is an acceptance run killed mid-task, reloaded from disk and resumed - then checked that no side effect repeated. The contract validator is mutation-measured: disable any one of its 19 enforcement points and its own self-test has to notice. Zero dependencies, 142 tests.",
+  "summary": "An AI agency OS built research-first: 40 agent projects read with file:line evidence, then 11 ADRs, 6 machine-readable contracts and 13 modules. Its strongest proof is an acceptance run killed mid-task, reloaded from disk and resumed - then checked that no side effect repeated. The contract validator is mutation-measured: disable any one of its 19 enforcement points and its own self-test has to notice. Zero dependencies, 145 tests.",
   "key_features": [
     "Built research-first: 40 agent projects read with file:line evidence before a line was written",
     "11 architecture decision records, 6 machine-readable contracts, 13 modules",
@@ -49,9 +49,9 @@
     "videos": []
   },
   "tests": {
-    "count": 142,
-    "source": "`node --test`: `pass 142`",
-    "measured": "2026-09-22"
+    "count": 145,
+    "source": "`node --test`: `pass 145`",
+    "measured": "2026-09-25"
   },
   "ci": {
     "workflows": [

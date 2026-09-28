@@ -15,6 +15,9 @@
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 
+/** contracts/task.schema.json $defs.kebab_id — `.`, `/`, `\` icermez. */
+const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
 /** Sema zaman deseni milisaniye kabul etmiyor: 2026-09-08T13:00:00Z. */
 function simdi() {
   return new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
@@ -45,7 +48,15 @@ function acikKayit(gorev, adim_id) {
 export function gorevYoneticisi({ dizin }) {
   if (!dizin) throw new Error("gorevYoneticisi: `dizin` zorunlu");
 
-  const yol = (task_id) => join(dizin, `${task_id}.json`);
+  // Kimlik diskte dosya adidir. Sema onu kebab_id ile sinirliyor; modul semayi
+  // tekrar etmese de bu siniri kendisi tutar, yoksa `../x` gibi bir kimlik kayit
+  // klasorunun disina yazar ya da disaridaki bir dosyayi okur.
+  const yol = (task_id) => {
+    if (typeof task_id !== "string" || !KEBAB.test(task_id)) {
+      throw new Error(`gorev kimligi kebab_id degil, dosya yolu yapilmaz: ${JSON.stringify(task_id)}`);
+    }
+    return join(dizin, `${task_id}.json`);
+  };
 
   /** Atomik yazma: gecici dosya + rename. Yarim JSON diske dusmez. */
   function diskeYaz(gorev) {
@@ -73,7 +84,7 @@ export function gorevYoneticisi({ dizin }) {
 
     /** Yeni gorev kaydini ilk kez diske indirir. */
     async olustur(gorev) {
-      if (existsSync(yol(gorev.task.id))) throw new Error(`gorev kaydi zaten var: ${gorev.task.id}`);
+      if (existsSync(yol(gorev?.task?.id))) throw new Error(`gorev kaydi zaten var: ${gorev.task.id}`);
       diskeYaz(gorev);
       return gorev;
     },

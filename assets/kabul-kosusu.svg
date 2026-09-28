@@ -13,13 +13,13 @@
 <text x="37.7" y="61.0" fill="#f2efe6">node --test src/kabul-kosusu.test.js</text>
 <text x="22.0" y="101.0" fill="#4ade9e" font-weight="600">  ok 1 -</text>
 <text x="84.6" y="101.0" fill="#d8d3c6"> U14: uctan uca kabul kosusu — oldurulup surdurulunce yan etki tekrarlanmiyor</text>
-<text x="687.5" y="101.0" fill="#6b6b77">509.22 ms</text>
+<text x="687.5" y="101.0" fill="#6b6b77">467.57 ms</text>
 <text x="22.0" y="121.0" fill="#4ade9e" font-weight="600">  ok 2 -</text>
 <text x="84.6" y="121.0" fill="#d8d3c6"> U14: ajan sozlesmesi yazma kapsami dar olursa arac cagrisi BLOCK olur        </text>
-<text x="695.4" y="121.0" fill="#6b6b77">6.76 ms</text>
+<text x="695.4" y="121.0" fill="#6b6b77">9.54 ms</text>
 <text x="22.0" y="141.0" fill="#4ade9e" font-weight="600">  ok 3 -</text>
 <text x="84.6" y="141.0" fill="#d8d3c6"> U14: ozet — sha256 ozeti sozlesmenin BU haline baglaniyor                    </text>
-<text x="695.4" y="141.0" fill="#6b6b77">0.63 ms</text>
+<text x="695.4" y="141.0" fill="#6b6b77">0.92 ms</text>
 <text x="22.0" y="181.0" fill="#9a9aa6">  # tests </text>
 <text x="100.3" y="181.0" fill="#f2efe6" font-weight="600">3</text>
 <text x="108.1" y="181.0" fill="#9a9aa6">   # pass </text>
@@ -34,9 +34,9 @@
 <text x="22.0" y="281.0" fill="#c9a961" font-weight="600">$ </text>
 <text x="37.7" y="281.0" fill="#f2efe6">npm test</text>
 <text x="22.0" y="301.0" fill="#9a9aa6">  # tests </text>
-<text x="100.3" y="301.0" fill="#d7d75f" font-weight="600">142</text>
+<text x="100.3" y="301.0" fill="#d7d75f" font-weight="600">145</text>
 <text x="123.8" y="301.0" fill="#9a9aa6">   # pass </text>
-<text x="202.1" y="301.0" fill="#4ade9e" font-weight="600">142</text>
+<text x="202.1" y="301.0" fill="#4ade9e" font-weight="600">145</text>
 <text x="225.6" y="301.0" fill="#9a9aa6">   # fail </text>
 <text x="303.9" y="301.0" fill="#4ade9e" font-weight="600">0</text>
 </g>
