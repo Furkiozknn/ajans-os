@@ -1,18 +1,35 @@
 ![ajans-os — araştırma-önce kurulmuş bir ajans işletim sistemi; kabul koşusu görevin ortasında öldürülse de kaldığı yerden sürüyor](assets/banner.svg)
 
+# ajans-os
+
+**A research-first agency operating system core: its acceptance run is killed mid-task, reloaded from disk and resumed, then checked that no side effect ran twice.**
+Araştırma-önce kurulmuş bir ajan işletim sistemi çekirdeği: kabul koşusu görevin ortasında öldürülür, diskten sürdürülür ve hiçbir yan etkinin ikinci kez çalışmadığı ölçülür.
+
+```sh
+git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os && npm run kapi
+```
+
+Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapının bitişine **16–24 s** ölçüldü (Windows 11, Node 24; dört taze koşuda klon ~2 s + `npm run kapi` 14–22 s). Kapı yeşilse çıkış kodu 0'dır. Ekranın sonunda "1 atlandı" görürsünüz; hata değil, [aşağıda](#ilk-koşuda-göreceğiniz-iki-atlama-bilinçli-hata-değil) açıklandı. Windows PowerShell 5.1'de `&&` yerine `;` yazın ([ayrıntı](#çalıştır)).
+
+<p align="center"><img src="docs/demo/demo.gif" alt="Terminal: kabul koşusunun 3 testi geçiyor, yapı kapısı kasıtlı bir ihlali yakalıyor, doğrulayıcının 19 mutantının 19'u ölüyor, yanlış yazılmış bir bayrak --test önerisiyle reddediliyor, npm run kapi 0 ile bitiyor" width="720"></p>
+<p align="center"><sub>Gerçek çıktı: <a href="docs/demo/kaydet.js">kaydet.js</a> komutları koşar (kayıt: <a href="docs/demo/komutlar.txt">komutlar.txt</a>), <a href="docs/demo/uret.py">uret.py</a> çizer; ekrandaki hiçbir satır elle yazılmadı. <code>npm run kapi</code> bu parçaların hepsini ve testlerin tamamını koşar; son sahne onun yalnız son 6 satırıdır.</sub></p>
+
+| Ne zaman kullanılır | Ne zaman kullanılmaz |
+|---|---|
+| Bir ajan sistemi tasarlıyor ve **kanıtlı** bir referans arıyorsanız: 40 projenin kaynak okumasından (dosya:satır) çıkan 11 ADR, gerekçeleri ve reddedilen seçenekleriyle | Kurup çalıştıracağınız bir paket ya da CLI arıyorsanız: yayımlanmış paket yok (`private: true`), `bin` yok |
+| Ajan, görev, mesaj, izin, span ve öneri sözleşmelerini makine-okur JSON Schema olarak almak istiyorsanız, bağımlılıksız bir doğrulayıcıyla | Hazır bir LLM sağlayıcı entegrasyonu bekliyorsanız: yalnızca `ModelTasiyici` arayüzü var, ağa çıkan kod yok |
+| Modülleri kendi bileşim kökünüzde bağlayacaksanız: [`src/kabul-kosusu.test.js`](src/kabul-kosusu.test.js) çalışan örnektir | Çok süreçli ya da eşzamanlı yazıcılar gerekiyorsa: kalıcılık yerel dosya, tek süreç, kilit yok |
+| Bir doğrulayıcının **gerçekten neyi koruduğunu** mutasyonla ölçme fikrini görmek istiyorsanız | Bir "ajan prompt koleksiyonu" arıyorsanız: burada ajan bir sözleşmedir, prompt listesi değil |
+
 <p align="center">
+  <a href="https://github.com/Furkiozknn/ajans-os/actions/workflows/ci.yml"><img src="https://github.com/Furkiozknn/ajans-os/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/lisans-MIT-4ade9e?style=flat-square&labelColor=0e0d12" alt="lisans: MIT">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-4ade9e?style=flat-square&labelColor=0e0d12" alt="Node 22 ve üzeri">
   <img src="https://img.shields.io/badge/ba%C4%9F%C4%B1ml%C4%B1l%C4%B1k-0-4ade9e?style=flat-square&labelColor=0e0d12" alt="bağımlılık yok">
-  <img src="https://img.shields.io/badge/test-145%20ge%C3%A7iyor-6cb6ff?style=flat-square&labelColor=0e0d12" alt="145 test geçiyor">
+  <img src="https://img.shields.io/badge/test-179-6cb6ff?style=flat-square&labelColor=0e0d12" alt="179 test">
   <img src="https://img.shields.io/badge/ADR-11%20karar-c9a961?style=flat-square&labelColor=0e0d12" alt="11 mimari karar kaydı">
   <img src="https://img.shields.io/badge/s%C3%B6zle%C5%9Fme-6%20%C5%9Fema-e857c3?style=flat-square&labelColor=0e0d12" alt="6 makine-okunur sözleşme şeması">
 </p>
-
-# ajans-os
-
-<p align="center"><img src="docs/reel/reel.gif" alt="ajans-os - 15 saniyelik tanıtım videosu" width="720"></p>
-<p align="center"><sub><a href="docs/reel/reel.mp4">Sesli MP4 sürümü</a></sub></p>
 
 **Bir AI Agency Operating System.** Sıradan bir "ajan koleksiyonu" değil:
 kullanıcı hedefini alan, parçalara ayıran, doğru uzman ajanları seçen,
@@ -21,30 +38,41 @@ hatayı yakalayıp toparlayan, her adımı izleyen ve kendi geçmişinden
 öğrenen bir çekirdek.
 
 > Durum: **Faz 5 — Uygulama.** Çekirdek çalışıyor: `src/` altında 13 modül,
-> ~2.848 satır kaynak (test dosyaları hariç), 145 geçen test ve uçtan uca
-> bir kabul koşusu. Araştırma → karşılaştırma → sentez → tasarım → uygulama
+> ~2.848 satır kaynak (test dosyaları hariç), 179 test ve uçtan uca
+> bir kabul koşusu; `contracts/` altında 6 şema, `docs/adr/` altında 11 ADR.
+> Araştırma → karşılaştırma → sentez → tasarım → uygulama
 > sırası korundu; kod en sona yazıldı.
 
 ## Çalıştır
 
-Bağımlılık yok; Node 22+ yeterli.
+Bağımlılık yok; Node 22+ yeterli. Yukarıdaki tek komut hepsini koşar; parça parça:
 
 ```bash
 git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os
-npm test        # 145 test (uçtan uca kabul koşusu dahil)
+npm test        # 179 test (uçtan uca kabul koşusu dahil)
 npm run yapi    # yapı doğrulama: 13 modül, blueprint §2 ile eşli, import yönü tek
 npm run sema    # sözleşmeler: örnekler + doğrulayıcının öz-testi + mutasyon ölçümü
 npm run kapi    # hepsi birden — kapı kontrolü (CI'ın koştuğu komutun aynısı)
 ```
 
-**İlk koşuda göreceğiniz iki atlama bilinçli, hata değil:**
+> Windows PowerShell 5.1'de `&&` yoktur (ayrıştırma hatası verir, ölçüldü); komutları `;` ile ayırın:
+> `git clone https://github.com/Furkiozknn/ajans-os; cd ajans-os; npm run kapi` (PowerShell 5.1'de denendi: çıkış 0, 18 s).
+> Bu README'deki `AJANS_OS_...=değer komut` biçimi bash/zsh içindir; PowerShell'de `$env:AJANS_OS_KOMSU='yol'; npm test`.
 
-- `npm test` → `# pass 144`, `# skipped 1`. Atlanan U15'tir: türetilen ajan
+Her `arac/*.js` betiği `--help` bilir (ör. `node arac/sema-dogrula.js --help`). Yanlış
+yazılmış bir bayrak sessizce geçmez: en yakın bayrağı önerip 2 ile çıkar. Çıkış kodları:
+0 temiz, 1 doğrulama hatası, 2 kullanım hatası ya da girdi okunamadı.
+
+### İlk koşuda göreceğiniz iki atlama bilinçli, hata değil
+
+- `npm test` → `pass 178`, `skipped 1` (toplam 179). Atlanan U15'tir: türetilen ajan
   dosyasını komşu projenin doğrulayıcısından ([turkce-ajanlar](https://github.com/Furkiozknn/turkce-ajanlar)
   `arac/dogrula.js`) geçirir ve onu varsayılan olarak `../turkce-ajanlar`'da
-  arar. Tam 145/145 için komşuyu yanına klonlayın ya da yolunu verin:
+  arar. Tam 179/179 için komşuyu yanına klonlayın ya da yolunu verin:
   `AJANS_OS_KOMSU=/yol/turkce-ajanlar npm test`. CI bunu pinli bir SHA ile
-  yapar ve U15 atlanırsa kırmızıya düşer.
+  yapar ve U15 atlanırsa kırmızıya düşer. (Satırın öneki koşucunun sürümüne
+  göre `ℹ` ya da `# ` olur: Node 24'te `ℹ pass 178`, Node 22'nin TAP çıktısında
+  `# pass 178`. Sayılar aynıdır.)
 - `npm run kapi` sonunda `5 gecti, 0 kaldi, 1 atlandi`. Atlanan, araştırma
   kanıt doğrulayıcısının uçtan uca bölümüdür; incelenen projelerin yerel
   klonlarını ister (`AJANS_OS_KLONLAR=<klon-kök>`). Kapı yine 0 döner.
@@ -60,15 +88,15 @@ denetim için indirilir).
    diskten sürdürülür. Kodu okumaya buradan başlayın.
 2. **[docs/mimari/00-BLUEPRINT.md](docs/mimari/00-BLUEPRINT.md)** — bir adımın
    orkestratörde izlediği sıra (§3.2) ve bileşenlerin sınırları.
-3. **[docs/adr/](docs/adr/)** — her kararın gerekçesi ve reddedilen seçenekler.
+3. **[docs/adr/](docs/adr/)** — her kararın gerekçesi ve reddedilen seçenekleri.
 4. **[BILINEN-TUZAKLAR.md](BILINEN-TUZAKLAR.md)** — bu depoda gerçekten yaşanmış
    hatalar ve neden oldukları.
 
 `npm run sema`'nın üçüncü adımı (`arac/sema-mutasyon.js`) alışılmadık ve
-kasıtlı. Sözleşme doğrulayıcısının 106 kontrollük bir öz-testi var ve
-"temiz" diyordu; bu, kontrollerin geçtiğini söyler, hangi kuralların
-*korunduğunu* söylemez. Araç her zorlama noktası için doğrulayıcının bir
-kopyasını üretip o tek satırı etkisizleştiriyor ve kopyanın kendi
+kasıtlı. Sözleşme doğrulayıcısının öz-testi (bugün 127 kontrol; mutasyon aracı
+eklendiğinde 106'ydı) "temiz" diyordu; bu, kontrollerin geçtiğini söyler, hangi
+kuralların *korunduğunu* söylemez. Araç her zorlama noktası için doğrulayıcının
+bir kopyasını üretip o tek satırı etkisizleştiriyor ve kopyanın kendi
 `--test`inin bunu yakalamasını bekliyor. İlk ölçüm: 19 noktanın **8'i**
 hayatta kaldı — `type` dahil. Yani doğrulayıcı o kurallar için sessizce
 doğrulamayı bırakabilirdi ve ne öz-test ne örnekler ne de kapı fark
@@ -80,7 +108,9 @@ kayamasın diye. `.github/workflows/ci.yml` ayrıca sözleşme kapısının ve
 komşu doğrulayıcıyı kullanan U15 testinin çıktıda **gerçekten göründüğünü**
 ayrı adımlarda arıyor: bu depo bir kez 142 testi hiç koşmadan yeşil kaldı
 (o zaman `.github/workflows/` yoktu), bir kez de U15 kendini atlarken yeşil
-kaldı. Bir kapının koştuğunu varsaymak, koştuğunu ölçmek değildir.
+kaldı. Bir kapının koştuğunu varsaymak, koştuğunu ölçmek değildir. Aynı
+mantıkla README'deki test sayısı da CI'da koşunun yazdığı sayıyla, modül /
+ADR / şema / satır sayıları da bir testle diskle karşılaştırılır.
 
 Deponun en güçlü kanıtı **kabul koşusudur**: 13 modülün gerçek uygulamaları
 elle bağlanır, tek bir görev baştan sona koşar, koşunun ürettiği her belge
@@ -88,12 +118,6 @@ elle bağlanır, tek bir görev baştan sona koşar, koşunun ürettiği her bel
 geçirilir; sonra koşu ortasından öldürülüp görev **diskten** yeniden
 yüklenerek sürdürülür ve yan etkinin tekrarlanmadığı ölçülür. Ağa çıkmaz,
 gerçek LLM çağırmaz — sahte olan tek şey model taşıyıcısıdır.
-
-<p align="center">
-  <img src="assets/kabul-kosusu.svg" alt="Üç komutun gerçek çıktısı: kabul koşusunun 3 testi de geçiyor, yapı doğrulama 13 modülü temiz buluyor, tam suite 145 testin 145&#39;ini geçiriyor" width="800">
-</p>
-
-<p align="center"><sub><i>Gerçek bir koşu, üç komut: <code>node --test src/kabul-kosusu.test.js</code>, <code>npm run yapi</code>, <code>npm test</code>. Ağ bağlantınız kapalıyken de aynı çıktı — koşu ağa çıkmaz.</i></sub></p>
 
 ## Neden var
 
@@ -135,6 +159,7 @@ Araştırma nasıl yapılır: [docs/00-ARASTIRMA-PROTOKOLU.md](docs/00-ARASTIRMA
 Kararlar ve gerekçeleri: [docs/adr/](docs/adr/)
 Ajan sözleşmesi (makine-okur): [contracts/agent.schema.json](contracts/agent.schema.json)
 Sıradaki işler: [YOL-HARITASI.md](YOL-HARITASI.md)
+Bu yenilemenin denetimi ve tasarımı: [docs/DENETIM.md](docs/DENETIM.md), [docs/TASARIM.md](docs/TASARIM.md)
 
 ## Klasörler
 
@@ -143,9 +168,10 @@ Sıradaki işler: [YOL-HARITASI.md](YOL-HARITASI.md)
 | `docs/arastirma/<iz>/` | Proje başına analiz dosyaları + iz özeti |
 | `docs/adr/` | Architecture Decision Record'lar — her kararın gerekçesi |
 | `docs/mimari/` | Blueprint ve 8 alt mimari (ajan, orkestrasyon, bellek, değerlendirme, güvenlik, gözlem, kendini geliştirme, yapı) |
+| `docs/demo/` | README demosunun kaydı ve çizicisi (`kaydet.js`, `uret.py`, `komutlar.txt`) |
 | `contracts/` | 6 JSON Schema sözleşmesi — ajan, görev, mesaj, izin, span, öneri — ve `ornek/` altında geçerli örnekleri |
-| `src/` | Çekirdek: 13 modül, her biri `index.js` + `index.d.ts` + `index.test.js`; ayrıca `kabul-kosusu.test.js` (uçtan uca) |
-| `arac/` | Kapı araçları: yapı doğrulama, bağımlılıksız şema doğrulayıcı + mutasyon ölçümü, araştırma kanıt doğrulayıcı |
+| `src/` | Çekirdek: 13 modül, her biri `index.js` + `index.d.ts` + `index.test.js`; ayrıca `kabul-kosusu.test.js` (uçtan uca), `arac-cli.test.js` ve `belge-sayilari.test.js` |
+| `arac/` | Kapı araçları: yapı doğrulama, bağımlılıksız şema doğrulayıcı + mutasyon ölçümü, araştırma kanıt doğrulayıcı, iz izleyici, matris üretici; hepsi `--help` bilir |
 | `veri/` | Model fiyat tablosu — maliyet yöneticisi fiyatı koddan değil buradan okur |
 
 ## Sınırlar

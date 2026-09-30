@@ -20,6 +20,23 @@
 
 const fs = require("fs");
 const path = require("path");
+const { cli } = require("./_cli.js");
+
+cli({
+  ad: "yapi-dogrula.js",
+  bayraklar: [],
+  yardim: `
+yapi-dogrula.js — src/ iskeletinin mimariye uyduğunu doğrular (ADR-001, ADR-002)
+
+Kullanım: node arac/yapi-dogrula.js
+
+Denetler: src/ altındaki modül klasörü sayısı = blueprint §2 başlık sayısı (13) ve her
+klasör bir başlığın kebab-case hali; her modülde index.d.ts; kardeş modülü yalnızca
+orchestrator import eder (.d.ts ve .js); 08-YAPI-VE-ARAYUZLER.md her modülden söz eder.
+
+Çıkış kodu: 0 temiz · 1 ihlal var (sorunlar stderr'e yazılır)
+`,
+});
 
 const kok = path.resolve(__dirname, "..");
 const src = path.join(kok, "src");

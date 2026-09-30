@@ -31,9 +31,25 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { cli } = require('./_cli.js');
+
+const YARDIM = `
+sema-mutasyon.js — sözleşme doğrulayıcısının öz-testi gerçekten neyi ölçüyor?
+
+Her zorlama noktası için sema-dogrula.js'in bir kopyasını üretir, o tek satırı
+etkisizleştirir ve kopyanın kendi --test'inin ya da contracts/ornek/ doğrulamasının
+bunu yakalamasını bekler. Yakalayan mutant "oldu"; ikisinden de sağ çıkan "HAYATTA":
+o kural için depo kördür.
+
+Kullanım:
+  node arac/sema-mutasyon.js              rapor + kapı (birkaç saniye sürer)
+  node arac/sema-mutasyon.js --ayrinti    hayatta kalan mutantın öz-test çıktısını da basar
+
+Çıkış kodu: 0 bütün mutantlar öldü · 1 hayatta kalan var · 2 mutasyon listesi eskimiş
+`;
 
 const HEDEF = path.join(__dirname, 'sema-dogrula.js');
-const ayrinti = process.argv.includes('--ayrinti');
+const ayrinti = cli({ ad: 'sema-mutasyon.js', yardim: YARDIM, bayraklar: ['--ayrinti'] }).includes('--ayrinti');
 
 /** Her biri: tek bir zorlama noktasını etkisizleştiren en küçük değişiklik. */
 const MUTASYONLAR = [

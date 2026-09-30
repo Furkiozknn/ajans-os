@@ -13,9 +13,14 @@
 // Neden ajv değil: bu depoda hiç bağımlılık yok ve olmasın (arac/ altındaki dört
 // script de saf Node). Desteklenmeyen bir anahtar kelime görürse hata verir —
 // sessizce geçmez, çünkü sessizce geçen doğrulayıcı doğrulamıyor demektir.
+//
+// Çıkış kodu: 0 temiz · 1 doğrulama hatası (belge sözleşmeye uymuyor ya da geçerli
+// JSON değil) · 2 kullanım hatası ya da dosya okunamadı (doğrulama yapılamadı).
+// Bayrak yazım hatası artık sessizce yutulmaz: arac/_cli.js.
 
 const fs = require('fs');
 const path = require('path');
+const { cli } = require('./_cli.js');
 
 const DESTEKLENEN = new Set([
   '$schema', '$id', 'title', 'description', 'default', 'examples',
@@ -584,6 +589,35 @@ function oneriCaprazKontrol(o) {
 
 // --- ana ------------------------------------------------------------------
 
+const YARDIM = `
+sema-dogrula.js — sözleşme doğrulayıcı (bağımlılıksız; JSON Schema'nın bu depoda kullanılan alt kümesi)
+
+Kullanım:
+  node arac/sema-dogrula.js                      contracts/ornek/ altındaki örnekleri doğrular
+  node arac/sema-dogrula.js --test               örneklere ek olarak doğrulayıcının öz-testini koşar
+                                                 (bozuk sözleşmeler reddedilmeli)
+  node arac/sema-dogrula.js --dosya <yol.json> --sema <şema>
+                                                 tek bir belgeyi doğrular (çalışma anında üretilmiş kayıt)
+
+Şemalar: agent.schema.json  task.schema.json  message.schema.json
+         permission.schema.json  span.schema.json  proposal.schema.json
+
+Çıkış kodu:
+  0  temiz
+  1  doğrulama hatası: belge sözleşmeye uymuyor ya da geçerli JSON değil
+  2  kullanım hatası ya da dosya okunamadı (doğrulama yapılamadı)
+
+Örnek:
+  node arac/sema-dogrula.js --dosya contracts/ornek/gorev/gece-mimari-turu.json --sema task.schema.json
+`;
+const arg = cli({ ad: 'sema-dogrula.js', yardim: YARDIM, bayraklar: ['--test', '--dosya', '--sema'] });
+// Bayrağın değeri: sonraki argüman, o da bir bayrak değilse.
+const bayrakDegeri = (bayrak) => {
+  const i = arg.indexOf(bayrak);
+  const v = i === -1 ? undefined : arg[i + 1];
+  return v !== undefined && !v.startsWith('-') ? v : undefined;
+};
+
 const kokDizin = path.resolve(__dirname, '..');
 const oku = (...p) => JSON.parse(fs.readFileSync(path.join(kokDizin, ...p), 'utf8'));
 const dizinDosyalari = (...p) => {
@@ -604,17 +638,40 @@ const SEMALAR = [
 // Örnek klasörlerinde durmayan, çalışma anında ÜRETİLMİŞ bir belgeyi doğrular
 // (U1+ modüllerinin kaydını kapıya sokan yol budur). Çıkış kodu 0 = temiz.
 const CAPRAZ = { task: gorevCaprazKontrol, permission: izinCaprazKontrol, span: spanCaprazKontrol, proposal: oneriCaprazKontrol };
-const dosyaBayragi = process.argv.indexOf('--dosya');
-if (dosyaBayragi !== -1) {
-  const hedefDosya = process.argv[dosyaBayragi + 1];
-  const semaAdi = process.argv[process.argv.indexOf('--sema') + 1];
+const KULLANIM = `Kullanım: --dosya <json> --sema <${SEMALAR.map((s) => s.sema).join('|')}>`;
+if (arg.includes('--sema') && !arg.includes('--dosya')) {
+  console.error(`hata: --sema tek başına anlamsız; --dosya <yol.json> ile birlikte verilir\n${KULLANIM}`);
+  process.exit(2);
+}
+if (arg.includes('--dosya')) {
+  const hedefDosya = bayrakDegeri('--dosya');
+  const semaAdi = bayrakDegeri('--sema');
   const secilen = SEMALAR.find((s) => s.sema === semaAdi);
   if (!hedefDosya || !secilen) {
-    console.error(`Kullanım: --dosya <json> --sema <${SEMALAR.map((s) => s.sema).join('|')}>`);
+    const neden = !hedefDosya ? '--dosya bir dosya yolu ister'
+      : semaAdi === undefined ? '--sema eksik'
+        : `bilinmeyen şema '${semaAdi}'`;
+    console.error(`hata: ${neden}\n${KULLANIM}`);
     process.exit(2);
   }
+  // Okunamayan dosya "doğrulanamadı"dır (2), geçersiz belge (1) değil: bir betik
+  // ikisini ayırt edebilmeli. Eskiden ikisi de yakalanmamış istisnaydı (yığın izi, kod 1).
+  let ham;
+  try {
+    ham = fs.readFileSync(hedefDosya, 'utf8');
+  } catch (e) {
+    const neden = { ENOENT: 'böyle bir dosya yok', EISDIR: 'bu bir klasör, dosya değil', EACCES: 'okuma izni yok', EPERM: 'okuma izni yok' }[e.code] || e.message;
+    console.error(`hata: ${hedefDosya} okunamadı — ${neden}`);
+    process.exit(2);
+  }
+  let belge;
+  try {
+    belge = JSON.parse(ham);
+  } catch (e) {
+    console.error(`✗ ${hedefDosya} — geçerli JSON değil: ${e.message}`);
+    process.exit(1);
+  }
   const semaKok = oku('contracts', secilen.sema);
-  const belge = JSON.parse(fs.readFileSync(hedefDosya, 'utf8'));
   const h = dogrula(belge, semaKok, semaKok, '');
   if (CAPRAZ[secilen.ad]) h.push(...CAPRAZ[secilen.ad](belge));
   if (h.length) {
@@ -657,7 +714,7 @@ for (const s of SEMALAR) {
   }
 }
 
-if (process.argv.includes('--test')) {
+if (arg.includes('--test')) {
   const ajan = yuklenen.agent.ornekler[0];
   const gorev = yuklenen.task.ornekler[0];
   if (!ajan || !gorev) { console.log('\nÖz-test için her şemadan en az bir geçerli örnek gerekiyor.'); toplamHata++; }

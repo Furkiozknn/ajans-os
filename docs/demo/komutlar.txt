@@ -1,0 +1,45 @@
+# ajans-os terminal demosu: gerçek komutlar, gerçek çıktı; hiçbir satır elle yazılmadı
+# tarih: 2026-09-30T08:10:50+03:00
+# sürüm: commit e795e75
+# ortam: win32 10.0.26200, Node v24.19.0, npm 11.17.0
+# her komut deponun geçici bir kopyasında, bash -c 'set -o pipefail; { KOMUT; } 2>&1' ile koşuldu; renkler kapalı (NO_COLOR=1)
+# yabancı makine taklidi: ../turkce-ajanlar yok; AJANS_OS_KLONLAR=/yok AJANS_OS_DEPOLAR=/yok (bu makinede D:/Repolar var)
+# betik: docs/demo/kaydet.js; çizim: docs/demo/uret.py
+
+$ node --test src/kabul-kosusu.test.js
+✔ U14: uctan uca kabul kosusu — oldurulup surdurulunce yan etki tekrarlanmiyor (1535.7687ms)
+✔ U14: ajan sozlesmesi yazma kapsami dar olursa arac cagrisi BLOCK olur (22.1755ms)
+✔ U14: ozet — sha256 ozeti sozlesmenin BU haline baglaniyor (0.9202ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1814.3284
+[çıkış kodu 0] (2.09 s)
+
+$ node arac/yapi-dogrula-test.js
+YAPI KAPISI TESTI: temiz. Kasitli .js ihlali yakalandi, agac geri birakildi.
+[çıkış kodu 0] (0.55 s)
+
+$ node arac/sema-mutasyon.js | tail -n 3
+oldu     $ref  (oz-test)
+
+19/19 mutant oldu: her zorlama noktasi gercekten olculuyor.
+[çıkış kodu 0] (6.09 s)
+
+$ node arac/sema-dogrula.js --tset
+hata: bilinmeyen bayrak '--tset' — --test mi demek istediniz?
+Yardım: node arac/sema-dogrula.js --help
+[çıkış kodu 2] (0.26 s)
+
+$ npm run kapi | tail -n 6
+— Uctan uca (uc iz) —
+  ATLANDI: uctan uca (uc iz) - klon klasoru yok: /yok
+
+5 gecti, 0 kaldi, 1 atlandi.
+Atlananlar: uctan uca (uc iz)
+Uctan uca bolum icin: AJANS_OS_KLONLAR=<klon-kok> node arac/kanit-dogrula-test.js
+[çıkış kodu 0] (16.00 s)

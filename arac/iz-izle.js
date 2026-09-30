@@ -18,13 +18,32 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const { cli } = require("./_cli.js");
 
 const KOK = path.resolve(__dirname, "..");
-const argümanlar = process.argv.slice(2);
+const argümanlar = cli({
+  ad: "iz-izle.js",
+  bayraklar: ["--yaz"],
+  yardim: `
+iz-izle.js — Faz 2/3 belgelerindeki her dosya:satır alıntısının iz belgelerinde (docs/arastirma/**) karşılığı var mı?
+
+Kullanım:
+  node arac/iz-izle.js <belge.md> [<belge.md> ...]           ekrana rapor
+  node arac/iz-izle.js <belge.md> --yaz                      + docs/inceleme/iz-izlenebilirlik.md
+
+Sınıflar: BIREBIR (aynı dosya + aynı satır) · YAKIN (±5 satır ya da kesişen aralık) ·
+YOK (iz belgelerinde hiç geçmiyor: elle bakılır).
+
+Çıkış kodu: 0 YOK yok · 1 YOK var · 2 kullanım hatası ya da belge bulunamadı
+
+Örnek:
+  node arac/iz-izle.js docs/02-EN-IYI-FIKIRLER.md
+`,
+});
 const yaz = argümanlar.includes("--yaz");
 const hedefler = argümanlar.filter((a) => !a.startsWith("--"));
 if (!hedefler.length) {
-  console.error("Kullanim: node arac/iz-izle.js <belge.md> [<belge.md> ...] [--yaz]");
+  console.error("Kullanim: node arac/iz-izle.js <belge.md> [<belge.md> ...] [--yaz]\nYardım: node arac/iz-izle.js --help");
   process.exit(2);
 }
 
