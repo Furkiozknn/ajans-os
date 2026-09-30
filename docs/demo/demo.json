@@ -1,0 +1,42 @@
+{
+ "meta": {
+  "tarih": "2026-09-30T07:59:45+03:00",
+  "commit": "6b5dd9d",
+  "agac_temiz": true,
+  "sistem": "win32 10.0.26200",
+  "node": "v24.19.0",
+  "npm": "11.17.0"
+ },
+ "adimlar": [
+  {
+   "komut": "node --test src/kabul-kosusu.test.js",
+   "cikti": "✔ U14: uctan uca kabul kosusu — oldurulup surdurulunce yan etki tekrarlanmiyor (1485.2326ms)\n✔ U14: ajan sozlesmesi yazma kapsami dar olursa arac cagrisi BLOCK olur (77.7269ms)\n✔ U14: ozet — sha256 ozeti sozlesmenin BU haline baglaniyor (1.0169ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1816.9504",
+   "cikis": 0,
+   "sure_s": 2.09
+  },
+  {
+   "komut": "node arac/yapi-dogrula-test.js",
+   "cikti": "YAPI KAPISI TESTI: temiz. Kasitli .js ihlali yakalandi, agac geri birakildi.",
+   "cikis": 0,
+   "sure_s": 0.53
+  },
+  {
+   "komut": "node arac/sema-mutasyon.js | tail -n 3",
+   "cikti": "oldu     $ref  (oz-test)\n\n19/19 mutant oldu: her zorlama noktasi gercekten olculuyor.",
+   "cikis": 0,
+   "sure_s": 5.19
+  },
+  {
+   "komut": "node arac/sema-dogrula.js --tset",
+   "cikti": "hata: bilinmeyen bayrak '--tset' — --test mi demek istediniz?\nYardım: node arac/sema-dogrula.js --help",
+   "cikis": 2,
+   "sure_s": 0.22
+  },
+  {
+   "komut": "npm run kapi | tail -n 6",
+   "cikti": "— Uctan uca (uc iz) —\n  ATLANDI: uctan uca (uc iz) - klon klasoru yok: /yok\n\n5 gecti, 0 kaldi, 1 atlandi.\nAtlananlar: uctan uca (uc iz)\nUctan uca bolum icin: AJANS_OS_KLONLAR=<klon-kok> node arac/kanit-dogrula-test.js",
+   "cikis": 0,
+   "sure_s": 13.99
+  }
+ ]
+}
