@@ -9,7 +9,11 @@ Araştırma-önce kurulmuş bir ajan işletim sistemi çekirdeği: kabul koşusu
 git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os && npm run kapi
 ```
 
-Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapının bitişine **@@TOPLAM@@ s** ölçüldü (Windows 11, Node 24: klon @@KLON@@ s + `npm run kapi` @@KAPI@@ s). Kapı yeşilse çıkış kodu 0'dır. Ekranın sonunda "1 atlandı" görürsünüz; hata değil, [aşağıda](#ilk-koşuda-göreceğiniz-iki-atlama-bilinçli-hata-değil) açıklandı.
+Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapının bitişine **16–24 s** ölçüldü (Windows 11, Node 24; dört taze koşuda klon ~2 s + `npm run kapi` 14–22 s). Kapı yeşilse çıkış kodu 0'dır. Ekranın sonunda "1 atlandı" görürsünüz; hata değil, [aşağıda](#ilk-koşuda-göreceğiniz-iki-atlama-bilinçli-hata-değil) açıklandı.
+
+> Windows PowerShell 5.1'de `&&` yoktur (ayrıştırma hatası verir); komutları `;` ile ayırın:
+> `git clone https://github.com/Furkiozknn/ajans-os; cd ajans-os; npm run kapi` (PowerShell 5.1'de denendi: çıkış 0, 18 s).
+> Bu README'deki `AJANS_OS_...=değer komut` biçimi bash/zsh içindir; PowerShell'de `$env:AJANS_OS_KOMSU='yol'; npm test`.
 
 <p align="center"><img src="docs/demo/demo.gif" alt="Terminal: kabul koşusunun 3 testi geçiyor, yapı kapısı kasıtlı bir ihlali yakalıyor, doğrulayıcının 19 mutantının 19'u ölüyor, yanlış yazılmış bir bayrak --test önerisiyle reddediliyor, npm run kapi 0 ile bitiyor" width="720"></p>
 <p align="center"><sub>Gerçek çıktı: <a href="docs/demo/kaydet.js">kaydet.js</a> komutları koşar (kayıt: <a href="docs/demo/komutlar.txt">komutlar.txt</a>), <a href="docs/demo/uret.py">uret.py</a> çizer; ekrandaki hiçbir satır elle yazılmadı. <code>npm run kapi</code> bu parçaların hepsini ve testlerin tamamını koşar; son sahne onun yalnız son 6 satırıdır.</sub></p>
@@ -26,7 +30,7 @@ Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapın
   <img src="https://img.shields.io/badge/lisans-MIT-4ade9e?style=flat-square&labelColor=0e0d12" alt="lisans: MIT">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-4ade9e?style=flat-square&labelColor=0e0d12" alt="Node 22 ve üzeri">
   <img src="https://img.shields.io/badge/ba%C4%9F%C4%B1ml%C4%B1l%C4%B1k-0-4ade9e?style=flat-square&labelColor=0e0d12" alt="bağımlılık yok">
-  <img src="https://img.shields.io/badge/test-177-6cb6ff?style=flat-square&labelColor=0e0d12" alt="177 test">
+  <img src="https://img.shields.io/badge/test-179-6cb6ff?style=flat-square&labelColor=0e0d12" alt="179 test">
   <img src="https://img.shields.io/badge/ADR-11%20karar-c9a961?style=flat-square&labelColor=0e0d12" alt="11 mimari karar kaydı">
   <img src="https://img.shields.io/badge/s%C3%B6zle%C5%9Fme-6%20%C5%9Fema-e857c3?style=flat-square&labelColor=0e0d12" alt="6 makine-okunur sözleşme şeması">
 </p>
@@ -38,7 +42,7 @@ hatayı yakalayıp toparlayan, her adımı izleyen ve kendi geçmişinden
 öğrenen bir çekirdek.
 
 > Durum: **Faz 5 — Uygulama.** Çekirdek çalışıyor: `src/` altında 13 modül,
-> ~2.848 satır kaynak (test dosyaları hariç), 177 test ve uçtan uca
+> ~2.848 satır kaynak (test dosyaları hariç), 179 test ve uçtan uca
 > bir kabul koşusu; `contracts/` altında 6 şema, `docs/adr/` altında 11 ADR.
 > Araştırma → karşılaştırma → sentez → tasarım → uygulama
 > sırası korundu; kod en sona yazıldı.
@@ -49,7 +53,7 @@ Bağımlılık yok; Node 22+ yeterli. Yukarıdaki tek komut hepsini koşar; par�
 
 ```bash
 git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os
-npm test        # 177 test (uçtan uca kabul koşusu dahil)
+npm test        # 179 test (uçtan uca kabul koşusu dahil)
 npm run yapi    # yapı doğrulama: 13 modül, blueprint §2 ile eşli, import yönü tek
 npm run sema    # sözleşmeler: örnekler + doğrulayıcının öz-testi + mutasyon ölçümü
 npm run kapi    # hepsi birden — kapı kontrolü (CI'ın koştuğu komutun aynısı)
@@ -61,14 +65,14 @@ yazılmış bir bayrak sessizce geçmez: en yakın bayrağı önerip 2 ile çık
 
 ### İlk koşuda göreceğiniz iki atlama bilinçli, hata değil
 
-- `npm test` → `pass 176`, `skipped 1` (toplam 177). Atlanan U15'tir: türetilen ajan
+- `npm test` → `pass 178`, `skipped 1` (toplam 179). Atlanan U15'tir: türetilen ajan
   dosyasını komşu projenin doğrulayıcısından ([turkce-ajanlar](https://github.com/Furkiozknn/turkce-ajanlar)
   `arac/dogrula.js`) geçirir ve onu varsayılan olarak `../turkce-ajanlar`'da
-  arar. Tam 177/177 için komşuyu yanına klonlayın ya da yolunu verin:
+  arar. Tam 179/179 için komşuyu yanına klonlayın ya da yolunu verin:
   `AJANS_OS_KOMSU=/yol/turkce-ajanlar npm test`. CI bunu pinli bir SHA ile
   yapar ve U15 atlanırsa kırmızıya düşer. (Satırın öneki koşucunun sürümüne
-  göre `ℹ` ya da `# ` olur: Node 24'te `ℹ pass 176`, Node 22'nin TAP çıktısında
-  `# pass 176`. Sayılar aynıdır.)
+  göre `ℹ` ya da `# ` olur: Node 24'te `ℹ pass 178`, Node 22'nin TAP çıktısında
+  `# pass 178`. Sayılar aynıdır.)
 - `npm run kapi` sonunda `5 gecti, 0 kaldi, 1 atlandi`. Atlanan, araştırma
   kanıt doğrulayıcısının uçtan uca bölümüdür; incelenen projelerin yerel
   klonlarını ister (`AJANS_OS_KLONLAR=<klon-kök>`). Kapı yine 0 döner.

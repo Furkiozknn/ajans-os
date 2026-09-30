@@ -43,7 +43,7 @@ YOK (iz belgelerinde hiç geçmiyor: elle bakılır).
 const yaz = argümanlar.includes("--yaz");
 const hedefler = argümanlar.filter((a) => !a.startsWith("--"));
 if (!hedefler.length) {
-  console.error("Kullanim: node arac/iz-izle.js <belge.md> [<belge.md> ...] [--yaz]");
+  console.error("Kullanim: node arac/iz-izle.js <belge.md> [<belge.md> ...] [--yaz]\nYardım: node arac/iz-izle.js --help");
   process.exit(2);
 }
 

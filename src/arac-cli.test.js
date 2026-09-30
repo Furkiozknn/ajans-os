@@ -89,6 +89,16 @@ test("yazim hatasi onerilir: iz-izle.js --yzaz --yaz mi demek istediniz? diye so
   assert.match(r.hata, /--yaz mi demek istediniz\?/);
 });
 
+test("iz-izle.js: belgesiz ya da olmayan belgeyle 2 (davranis degismedi) ve --help'e yonlendirir", () => {
+  const yok = kos("iz-izle.js", ["yok.md"]);
+  assert.equal(yok.kod, 2);
+  assert.match(yok.hata, /Belge yok: yok\.md/);
+  const bos = kos("iz-izle.js");
+  assert.equal(bos.kod, 2);
+  assert.match(bos.hata, /Kullanim: node arac\/iz-izle\.js/);
+  assert.ok(bos.hata.includes("node arac/iz-izle.js --help"), "kullanim hatasi --help'e yonlendirmeli");
+});
+
 test("oner: yakin bayragi bulur, uzak olani onermez", () => {
   const bilinen = ["--test", "--dosya", "--sema", "--help"];
   assert.equal(oner("--tset", bilinen), "--test");

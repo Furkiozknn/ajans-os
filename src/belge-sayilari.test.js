@@ -13,7 +13,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -56,4 +56,24 @@ test("README'deki modul, ADR, sema ve kaynak satiri sayilari diskle ayni", () =>
     Math.abs(yazilan - satir) / satir <= 0.02,
     `README ~${yazilan} satır diyor, diskte ${satir} var (en çok %2 sapma kabul)`,
   );
+});
+
+test("README'nin komutlari ve yerel baglantilari gercekten var", () => {
+  const readme = readFileSync(join(KOK, "README.md"), "utf8");
+  const betikler = JSON.parse(readFileSync(join(KOK, "package.json"), "utf8")).scripts;
+
+  const npmKomutlari = [...readme.matchAll(/npm run ([\w:-]+)/g)].map((m) => m[1]);
+  assert.ok(npmKomutlari.includes("kapi"), "README'nin tek komutu `npm run kapi` olmali");
+  for (const ad of npmKomutlari) assert.ok(ad in betikler, `README "npm run ${ad}" diyor, package.json'da yok`);
+
+  for (const m of readme.matchAll(/node (?:--test )?((?:arac|src|docs)\/[\w./-]+\.js)/g)) {
+    assert.ok(existsSync(join(KOK, m[1])), `README "node ${m[1]}" diyor, dosya yok`);
+  }
+
+  // [metin](yol) ve href="yol" / src="yol": yerel olanlar diskte olmali (http ve #bolum atlanir).
+  for (const m of readme.matchAll(/\]\(([^)\s]+)\)|(?:href|src)="([^"]+)"/g)) {
+    const yol = (m[1] || m[2]).split("#")[0];
+    if (!yol || /^(https?:|mailto:)/.test(yol)) continue;
+    assert.ok(existsSync(join(KOK, decodeURIComponent(yol))), `README baglantisi diskte yok: ${yol}`);
+  }
 });
