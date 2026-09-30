@@ -125,3 +125,19 @@ jobs:
           echo "U15 dahil butun testler kostu"
         env:
           AJANS_OS_KOMSU: ${{ github.workspace }}/_komsu/turkce-ajanlar
+
+      # README ve project-meta.json'daki test sayisi KOSUNUN yazdigi sayiyla ayni olmali.
+      # Gunluk ekosistem denetimi (Furkiozknn/Furkiozknn #19) her gun bu sinifi buluyor:
+      # sayi bir yerde guncellenir, digerinde kalir. Burada kosudan okunur. Onek Node
+      # 22'de "# tests N", 24'te "<bilgi isareti> tests N" - satirin kendisine bakilir.
+      - name: Test sayisi README ve project-meta ile ayni mi
+        run: |
+          set -e
+          n=$(grep -E "(^|[^a-zA-Z])tests [0-9]+$" kapi-ciktisi.txt | tail -1 | grep -oE "[0-9]+$" || true)
+          [ -n "$n" ] || { echo "HATA: kosunun 'tests N' satiri okunamadi"; exit 1; }
+          grep -q "$n test" README.md \
+            || { echo "HATA: README '$n test' demiyor (kosu: $n)"; grep -n "test" README.md | head -20; exit 1; }
+          m=$(node -p "require('./project-meta.json').tests.count")
+          [ "$m" = "$n" ] \
+            || { echo "HATA: project-meta.json tests.count=$m, kosu: $n"; exit 1; }
+          echo "Test sayisi tutarli: $n"
