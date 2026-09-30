@@ -40,7 +40,7 @@ Bayrak kapısı tek yerde (`arac/_cli.js`, 61 satır, bağımlılık yok): `--he
 
 ## Görsel dil (video sisteminden alınanlar)
 
-README görselleri FRK-OS klasik temasında (`D:\Claude Projeleri\sosyal\uret\tema.mjs`, tema `klasik`); ürünün kendi kimliği (araştırma-önce bir çekirdek, terminal ağırlıklı) bu dille çelişmediği için ortak palet olduğu gibi kullanıldı.
+README görselleri FRK-OS klasik temasında (günlük video üreticisinin `sosyal/uret/tema.mjs` dosyası, tema `klasik`); ürünün kendi kimliği (araştırma-önce bir çekirdek, terminal ağırlıklı) bu dille çelişmediği için ortak palet olduğu gibi kullanıldı.
 
 | Ne | Nereden | Nerede |
 |---|---|---|
