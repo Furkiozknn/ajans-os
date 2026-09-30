@@ -216,6 +216,10 @@ def main():
                 secilen.append(kare(satirlar, imlec).convert("P", palette=Image.Palette.ADAPTIVE, colors=32))
                 sureler.append(int(1000 / fps))
                 onceki = anahtar
+        # Poster kare: statik önizleme (bağlantı kartı, mobil) ilk kareyi gösterir. Boş açılış karesi
+        # yerine son kare (kapının yeşil sonucu) 0,5 sn öne konur; döngüde son sahnenin bekleyişini uzatır.
+        secilen.insert(0, secilen[-1])
+        sureler.insert(0, 500)
         secilen[0].save(cikti, save_all=True, append_images=secilen[1:], duration=sureler, loop=0, optimize=True)
     else:
         tmp = Path(tempfile.mkdtemp())

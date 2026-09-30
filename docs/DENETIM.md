@@ -4,23 +4,23 @@ Yenilemeden önce `master` (`5684604`) üzerinde, taze `git clone` ile geçici k
 
 ## Temiz ortamda kurulum ve ilk sonuç
 
-Kurulacak bir şey yok (bağımlılık: 0); "kurulum" `git clone`. Süreler tek koşudur; makine başka işlerle paylaşılıyordu, bu yüzden aynı komut için koşular arası fark 5-7 s'yi bulabiliyor (aşağıdaki iki `kapi` sütunu).
+Kurulacak bir şey yok (bağımlılık: 0); "kurulum" `git clone`. Süreler tek koşudur; makine başka işlerle paylaşıldığı için aynı komutun koşuları arasında 5-7 s fark çıktı (`npm run kapi`: 21,9 s ve 14,3 s). Yeni testler `npm test`'e koşucu süresinde ~2 s ekliyor (4,5 s -> 6,6 s: çoğu test bir alt süreç başlatıyor).
 
-| Komut (README'deki) | Önce (`5684604`) | Sonra (`@S_SHA@`) | Sonuç |
+| Komut (README'deki) | Önce (`5684604`) | Sonra (`2243af7`) | Sonuç |
 |---|---|---|---|
-| `git clone https://github.com/Furkiozknn/ajans-os` | 2,26 s (`.git` 4,6 MB) | @S_KLON@ s (`.git` @S_GIT@ MB) | |
-| `npm test` (komşu yok) | 7,02 s | @S_TEST@ s | önce `tests 145 / pass 144 / skipped 1`; sonra `tests 179 / pass 178 / skipped 1` |
-| `npm run yapi` | 1,95 s | @S_YAPI@ s | `YAPI DOGRULAMA: temiz. 13 modul ...` |
-| `npm run sema` | 8,93 s | @S_SEMA@ s | `19/19 mutant oldu` |
-| `npm run kapi` (komşu yok) | 21,92 s | @S_KAPI@ s | çıkış 0; son satırlar `5 gecti, 0 kaldi, 1 atlandi.` |
-| `node --test src/kabul-kosusu.test.js` | 2,05 s | @S_KABUL@ s | 3/3 |
-| `npx -p typescript@5.9.3 tsc -p .` | 16,76 s (soğuk: TypeScript iner) | @S_TSC@ s (önbellekli) | çıkış 0 |
-| `AJANS_OS_KOMSU=../komsu/turkce-ajanlar npm test` | 6,95 s | @S_KOMSU_TEST@ s | önce `pass 145`, sonra `pass 179`, `skipped 0` |
-| `AJANS_OS_KOMSU=... npm run kapi` | 20,77 s | @S_KOMSU_KAPI@ s | çıkış 0 |
-| Node 22 (`npx -p node@22 node --test ...`, boruya) | 8,69 s | @S_N22@ s | TAP: `# tests`, `# pass`, `# skipped` |
+| `git clone https://github.com/Furkiozknn/ajans-os` | 2,26 s (`.git` 4,6 MB) | 1,76 s (`.git` 4,9 MB) | |
+| `npm test` (komşu yok) | 7,02 s | 8,07 s | önce `tests 145 / pass 144 / skipped 1`; sonra `tests 179 / pass 178 / skipped 1` |
+| `npm run yapi` | 1,95 s | 1,17 s | `YAPI DOGRULAMA: temiz. 13 modul ...` |
+| `npm run sema` | 8,93 s | 6,70 s | `19/19 mutant oldu` |
+| `npm run kapi` (komşu yok) | 21,92 s | 14,34 s | çıkış 0; son satırlar `5 gecti, 0 kaldi, 1 atlandi.` |
+| `node --test src/kabul-kosusu.test.js` | 2,05 s | 1,60 s | 3/3 |
+| `npx -p typescript@5.9.3 tsc -p .` | 16,76 s (soğuk: TypeScript iner) | 4,05 s (önbellekli) | çıkış 0 |
+| `AJANS_OS_KOMSU=../komsu/turkce-ajanlar npm test` | 6,95 s | 7,85 s | önce `pass 145`, sonra `pass 179`, `skipped 0` |
+| `AJANS_OS_KOMSU=... npm run kapi` | 20,77 s | 15,64 s | çıkış 0 |
+| Node 22 (`npx -p node@22 node --test ...`, boruya) | 8,69 s | 10,83 s | TAP: `# tests`, `# pass`, `# skipped` |
 | Windows PowerShell 5.1: `git clone ...; cd ajans-os; npm run kapi` | | 18,1 s | çıkış 0 |
 
-"Tek komutla kur, bir dakikada ilk sonuç" tutuyor: klon + kapı, en kötü ölçümle 2,3 + 21,9 = ~24 s; en iyi ölçümle 1,8 + 14,5 = ~16 s. README'deki "16-24 s" bu iki uç. Kapının bitmesi klonlanan sürümden çok makine yüküne bağlı.
+"Tek komutla kur, bir dakikada ilk sonuç" tutuyor: klon + kapı, en kötü ölçümle 2,3 + 21,9 = ~24 s; en iyi ölçümle 1,8 + 14,3 = ~16 s. README'deki "16-24 s" bu iki uç. Kapının bitmesi klonlanan sürümden çok makine yüküne bağlı.
 
 ## README komutları ve sayıları
 
