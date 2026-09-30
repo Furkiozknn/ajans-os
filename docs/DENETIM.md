@@ -91,3 +91,4 @@ Bu depoya ait üç açık bulgu var ve üçü de profil deposundaki meta-source 
 - `kanit-dogrula-test.js`'in uçtan uca bölümü incelenen projelerin yerel klonlarını ister; yabancı makinede her zaman atlanır (bilinçli, README anlatıyor).
 - Node 22'nin `#` önekini yalnız boruya yazılan çıktıda ölçtüm (TTY'de ölçülmedi).
 - `npx tsc` ilk çalışmada TypeScript indirdiği için soğuk süre (16,8 s) bir ağ ölçümüdür.
+- Mevcut testler (`u1`, `u2`, `u10`, `u12`, `u15`) `%TEMP%` altında `ajans-os-u*-*` klasörlerini silmiyor: bu makinede 650'den fazla (her biri ~4 KB) birikmiş, her `npm test` onlarca yenisini bırakıyor. Yeni testler kendi geçici klasörünü siler. Mevcut testlere dokunulmadı (ayrı iş).
