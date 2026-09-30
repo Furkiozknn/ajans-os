@@ -17,12 +17,27 @@
 
 const fs = require("fs");
 const path = require("path");
+const { cli } = require("./_cli.js");
 
 const KOK = path.resolve(__dirname, "..");
 const ARASTIRMA = path.join(KOK, "docs", "arastirma");
 const JSON_CIKTI = path.join(KOK, "docs", "01-matris.json");
 const MD_CIKTI = path.join(KOK, "docs", "01-KARSILASTIRMA-MATRISI.md");
-const kuru = process.argv.includes("--kuru");
+// Bayraksız çalıştırmak İKİ DOSYAYI YENİDEN YAZAR; eskiden `--help` da öyle yapıyordu.
+const kuru = cli({
+  ad: "matris-uret.js",
+  bayraklar: ["--kuru"],
+  yardim: `
+matris-uret.js — iz özetlerinden (docs/arastirma/<iz>/OZET.md) karşılaştırma matrisini üretir
+
+Kullanım:
+  node arac/matris-uret.js --kuru    matrisi ekrana basar, hiçbir dosyaya yazmaz
+  node arac/matris-uret.js           docs/01-matris.json ve docs/01-KARSILASTIRMA-MATRISI.md
+                                     dosyalarını YENİDEN YAZAR (yorum bloğu korunur; üretim tarihi güncellenir)
+
+Çıkış kodu: 0 üretildi (ayrıştırma uyarıları varsa ekrana yazılır)
+`,
+}).includes("--kuru");
 
 const norm = (s) => String(s).toLowerCase().replace(/[çğıöşü]/g, (c) => ({ ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u" }[c])).replace(/[^a-z0-9]/g, "");
 const PUAN_ANAHTAR = ["olgunluk", "mimari_netlik", "genisletilebilirlik", "guvenilirlik", "gozlemlenebilirlik", "guvenlik"];

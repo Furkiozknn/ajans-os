@@ -13,6 +13,23 @@
 const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
+const { cli } = require("./_cli.js");
+
+cli({
+  ad: "yapi-dogrula-test.js",
+  bayraklar: [],
+  yardim: `
+yapi-dogrula-test.js — yapı kapısının gerçekten kapalı olduğunu kanıtlar
+
+Kasıtlı bir ihlal dosyası yazar (src/evaluator/_ihlal-gecici.js: evaluator kardeş
+modülü import ediyor, ADR-002 ihlali), yapi-dogrula.js'in 1 ile çıktığını ve hata
+mesajının dosyayı ile ADR-002'yi andığını doğrular; dosyayı her durumda siler.
+
+Kullanım: node arac/yapi-dogrula-test.js
+
+Çıkış kodu: 0 kapı çalışıyor · 1 kapı ihlali yakalayamadı ya da ağaç temiz bırakılamadı
+`,
+});
 
 const kok = path.resolve(__dirname, "..");
 const denetim = path.join(kok, "arac", "yapi-dogrula.js");

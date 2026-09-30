@@ -30,9 +30,25 @@
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
+const { cli } = require("./_cli.js");
 
 const KOK = path.resolve(__dirname, "..");
-const kati = process.argv.includes("--kati");
+const kati = cli({
+  ad: "kanit-dogrula-test.js",
+  bayraklar: ["--kati"],
+  yardim: `
+kanit-dogrula-test.js — kanit-dogrula.js'in regresyon testi (npm run kapi'nın son adımı)
+
+Kullanım:
+  node arac/kanit-dogrula-test.js           klon yoksa uçtan uca bölümü atlar (özette sayılır), 0 döner
+  node arac/kanit-dogrula-test.js --kati    atlanan bölüm varsa 1 döner
+
+Uçtan uca bölüm incelenen projelerin yerel klonlarını ister:
+  AJANS_OS_KLONLAR=<klon-kök> node arac/kanit-dogrula-test.js
+
+Çıkış kodu: 0 hepsi geçti · 1 kalan test var ya da --kati ile atlama
+`,
+}).includes("--kati");
 let gecen = 0;
 const kalan = [];
 const atlanan = [];

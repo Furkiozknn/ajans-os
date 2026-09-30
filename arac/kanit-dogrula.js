@@ -29,6 +29,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
+const { cli } = require("./_cli.js");
 
 const KOK = path.resolve(__dirname, "..");
 // Klon kökleri makineye bağlı. Varsayılanlar bu aracın yazıldığı makinenin
@@ -37,12 +38,46 @@ const KOK = path.resolve(__dirname, "..");
 // demekti - depo herkese açık.
 const KLON_KOK = process.env.AJANS_OS_KLONLAR || "D:/Repolar/_inceleme";
 const KULLANICI_DEPOLARI = process.env.AJANS_OS_DEPOLAR || "D:/Repolar";
-const iz = process.argv[2];
-const yaz = process.argv.includes("--yaz");
-const ayrinti = process.argv.includes("--ayrinti");
-if (!iz) { console.error("kullanım: node arac/kanit-dogrula.js <iz-klasörü> [--yaz] [--ayrinti]"); process.exit(2); }
+const arg = cli({
+  ad: "kanit-dogrula.js",
+  bayraklar: ["--yaz", "--ayrinti"],
+  yardim: `
+kanit-dogrula.js — araştırma izlerindeki dosya:satır alıntılarını yerel klonlarda doğrular (protokol §4)
+
+Kullanım:
+  node arac/kanit-dogrula.js <iz-klasörü>              ekrana rapor (örnek: i2-bellek)
+  node arac/kanit-dogrula.js <iz-klasörü> --yaz        + docs/arastirma/<iz>/DENETIM-otomatik.md
+  node arac/kanit-dogrula.js <iz-klasörü> --ayrinti    tüm alıntıları da listeler
+
+Klon kökleri (ortam değişkeni; verilmezse aracın yazıldığı makinenin yolları):
+  AJANS_OS_KLONLAR   incelenen projelerin klonları   (varsayılan D:/Repolar/_inceleme)
+  AJANS_OS_DEPOLAR   kullanıcının kendi depoları     (varsayılan D:/Repolar)
+En az biri var olmalı: araç klonlar olmadan hiçbir alıntıyı doğrulayamaz.
+
+Sınıflar: TAM · YAKIN · VAR · TOKEN-YOK · EOF · DOSYA-YOK (son üçü elle bakılır; araç karar vermez)
+Çıkış kodu: 0 rapor üretildi (şüpheli olsa da) · 2 kullanım hatası ya da klon kökü yok
+`,
+});
+const iz = arg.find((a) => !a.startsWith("-"));
+const yaz = arg.includes("--yaz");
+const ayrinti = arg.includes("--ayrinti");
+const izler = () => {
+  try { return fs.readdirSync(path.join(KOK, "docs", "arastirma"), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name); } catch { return []; }
+};
+if (!iz) { console.error("kullanım: node arac/kanit-dogrula.js <iz-klasörü> [--yaz] [--ayrinti]\nizler: " + izler().join(", ") + "\nYardım: node arac/kanit-dogrula.js --help"); process.exit(2); }
 const IZ_DIR = path.join(KOK, "docs", "arastirma", iz);
-if (!fs.existsSync(IZ_DIR)) { console.error("iz klasörü yok: " + IZ_DIR); process.exit(2); }
+if (!fs.existsSync(IZ_DIR)) { console.error("iz klasörü yok: " + IZ_DIR + "\nizler: " + izler().join(", ")); process.exit(2); }
+// Klon kökü hiç yoksa doğrulanacak bir şey de yoktur; eskiden burada yakalanmamış
+// bir ENOENT yığın izi çıkıyordu (AJANS_OS_DEPOLAR'ın varsayılanı D:/Repolar, başka
+// makinede yok - README'nin önerdiği AJANS_OS_KLONLAR tek başına yetmiyordu).
+if (!fs.existsSync(KLON_KOK) && !fs.existsSync(KULLANICI_DEPOLARI)) {
+  console.error("hata: doğrulanacak klon bulunamadı, iki klasörden hiçbiri yok:\n"
+    + "  AJANS_OS_KLONLAR = " + KLON_KOK + "   (incelenen projelerin klonları)\n"
+    + "  AJANS_OS_DEPOLAR = " + KULLANICI_DEPOLARI + "   (kullanıcının kendi depoları)\n"
+    + "Araç, izlerdeki dosya:satır alıntılarını yerel klonlarda arar. Klonların klasörünü ver:\n"
+    + "  AJANS_OS_KLONLAR=<klon-kök> node arac/kanit-dogrula.js " + iz);
+  process.exit(2);
+}
 
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -55,7 +90,7 @@ function gez(kok, depo, altKok, d) {
     if (e.isDirectory()) gez(p, depo, alt, d + 1); else indeks.push({ tam: p.replace(/\\/g, "/"), alt, depo }); }
 }
 if (fs.existsSync(KLON_KOK)) for (const d of fs.readdirSync(KLON_KOK, { withFileTypes: true })) if (d.isDirectory()) { depoKok[d.name] = path.join(KLON_KOK, d.name); gez(depoKok[d.name], d.name, "", 0); }
-for (const d of fs.readdirSync(KULLANICI_DEPOLARI, { withFileTypes: true })) {
+if (fs.existsSync(KULLANICI_DEPOLARI)) for (const d of fs.readdirSync(KULLANICI_DEPOLARI, { withFileTypes: true })) {
   if (!d.isDirectory() || d.name.startsWith("_") || d.name === "ajans-os") continue;
   const k = path.join(KULLANICI_DEPOLARI, d.name);
   if (fs.existsSync(path.join(k, ".git"))) { depoKok[d.name] = k; gez(k, d.name, "", 0); }
