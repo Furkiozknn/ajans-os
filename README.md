@@ -26,7 +26,7 @@ Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapın
   <img src="https://img.shields.io/badge/lisans-MIT-4ade9e?style=flat-square&labelColor=0e0d12" alt="lisans: MIT">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-4ade9e?style=flat-square&labelColor=0e0d12" alt="Node 22 ve üzeri">
   <img src="https://img.shields.io/badge/ba%C4%9F%C4%B1ml%C4%B1l%C4%B1k-0-4ade9e?style=flat-square&labelColor=0e0d12" alt="bağımlılık yok">
-  <img src="https://img.shields.io/badge/test-179-6cb6ff?style=flat-square&labelColor=0e0d12" alt="179 test">
+  <img src="https://img.shields.io/badge/test-183-6cb6ff?style=flat-square&labelColor=0e0d12" alt="183 test">
   <img src="https://img.shields.io/badge/ADR-11%20karar-c9a961?style=flat-square&labelColor=0e0d12" alt="11 mimari karar kaydı">
   <img src="https://img.shields.io/badge/s%C3%B6zle%C5%9Fme-6%20%C5%9Fema-e857c3?style=flat-square&labelColor=0e0d12" alt="6 makine-okunur sözleşme şeması">
 </p>
@@ -38,7 +38,7 @@ hatayı yakalayıp toparlayan, her adımı izleyen ve kendi geçmişinden
 öğrenen bir çekirdek.
 
 > Durum: **Faz 5 — Uygulama.** Çekirdek çalışıyor: `src/` altında 13 modül,
-> ~2.848 satır kaynak (test dosyaları hariç), 179 test ve uçtan uca
+> ~2.848 satır kaynak (test dosyaları hariç), 183 test ve uçtan uca
 > bir kabul koşusu; `contracts/` altında 6 şema, `docs/adr/` altında 11 ADR.
 > Araştırma → karşılaştırma → sentez → tasarım → uygulama
 > sırası korundu; kod en sona yazıldı.
@@ -49,7 +49,7 @@ Bağımlılık yok; Node 22+ yeterli. Yukarıdaki tek komut hepsini koşar; par�
 
 ```bash
 git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os
-npm test        # 179 test (uçtan uca kabul koşusu dahil)
+npm test        # 183 test (uçtan uca kabul koşusu dahil)
 npm run yapi    # yapı doğrulama: 13 modül, blueprint §2 ile eşli, import yönü tek
 npm run sema    # sözleşmeler: örnekler + doğrulayıcının öz-testi + mutasyon ölçümü
 npm run kapi    # hepsi birden — kapı kontrolü (CI'ın koştuğu komutun aynısı)
@@ -65,10 +65,10 @@ yazılmış bir bayrak sessizce geçmez: en yakın bayrağı önerip 2 ile çık
 
 ### İlk koşuda göreceğiniz iki atlama bilinçli, hata değil
 
-- `npm test` → `pass 178`, `skipped 1` (toplam 179). Atlanan U15'tir: türetilen ajan
+- `npm test` → `pass 182`, `skipped 1` (toplam 183). Atlanan U15'tir: türetilen ajan
   dosyasını komşu projenin doğrulayıcısından ([turkce-ajanlar](https://github.com/Furkiozknn/turkce-ajanlar)
   `arac/dogrula.js`) geçirir ve onu varsayılan olarak `../turkce-ajanlar`'da
-  arar. Tam 179/179 için komşuyu yanına klonlayın ya da yolunu verin:
+  arar. Tam 183/183 için komşuyu yanına klonlayın ya da yolunu verin:
   `AJANS_OS_KOMSU=/yol/turkce-ajanlar npm test`. CI bunu pinli bir SHA ile
   yapar ve U15 atlanırsa kırmızıya düşer. (Satırın öneki koşucunun sürümüne
   göre `ℹ` ya da `# ` olur: Node 24'te `ℹ pass 178`, Node 22'nin TAP çıktısında
