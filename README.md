@@ -26,7 +26,7 @@ Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapın
   <img src="https://img.shields.io/badge/lisans-MIT-4ade9e?style=flat-square&labelColor=0e0d12" alt="lisans: MIT">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-4ade9e?style=flat-square&labelColor=0e0d12" alt="Node 22 ve üzeri">
   <img src="https://img.shields.io/badge/ba%C4%9F%C4%B1ml%C4%B1l%C4%B1k-0-4ade9e?style=flat-square&labelColor=0e0d12" alt="bağımlılık yok">
-  <img src="https://img.shields.io/badge/test-179-6cb6ff?style=flat-square&labelColor=0e0d12" alt="179 test">
+  <img src="https://img.shields.io/badge/test-187-6cb6ff?style=flat-square&labelColor=0e0d12" alt="187 test">
   <img src="https://img.shields.io/badge/ADR-11%20karar-c9a961?style=flat-square&labelColor=0e0d12" alt="11 mimari karar kaydı">
   <img src="https://img.shields.io/badge/s%C3%B6zle%C5%9Fme-6%20%C5%9Fema-e857c3?style=flat-square&labelColor=0e0d12" alt="6 makine-okunur sözleşme şeması">
 </p>
@@ -38,7 +38,7 @@ hatayı yakalayıp toparlayan, her adımı izleyen ve kendi geçmişinden
 öğrenen bir çekirdek.
 
 > Durum: **Faz 5 — Uygulama.** Çekirdek çalışıyor: `src/` altında 13 modül,
-> ~2.848 satır kaynak (test dosyaları hariç), 179 test ve uçtan uca
+> ~2.848 satır kaynak (test dosyaları hariç), 187 test ve uçtan uca
 > bir kabul koşusu; `contracts/` altında 6 şema, `docs/adr/` altında 11 ADR.
 > Araştırma → karşılaştırma → sentez → tasarım → uygulama
 > sırası korundu; kod en sona yazıldı.
@@ -49,7 +49,7 @@ Bağımlılık yok; Node 22+ yeterli. Yukarıdaki tek komut hepsini koşar; par�
 
 ```bash
 git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os
-npm test        # 179 test (uçtan uca kabul koşusu dahil)
+npm test        # 187 test (uçtan uca kabul koşusu dahil)
 npm run yapi    # yapı doğrulama: 13 modül, blueprint §2 ile eşli, import yönü tek
 npm run sema    # sözleşmeler: örnekler + doğrulayıcının öz-testi + mutasyon ölçümü
 npm run kapi    # hepsi birden — kapı kontrolü (CI'ın koştuğu komutun aynısı)
@@ -65,14 +65,14 @@ yazılmış bir bayrak sessizce geçmez: en yakın bayrağı önerip 2 ile çık
 
 ### İlk koşuda göreceğiniz iki atlama bilinçli, hata değil
 
-- `npm test` → `pass 178`, `skipped 1` (toplam 179). Atlanan U15'tir: türetilen ajan
+- `npm test` → `pass 186`, `skipped 1` (toplam 187). Atlanan U15'tir: türetilen ajan
   dosyasını komşu projenin doğrulayıcısından ([turkce-ajanlar](https://github.com/Furkiozknn/turkce-ajanlar)
   `arac/dogrula.js`) geçirir ve onu varsayılan olarak `../turkce-ajanlar`'da
-  arar. Tam 179/179 için komşuyu yanına klonlayın ya da yolunu verin:
+  arar. Tam 187/187 için komşuyu yanına klonlayın ya da yolunu verin:
   `AJANS_OS_KOMSU=/yol/turkce-ajanlar npm test`. CI bunu pinli bir SHA ile
   yapar ve U15 atlanırsa kırmızıya düşer. (Satırın öneki koşucunun sürümüne
-  göre `ℹ` ya da `# ` olur: Node 24'te `ℹ pass 178`, Node 22'nin TAP çıktısında
-  `# pass 178`. Sayılar aynıdır.)
+  göre `ℹ` ya da `# ` olur: Node 24'te `ℹ pass 186`, Node 22'nin TAP çıktısında
+  `# pass 186`. Sayılar aynıdır.)
 - `npm run kapi` sonunda `5 gecti, 0 kaldi, 1 atlandi`. Atlanan, araştırma
   kanıt doğrulayıcısının uçtan uca bölümüdür; incelenen projelerin yerel
   klonlarını ister (`AJANS_OS_KLONLAR=<klon-kök>`). Kapı yine 0 döner.
@@ -80,6 +80,24 @@ yazılmış bir bayrak sessizce geçmez: en yakın bayrağı önerip 2 ile çık
 Arayüz tipleri (`src/**/*.d.ts`) CI'da ayrıca denetlenir; yerelde aynısı:
 `npx -p typescript@5.9.3 tsc -p .` (TypeScript bağımlılık değil, yalnızca bu
 denetim için indirilir).
+
+### Koştuktan sonra: koşu raporu
+
+Görev kaydı ve iz diskte iki ayrı biçimde durur (adım kayıtları JSON, span'ler JSONL).
+`arac/run-report.js` ikisini tek bir rapora çevirir; sunucu ya da ağ gerekmez:
+
+```bash
+node arac/run-report.js contracts/ornek/gorev/gece-mimari-turu.json
+node arac/run-report.js <kayit>/<gorev>.json --izler <iz>/<run_id>.jsonl --json
+```
+
+Rapor koşunun sonucunu (tamamlandı / onay bekliyor / başarısız / yarıda kaldı),
+bekleyen onay kayıtlarını, adım başına durum, deneme, süre, maliyet, değerlendirme
+ve hatayı; iz verilirse model başına çağrı/token/maliyeti, izin kararlarını, kurtarma
+modlarını ve kesilmiş span'leri gösterir. Bilinmeyen sıfır sayılmaz (AP10): maliyeti
+ölçülmemiş bir adım toplamı "en az $X (n kalemde bilinmiyor)" yapar. `--kati` koşu
+tamamlanmadıysa 1 döner, CI'da "koşu bitti mi" kapısı olarak kullanılabilir. Testler
+kaydı ve izi elle yazmaz: gerçek `task-manager` ve `observability` üretir.
 
 ### Nereden başlamalı
 
@@ -171,7 +189,7 @@ Bu yenilemenin denetimi ve tasarımı: [docs/DENETIM.md](docs/DENETIM.md), [docs
 | `docs/demo/` | README demosunun kaydı ve çizicisi (`kaydet.js`, `uret.py`, `komutlar.txt`) |
 | `contracts/` | 6 JSON Schema sözleşmesi — ajan, görev, mesaj, izin, span, öneri — ve `ornek/` altında geçerli örnekleri |
 | `src/` | Çekirdek: 13 modül, her biri `index.js` + `index.d.ts` + `index.test.js`; ayrıca `kabul-kosusu.test.js` (uçtan uca), `arac-cli.test.js` ve `belge-sayilari.test.js` |
-| `arac/` | Kapı araçları: yapı doğrulama, bağımlılıksız şema doğrulayıcı + mutasyon ölçümü, araştırma kanıt doğrulayıcı, iz izleyici, matris üretici; hepsi `--help` bilir |
+| `arac/` | Kapı araçları: yapı doğrulama, bağımlılıksız şema doğrulayıcı + mutasyon ölçümü, araştırma kanıt doğrulayıcı, iz izleyici, matris üretici, koşu raporu; hepsi `--help` bilir |
 | `veri/` | Model fiyat tablosu — maliyet yöneticisi fiyatı koddan değil buradan okur |
 
 ## Sınırlar

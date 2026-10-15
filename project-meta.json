@@ -51,9 +51,9 @@
     "videos": []
   },
   "tests": {
-    "count": 179,
-    "source": "`node --test`: `pass 179`",
-    "measured": "2026-09-30"
+    "count": 187,
+    "source": "`node --test`: `pass 187`",
+    "measured": "2026-10-15"
   },
   "ci": {
     "workflows": [
