@@ -196,3 +196,14 @@ async function realRunForCli() {
   appendFileSync(tracePath, `${JSON.stringify({ span_id: "p", run_id: "kosu-cli", operation: "permission_check", name: "permission_check ALLOW", outcome: { status: "ok" } })}\n`);
   return { recordPath: tm.kayit_yolu("cli"), tracePath };
 }
+
+test("run-report: a value cannot break out of its Markdown table cell", () => {
+  const t = newTask("hucre", [step("a")]);
+  t.run.step_records = [
+    { step_id: "a", attempt: 1, status: "BASARISIZ", started_at: "2026-10-15T10:00:00Z", error_type: "ARAC_HATASI", error_message: "yol C:\\x\\| sonra\nyeni satir" },
+  ];
+  const row = toMarkdown(buildReport(t)).split("\n").find((l) => l.startsWith("| a |"));
+  // 7 columns = 8 unescaped pipes; the message's "\|" must stay inside its cell.
+  assert.equal(row.replace(/\\\\/g, "").replace(/\\\|/g, "").split("|").length - 1, 8, row);
+  assert.match(row, /C:\\\\x\\\\\\\| sonra yeni satir/);
+});

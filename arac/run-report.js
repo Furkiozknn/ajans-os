@@ -192,7 +192,12 @@ function ms(v) {
   return v >= 60000 ? `${Math.round(v / 6000) / 10} dk` : `${Math.round(v / 100) / 10} s`;
 }
 
-const cell = (v) => String(v === null || v === undefined || v === "" ? "—" : v).replace(/\|/g, "\\|").replace(/\n/g, " ");
+/** A Markdown table cell: backslash first, then the pipe, so "\|" in a value cannot end the cell. */
+const cell = (v) =>
+  String(v === null || v === undefined || v === "" ? "—" : v)
+    .replace(/\\/g, "\\\\")
+    .replace(/\|/g, "\\|")
+    .replace(/\r?\n/g, " ");
 
 function toMarkdown(r) {
   const out = [];
