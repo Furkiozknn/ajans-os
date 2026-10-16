@@ -82,7 +82,7 @@ function gorevYoneticisiSahte(cagrilar, baslatilanlar) {
       cagrilar.push("gorev_yoneticisi.sonraki_adim");
       for (const adim of gorev.graph.steps) {
         const k = son(gorev, adim.id);
-        if (k && (k.status === "BITTI" || k.status === "ONAY_BEKLIYOR")) continue;
+        if (k && ["BITTI", "ONAY_BEKLIYOR", "GIRDI_BEKLIYOR"].includes(k.status)) continue;
         if (k && k.status === "BASARISIZ" && k.attempt >= adim.retry.max_attempts) continue;
         const hazir = adim.depends_on.every((b) => {
           const bk = son(gorev, b);
@@ -463,6 +463,51 @@ test("kosuyu_surdur tamamlanmis adimi tekrar baslatmaz", async () => {
   assert.equal(sonuc.son, "bitti");
   assert.deepEqual(baslatilanlar, ["ikinci-adim"], "biten adim ikinci kez baslatilmadi");
   assert.equal(sonuc.adim_kayitlari.length, 1);
+});
+
+// Tikali kosu "bitti" degildir: `sonraki_adim` null dondugunde sebep kayittan
+// okunur. Her durumda hicbir adim yeniden baslatilmaz.
+for (const [durum, ek, beklenen] of [
+  ["BASARISIZ", { attempt: 2, error_type: "DOGRULAMA_KALDI" }, "basarisiz"],
+  ["ONAY_BEKLIYOR", { approval_ref: "onay-bekleyenler-satir-7" }, "onay-bekliyor"],
+  ["GIRDI_BEKLIYOR", {}, "girdi-bekliyor"],
+]) {
+  test(`kosuyu_surdur ${durum} adimda '${beklenen}' doner, 'bitti' degil`, async () => {
+    const { orkestra, baslatilanlar } = kur();
+    const gorev = gorevUret([
+      {
+        step_id: "birinci-adim",
+        attempt: 1,
+        status: durum,
+        started_at: "2026-09-08T17:00:00Z",
+        ...ek,
+      },
+    ]);
+
+    const sonuc = await orkestra.kosuyu_surdur(gorev, "kosu-bir");
+
+    assert.equal(sonuc.son, beklenen);
+    assert.deepEqual(baslatilanlar, [], "tikali kosuda adim baslatilmaz");
+    assert.equal(sonuc.adim_kayitlari.length, 0);
+  });
+}
+
+test("kosuyu_surdur her adim BITTI ise 'bitti' doner", async () => {
+  const { orkestra, baslatilanlar } = kur();
+  const bitti = (step_id) => ({
+    step_id,
+    attempt: 1,
+    status: "BITTI",
+    started_at: "2026-09-08T17:00:00Z",
+    ended_at: "2026-09-08T17:01:00Z",
+    evaluation_result: "GECTI",
+  });
+  const gorev = gorevUret([bitti("birinci-adim"), bitti("ikinci-adim")]);
+
+  const sonuc = await orkestra.kosuyu_surdur(gorev, "kosu-bir");
+
+  assert.equal(sonuc.son, "bitti");
+  assert.deepEqual(baslatilanlar, []);
 });
 
 test("kosuyu_surdur baska bir kosunun kaydiyla calismaz", async () => {
