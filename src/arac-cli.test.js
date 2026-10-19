@@ -51,6 +51,7 @@ const ARACLAR = {
   "kanit-dogrula-test.js": /— yolEslesir —/,
   "matris-uret.js": /^Yazıldı:|proje: \d+/m,
   "iz-izle.js": /farkli alinti/,
+  "run-report.js": /^# Koşu raporu:/m,
   "plan-preview.js": /^Plan önizleme:/m,
 };
 
