@@ -9,7 +9,7 @@ Araştırma-önce kurulmuş bir ajan işletim sistemi çekirdeği: kabul koşusu
 git clone https://github.com/Furkiozknn/ajans-os && cd ajans-os && npm run kapi
 ```
 
-Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapının bitişine **16–24 s** ölçüldü (Windows 11, Node 24; dört taze koşuda klon ~2 s + `npm run kapi` 14–22 s). Kapı yeşilse çıkış kodu 0'dır. Ekranın sonunda "1 atlandı" görürsünüz; hata değil, [aşağıda](#ilk-koşuda-göreceğiniz-iki-atlama-bilinçli-hata-değil) açıklandı. Windows PowerShell 5.1'de `&&` yerine `;` yazın ([ayrıntı](#çalıştır)).
+Node 22+ yeter; kurulacak bir şey yok (bağımlılık: 0). Temiz klondan kapının bitişine **16–24 s** ölçüldü (Windows 11, Node 24; dört taze koşuda klon ~2 s + `npm run kapi` 14–22 s). Kapı yeşilse çıkış kodu 0'dır. Ekranın sonunda "1 atlandı" görürsünüz; hata değil, [aşağıda](#i%CC%87lk-koşuda-göreceğiniz-iki-atlama-bilinçli-hata-değil) açıklandı. Windows PowerShell 5.1'de `&&` yerine `;` yazın ([ayrıntı](#çalıştır)).
 
 <p align="center"><img src="docs/demo/demo.gif" alt="Terminal: kabul koşusunun 3 testi geçiyor, yapı kapısı kasıtlı bir ihlali yakalıyor, doğrulayıcının 19 mutantının 19'u ölüyor, yanlış yazılmış bir bayrak --test önerisiyle reddediliyor, npm run kapi 0 ile bitiyor" width="720"></p>
 <p align="center"><sub>Gerçek çıktı: <a href="docs/demo/kaydet.js">kaydet.js</a> komutları koşar (kayıt: <a href="docs/demo/komutlar.txt">komutlar.txt</a>), <a href="docs/demo/uret.py">uret.py</a> çizer; ekrandaki hiçbir satır elle yazılmadı. <code>npm run kapi</code> bu parçaların hepsini ve testlerin tamamını koşar; son sahne onun yalnız son 6 satırıdır.</sub></p>
