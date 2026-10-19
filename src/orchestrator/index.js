@@ -58,6 +58,31 @@ function simdi() {
 }
 
 /**
+ * `sonraki_adim` null dondugunde kosunun gercek sonu. null iki ayri seyi
+ * soyler: ya her adim BITTI'dir, ya da kalan adimlar tikalidir (deneme hakki
+ * bitmis BASARISIZ adim, onay/girdi bekleyen adim ya da bunlara bagli adimlar).
+ * Ikincisini "bitti" diye raporlamak, surdurulen basarisiz bir kosuyu
+ * tamamlanmis gosterir. Oncelik: kapanmis basarisizlik > onay > girdi.
+ */
+function durakSonu(gorev) {
+  const sonKayit = (id) => {
+    const kayitlar = gorev.run.step_records.filter((k) => k.step_id === id);
+    return kayitlar.length ? kayitlar[kayitlar.length - 1] : null;
+  };
+  const durumlar = gorev.graph.steps.map((a) => {
+    const k = sonKayit(a.id);
+    return k ? k.status : null;
+  });
+  if (durumlar.every((s) => s === "BITTI")) return "bitti";
+  if (durumlar.includes("BASARISIZ")) return "basarisiz";
+  if (durumlar.includes("ONAY_BEKLIYOR")) return "onay-bekliyor";
+  if (durumlar.includes("GIRDI_BEKLIYOR")) return "girdi-bekliyor";
+  // Kalan adim ne kapali ne bekliyor ama yine de verilmedi: ilerleyemeyen kosu
+  // tamamlanmis sayilmaz.
+  return "basarisiz";
+}
+
+/**
  * ponytail: token sayisi 4 karakter = 1 token kabaligiyla tahmin ediliyor.
  * Gercek sayaci saglayici verir (`ModelTasiyici`); tasiyici bir sayac
  * sunduğunda burasi ona devredilir. Baglam butcesi icin kabalik yeterli,
@@ -441,7 +466,7 @@ export function orkestrator(bagimliliklar, secenekler = {}) {
 
     for (let tur = 0; tur < tavan; tur += 1) {
       const adim = d.gorev_yoneticisi.sonraki_adim(gorev);
-      if (!adim) return { run_id, son: "bitti", adim_kayitlari };
+      if (!adim) return { run_id, son: durakSonu(gorev), adim_kayitlari };
 
       const kayit = await adimi_yurut(gorev, adim.id);
       adim_kayitlari.push(kayit);
