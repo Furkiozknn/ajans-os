@@ -52,6 +52,7 @@ const ARACLAR = {
   "matris-uret.js": /^Yazıldı:|proje: \d+/m,
   "iz-izle.js": /farkli alinti/,
   "run-report.js": /^# Koşu raporu:/m,
+  "plan-preview.js": /^Plan önizleme:/m,
 };
 
 for (const [arac, normalKosu] of Object.entries(ARACLAR)) {

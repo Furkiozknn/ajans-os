@@ -37,8 +37,18 @@ export interface OrchestratorBagimliliklari {
   gozlem: Observability;
 }
 
-/** Bir kosunun neden bittigi. `butce` planli faz gecisidir, cokme degil. */
-export type KosuSonu = "bitti" | "basarisiz" | "onay-bekliyor" | "butce" | "kesildi";
+/**
+ * Bir kosunun neden bittigi. `butce` planli faz gecisidir, cokme degil.
+ * `bitti` yalnizca her adim BITTI ise doner; surdurulen kosuda tikali adim
+ * `basarisiz`, `onay-bekliyor` ya da `girdi-bekliyor` olarak raporlanir.
+ */
+export type KosuSonu =
+  | "bitti"
+  | "basarisiz"
+  | "onay-bekliyor"
+  | "girdi-bekliyor"
+  | "butce"
+  | "kesildi";
 
 export interface KosuSonucu {
   run_id: KebabId;
